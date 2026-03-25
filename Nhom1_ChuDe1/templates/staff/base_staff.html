@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cen Sports - Quản trị hệ thống{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3482b9;
+            --dark-blue: #1a5c8b;
+            --sidebar-width: 260px;
+            --bg-light: #f4f7f9;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { display: flex; background-color: var(--bg-light); min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--dark-blue);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-logo img {
+            height: 35px;
+            width: auto;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        .sidebar-menu { list-style: none; flex: 1; margin-top: 15px; overflow-y: auto; }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li a i { width: 25px; font-size: 18px; }
+
+        .sidebar-menu li a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tự động sáng menu khi ở đúng trang */
+        .sidebar-menu li a.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-left: 4px solid #fff;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #ff6b6b;
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover { background-color: rgba(255, 107, 107, 0.1); }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* TOPBAR */
+        header {
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .topbar-left { display: flex; align-items: center; gap: 20px; color: #666; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-name { text-align: right; }
+        .user-name b { display: block; color: #333; font-size: 14px; }
+        .user-name small { color: #888; font-size: 12px; }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(52, 130, 185, 0.3);
+        }
+
+        .container { padding: 30px; }
+
+        /* Scrollbar Sidebar */
+        .sidebar-menu::-webkit-scrollbar { width: 4px; }
+        .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+        /* Khi sidebar có class .collapsed thì thu gọn lại */
+        .sidebar.collapsed {
+            margin-left: calc(var(--sidebar-width) * -1);
+        }
+
+        /* Khi sidebar ẩn, nội dung chính phải tràn ra hết màn hình */
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Thêm hiệu ứng chuyển động mượt mà */
+        .sidebar, .main-content {
+            transition: all 0.3s ease;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <aside class="sidebar" id="mySidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'logo/logoCen.jpg' %}" alt="Logo">
+            <span>Cen Sports</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{% url 'bao_cao_staff' %}"
+                   class="{% if request.resolver_match.url_name == 'bao_cao_staff' or request.resolver_match.url_name == 'admin_index' %}active{% endif %}">
+                    <i class="fa fa-chart-line"></i> Báo cáo thống kê
+                </a>
+            </li>
+            <li><a href="#"><i class="fa fa-shopping-cart"></i> Quản lý đơn hàng</a></li>
+            <li><a href="#"><i class="fa fa-box"></i> Quản lý sản phẩm</a></li>
+            <li><a href="#"><i class="fa fa-list"></i> Quản lý danh mục</a></li>
+            <li><a href="#"><i class="fa fa-users"></i> Quản lý khách hàng</a></li>
+            <li><a href="#"><i class="fa fa-truck-loading"></i> Quản lý nhập hàng</a></li>
+            <li><a href="#"><i class="fa fa-truck"></i> Quản lý nhà cung cấp</a></li>
+            <li><a href="#"><i class="fa fa-tags"></i> Quản lý khuyến mãi</a></li>
+            <li><a href="#"><i class="fa fa-cog"></i> Cài đặt tài khoản</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn">
+                <i class="fa fa-sign-out-alt" style="margin-right: 10px;"></i> Đăng xuất
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content" id="mainContent">
+        <header>
+            <div class="topbar-left">
+                <i class="fa fa-bars" id="toggleBtn" style="cursor: pointer; font-size: 20px;"></i>
+                <span style="font-weight: 500; color: #444;"></span>
+            </div>
+
+            <div class="user-info">
+                <div class="user-name">
+                    <b>Admin User</b>
+                    <small>admin@censports.com</small>
+                </div>
+                <div class="user-avatar">A</div>
+            </div>
+        </header>
+
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('mySidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        toggleBtn.addEventListener('click', () => {
+            // Toggle (bật/tắt) các class
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+    </script>
+</body>
+</html>
