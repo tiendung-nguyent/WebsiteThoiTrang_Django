@@ -34,7 +34,7 @@
 <div class="product-grid">
     {% for i in "12345678" %}
     <a href="{% url 'chiTietSanPham' %}" class="product-card">
-        <img src="https://via.placeholder.com/300" class="product-img" alt="Sản phẩm">
+        <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="Sản phẩm">
         <div class="product-info">
             <p class="product-category">NAM / GYM</p>
             <p class="product-name">Áo Thun Tập Gym Nam Premium Vải Co Giãn</p>
