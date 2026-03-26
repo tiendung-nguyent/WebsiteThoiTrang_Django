@@ -16,13 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import TemplateView
 from app.views import views_user, views_staff, views_staff_quanLySanPham
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views_user.index,name='index'),
-    path('user',views_user.index,name='index'),
-    path('temp-url/', views_user.index, name='quanLyDonDat'),
-    path('temp-url/', views_user.index, name='gioHang'),
+
+    # Đường dẫn cho Trang chủ User
+    # SỬA DÒNG NÀY: Thay views_user.index bằng views_user.trangChuUser
+    path('', views_user.trangChuUser, name='trangChuUser'),
+
+    # Đảm bảo các dòng dưới cũng khớp với tên hàm trong views_user.py
+    path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
+    path('gio-hang-user/', views_user.gio_hang, name='gioHang'),
+    path('quan-ly-don-hang-user/', views_user.quanLyDonDat, name='quanLyDonDat'),
     path('staff/', views_staff.bao_cao_view, name='bao_cao_staff'),
     path('staff/quanLySanPham/', views_staff_quanLySanPham.quanLySP ,name='quanLySP'),
 ]
