@@ -26,5 +26,9 @@ urlpatterns = [
 
     path('staff/', views_staff.bao_cao_view, name='bao_cao_staff'),
     path('staff/quanLySanPham/', views_staff_quanLySanPham.quanLySP ,name='quanLySP'),
+    path('staff/quanLySanPham/add/', views_staff_quanLySanPham.add_quanLySP, name='add_quanLySP'),
+    path('staff/quanLySanPham/view/', views_staff_quanLySanPham.view_quanLySP, name='view_quanLySP'),
+    path('staff/quanLySanPham/edit/', views_staff_quanLySanPham.edit_quanLySP, name='edit_quanLySP'),
+    path('staff/quanLySanPham/delete/', views_staff_quanLySanPham.delete_quanLySP, name='delete_quanLySP'),
     path('staff/quan-ly-nhap-hang/', views_staff_QuanLyNhapHang.nhap_hang_view, name='quan_ly_nhap_hang'),
 ]

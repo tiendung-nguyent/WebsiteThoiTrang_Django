@@ -1,6 +1,6 @@
 {% extends "staff/base_staff.html" %}
 
-{% block title %}Thêm sản phẩm mới - Cen Sports{% endblock %}
+{% block title %}Cập nhật sản phẩm - Cen Sports{% endblock %}
 
 {% block content %}
 <style>
@@ -15,19 +15,19 @@
         justify-content: center;
         align-items: center;
         z-index: 2000;
-        padding: 20px; /* Tránh sát mép màn hình điện thoại/máy tính bảng */
+        padding: 20px;
     }
 
-    /* --- MODAL BOX (Fix tràn màn hình) --- */
+    /* --- MODAL CARD --- */
     .modal-card {
         background: white;
         width: 100%;
         max-width: 600px;
-        max-height: 90vh; /* Giới hạn chiều cao tối đa 90% màn hình */
+        max-height: 90vh;
         border-radius: 12px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         display: flex;
-        flex-direction: column; /* Quan trọng để tách Header, Body, Footer */
+        flex-direction: column;
         overflow: hidden;
         animation: modalFadeIn 0.3s ease-out;
     }
@@ -43,21 +43,20 @@
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #eee;
-        flex-shrink: 0; /* Không cho header bị co lại */
+        flex-shrink: 0;
     }
 
     .modal-header h2 { font-size: 18px; color: #002140; }
-    .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; font-size: 16px;}
+    .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; }
     .close-btn { font-size: 22px; color: #aaa; cursor: pointer; }
 
-    /* --- FORM BODY (Thanh cuộn nằm ở đây) --- */
+    /* --- FORM BODY (Scrollable) --- */
     .modal-body {
         padding: 20px 25px;
-        overflow-y: auto; /* Tạo thanh cuộn riêng cho phần nhập liệu */
-        flex-grow: 1;     /* Chiếm không gian ở giữa */
+        overflow-y: auto;
+        flex-grow: 1;
     }
 
-    /* Tùy chỉnh scrollbar cho đẹp */
     .modal-body::-webkit-scrollbar { width: 6px; }
     .modal-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
@@ -71,19 +70,27 @@
     .input-icon-wrapper { position: relative; }
     .input-icon-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
 
+    /* Tags Styling */
     .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag-item { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .tag-item:hover, .tag-item.active { border-color: var(--primary-color); background: #f0f7ff; color: var(--primary-color); }
+    .tag-item { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
+    
+    /* Màu xanh đậm cho các tag được chọn như trong ảnh */
+    .tag-item.active { 
+        background-color: #003366; 
+        color: white; 
+        border-color: #003366; 
+    }
+    
     .tag-add { padding: 5px 12px; border: 1px dashed #bbb; border-radius: 6px; color: #888; cursor: pointer; }
 
-    /* --- FOOTER (Cố định ở dưới) --- */
+    /* --- FOOTER --- */
     .modal-footer {
         padding: 15px 25px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 15px;
         border-top: 1px solid #eee;
-        flex-shrink: 0; /* Không cho footer bị co lại */
+        flex-shrink: 0;
         background: white;
     }
 
@@ -94,35 +101,35 @@
 <div class="modal-overlay">
     <div class="modal-card">
         <div class="modal-header">
-            <h2>Thêm sản phẩm mới: <span>SP0000001</span></h2>
+            <h2>Cập nhật sản phẩm: <span>SP0000001</span></h2>
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
-    <form id="addProductForm" action="#" method="POST" style="display: contents;">
-            {% csrf_token %} <div class="modal-body">
+        <form id="editProductForm" action="#" method="GET" style="display: contents;">
+            <div class="modal-body">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
-                    <input type="text" placeholder="Nhập tên sản phẩm" required>
+                    <input type="text" value="Áo thun thể thao Pro">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Danh mục</label>
                         <select>
-                            <option>Chọn danh mục</option>
-                            <option>Áo thun nam</option>
+                            <option selected>Áo thun nam</option>
+                            <option>Quần nam</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Giá bán (VNĐ)</label>
-                        <input type="number" value="0">
+                        <input type="number" value="350000">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>URL Hình ảnh</label>
                     <div class="input-icon-wrapper">
-                        <input type="text" placeholder="https://...">
+                        <input type="text" value="https://images.unsplash.com/photo-1521572163474...">
                         <i class="fa fa-image"></i>
                     </div>
                 </div>
@@ -131,9 +138,9 @@
                     <label>Kích cỡ</label>
                     <div class="tag-list">
                         <span class="tag-item">S</span>
-                        <span class="tag-item">M</span>
-                        <span class="tag-item">L</span>
-                        <span class="tag-item">XL</span>
+                        <span class="tag-item active">M</span>
+                        <span class="tag-item active">L</span>
+                        <span class="tag-item active">XL</span>
                         <span class="tag-item">XXL</span>
                         <span class="tag-add">+</span>
                     </div>
@@ -142,9 +149,9 @@
                 <div class="form-group">
                     <label>Màu sắc</label>
                     <div class="tag-list">
-                        <span class="tag-item">Đen</span>
+                        <span class="tag-item active">Đen</span>
                         <span class="tag-item">Trắng</span>
-                        <span class="tag-item">Xanh</span>
+                        <span class="tag-item active">Xanh</span>
                         <span class="tag-item">Đỏ</span>
                         <span class="tag-item">Xám</span>
                         <span class="tag-item">Vàng</span>
@@ -154,13 +161,13 @@
 
                 <div class="form-group">
                     <label>Mô tả chi tiết</label>
-                    <textarea rows="3"></textarea>
+                    <textarea rows="3">Áo thun thể thao chất liệu thoáng mát.</textarea>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0;">
+                <div class="form-group">
                     <label>Trạng thái</label>
                     <select>
-                        <option>Đang bán</option>
+                        <option selected>Đang bán</option>
                         <option>Ngừng bán</option>
                     </select>
                 </div>
@@ -176,30 +183,18 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Active menu sidebar
-        const menuLinks = document.querySelectorAll('.sidebar-menu a');
-        menuLinks.forEach(link => {
-            if (link.innerText.includes("Quản lý sản phẩm")) {
-                link.classList.add('active');
-            }
-        });
-
-        // Hiệu ứng chọn Tag (Click để đổi màu)
+        // Tag Click Toggle
         document.querySelectorAll('.tag-item').forEach(tag => {
             tag.addEventListener('click', function() {
                 this.classList.toggle('active');
             });
         });
 
-        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG
-        const productForm = document.getElementById('addProductForm');
-        productForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Ngăn chặn trang bị load lại và lỗi 403
-
-            // Hiển thị thông báo
-            alert("Lưu sản phẩm thành công!");
-
-            // Quay về trang trước đó (Danh sách sản phẩm)
+        // Form Submit
+        const form = document.getElementById('editProductForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert("Cập nhật thông tin thành công!");
             window.location.href = "{% url 'quanLySP' %}";
         });
     });
