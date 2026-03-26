@@ -1,0 +1,45 @@
+<div id="modalAdd" class="modal">
+    <div class="modal-content" style="width: 650px;">
+        <div class="modal-header">
+            <h3>Thêm khuyến mãi mới</h3>
+            <span class="close" onclick="closeModal('modalAdd')">&times;</span>
+        </div>
+        <div class="form-body">
+            <div class="input-group">
+                <label>Tên khuyến mãi <span style="color:red">*</span></label>
+                <input type="text" placeholder="Nhập tên coupon">
+            </div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="input-group">
+                    <label>Loại giảm giá <span style="color:red">*</span></label>
+                    <select style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;">
+                        <option>Phần trăm (%)</option>
+                        <option>Số tiền cố định</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Giá trị giảm <span style="color:red">*</span></label>
+                    <input type="number" value="0">
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Sản phẩm áp dụng <span style="color:red">*</span></label>
+                <input type="text" placeholder="Nhập tên hoặc mã sản phẩm">
+            </div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="input-group">
+                    <label>Ngày bắt đầu <span style="color:red">*</span></label>
+                    <input type="date">
+                </div>
+                <div class="input-group">
+                    <label>Ngày kết thúc <span style="color:red">*</span></label>
+                    <input type="date">
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;">
+            <button class="btn-no" onclick="closeModal('modalAdd')">Hủy</button>
+            <button class="btn-yes" style="background-color: #003366;">Lưu</button>
+        </div>
+    </div>
+</div>
