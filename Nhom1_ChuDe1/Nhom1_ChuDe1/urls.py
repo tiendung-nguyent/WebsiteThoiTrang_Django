@@ -42,12 +42,14 @@ urlpatterns = [
 
     path('staff/quan-ly-nhap-hang/', views_staff_QuanLyNhapHang.nhap_hang_view, name='quan_ly_nhap_hang'),
 
-    path('staff/QuanLyDanhMuc/', views_staff.bao_cao_view, name='quanLyDM'),
+    path('staff/QuanLyDanhMuc/',views_staff_QuanLyDanhMuc.danh_muc_view, name='quanLyDM'),
+
 
     path('staff/QuanLyKhachHang/', views_staff_QuanLyKhachHang.khach_hang_view, name='quanLyKH'),
 
     path('staff/quanLyDonHang/', views_staff_quanLyDonHang.quanLyDonHang, name='quanLyDonHang'),
     path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
+
 
     path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
 
