@@ -16,20 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
 from app.views import (views_user, views_staff,
                        views_staff_quanLySanPham,
                        views_staff_QuanLyNhapHang,
                        views_staff_QuanLyDanhMuc,
                        views_staff_QuanLyKhachHang,
-                       views_staff_quanLyDonHang,
+                       views_staff_quanLyDonHang, views_staff_KhuyenMai, views_staff_QuanLyNhaCungCap,
+    # views_staff_QuanLyNhaCungCap,
+    # views_staff_KhuyenMai,
                        )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views_user.index,name='index'),
-    path('user',views_user.index,name='index'),
-    path('temp-url/', views_user.index, name='quanLyDonDat'),
-    path('temp-url/', views_user.index, name='gioHang'),
+    path('', views_user.trangChuUser, name='trangChuUser'),
+    path('user/',views_user.trangChuUser,name='index'),
+ 
 
     path('staff/', views_staff.bao_cao_view, name='bao_cao_staff'),
     path('staff/quanLySanPham/', views_staff_quanLySanPham.quanLySP ,name='quanLySP'),
@@ -37,10 +39,24 @@ urlpatterns = [
     path('staff/quanLySanPham/view/', views_staff_quanLySanPham.view_quanLySP, name='view_quanLySP'),
     path('staff/quanLySanPham/edit/', views_staff_quanLySanPham.edit_quanLySP, name='edit_quanLySP'),
     path('staff/quanLySanPham/delete/', views_staff_quanLySanPham.delete_quanLySP, name='delete_quanLySP'),
+
     path('staff/quan-ly-nhap-hang/', views_staff_QuanLyNhapHang.nhap_hang_view, name='quan_ly_nhap_hang'),
-    path('staff/QuanLyDanhMuc/', views_staff_QuanLyDanhMuc.danh_muc_view, name='quanLyDM'),
+
+    path('staff/QuanLyDanhMuc/',views_staff_QuanLyDanhMuc.danh_muc_view, name='quanLyDM'),
+
     path('staff/QuanLyKhachHang/', views_staff_QuanLyKhachHang.khach_hang_view, name='quanLyKH'),
 
     path('staff/quanLyDonHang/', views_staff_quanLyDonHang.quanLyDonHang, name='quanLyDonHang'),
     path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
+
+    # path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
+    #
+    # path('staff/khuyen-mai/', views_staff_KhuyenMai.quan_ly_khuyen_mai_view, name='quan_ly_khuyen_mai'),
+
+    path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
+
+
+    path('gio-hang-user/', views_user.gio_hang, name='gioHang'),
+
+    path('quan-ly-don-hang-user/', views_user.quanLyDonDat, name='quanLyDonDat'),
 ]
