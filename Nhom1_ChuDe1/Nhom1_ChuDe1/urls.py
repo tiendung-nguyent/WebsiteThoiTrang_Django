@@ -20,8 +20,10 @@ from app.views import (views_user, views_staff,
                        views_staff_quanLySanPham,
                        views_staff_QuanLyNhapHang,
                        views_staff_QuanLyDanhMuc,
-                       views_staff_QuanLyKhachHang
+                       views_staff_QuanLyKhachHang,
+                       views_staff_quanLyDonHang,
                        )
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views_user.index,name='index'),
@@ -39,4 +41,6 @@ urlpatterns = [
     path('staff/QuanLyDanhMuc/', views_staff_QuanLyDanhMuc.danh_muc_view, name='quanLyDM'),
     path('staff/QuanLyKhachHang/', views_staff_QuanLyKhachHang.khach_hang_view, name='quanLyKH'),
 
+    path('staff/quanLyDonHang/', views_staff_quanLyDonHang.quanLyDonHang, name='quanLyDonHang'),
+    path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
 ]
