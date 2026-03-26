@@ -15,3 +15,5 @@ def gio_hang(request):
 def quanLyDonDat(request):
     return render(request, 'user/donDat/quanLyDonDat.html')
 
+def thanh_toan_view(request):
+    return render(request, 'user/gioHang/ThanhToan.html')
