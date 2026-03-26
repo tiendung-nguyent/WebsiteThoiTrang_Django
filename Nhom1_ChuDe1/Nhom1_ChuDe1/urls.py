@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
 from app.views import (views_user, views_staff,
                        views_staff_quanLySanPham,
                        views_staff_QuanLyNhapHang,
@@ -27,10 +28,9 @@ from app.views import (views_user, views_staff,
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views_user.index,name='index'),
-    path('user',views_user.index,name='index'),
-    path('temp-url/', views_user.index, name='quanLyDonDat'),
-    path('temp-url/', views_user.index, name='gioHang'),
+    path('', views_user.trangChuUser, name='trangChuUser'),
+    path('user/',views_user.index,name='index'),
+ 
 
     path('staff/', views_staff.bao_cao_view, name='bao_cao_staff'),
     path('staff/quanLySanPham/', views_staff_quanLySanPham.quanLySP ,name='quanLySP'),
@@ -46,4 +46,7 @@ urlpatterns = [
     path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
     path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
     path('staff/khuyen-mai/', views_staff_KhuyenMai.quan_ly_khuyen_mai_view, name='quan_ly_khuyen_mai'),
+    path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
+    path('gio-hang-user/', views_user.gio_hang, name='gioHang'),
+    path('quan-ly-don-hang-user/', views_user.quanLyDonDat, name='quanLyDonDat'),
 ]
