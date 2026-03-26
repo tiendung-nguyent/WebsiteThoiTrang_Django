@@ -1,10 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user/base_user.html' %}
+{% load static %} {% block content %}
+<style>
+    /* --- Bố cục chung --- */
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-</body>
-</html>
+    .btn-delete-all {
+        background-color: #e65540;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .btn-continue {
+        display: block;             /* Biến thẻ a thành khối để nhận width và padding */
+        width: 100%;                /* Kéo dài bằng nút Thanh toán */
+        padding: 12px 0;            /* Tạo độ dày cho nút */
+        margin-top: 15px;           /* Khoảng cách với nút phía trên */
+        text-align: center;         /* Căn giữa chữ */
+        text-decoration: none;      /* Bỏ gạch chân mặc định của link */
+        color: #333;                /* Màu chữ đen xám */
+        background-color: #fff;     /* Nền trắng */
+        border: 1px solid #ddd;     /* Viền xám nhạt */
+        border-radius: 6px;         /* Bo góc nhẹ */
+        font-weight: 600;           /* Chữ đậm vừa phải */
+        font-size: 15px;            /* Kích thước chữ */
+        transition: all 0.3s ease;
+    }
+    .btn-continue:hover {
+        background-color: #f8f9fa; /* Đổi màu nhẹ khi di chuột vào */
+        border-color: #ccc;
+    }
+
+    .cart-page { display: flex; gap: 30px; }
+    .cart-items { flex: 2; }
+    .cart-summary { flex: 1; border: 1px solid #eee; padding: 20px; border-radius: 8px; height: fit-content; }
+
+    /* --- Item giỏ hàng --- */
+    .cart-item {
+        display: flex; gap: 15px; border: 1px solid #eee; padding: 20px;
+        border-radius: 8px; position: relative; margin-bottom: 15px; align-items: flex-start;
+    }
+    .cart-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+    .item-info { flex: 1; }
+    .item-info h4 { font-size: 16px; margin-bottom: 8px; padding-right: 30px; line-height: 1.4; }
+    .item-meta { font-size: 13px; color: #888; margin-bottom: 10px; }
+    .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+
+    /* Nút số lượng mini ở trang giỏ hàng */
+    .qty-control-mini { display: flex; border: 1px solid #ddd; width: fit-content; border-radius: 3px; }
+    .qty-control-mini button { border: none; background: #f5f5f5; padding: 2px 10px; cursor: pointer; }
+    .qty-control-mini input { border: none; width: 30px; text-align: center; font-size: 13px; outline: none; }
+
+    .item-price { font-weight: bold; color: #004a99; font-size: 16px; }
+    .btn-edit-link { color: #004a99; text-decoration: underline; font-size: 14px; cursor: pointer; border: none; background: none; margin-top: 10px; display: block;}
+    .btn-remove-item { position: absolute; right: 15px; top: 15px; color: #ccc; cursor: pointer; font-size: 20px; }
+
+    /* --- Modal (Pop-up) theo mẫu mới --- */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); display: none;
+        justify-content: center; align-items: center; z-index: 1001;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-content {
+        background: white; padding: 30px; border-radius: 20px;
+        width: 450px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 24px; color: #2c3e50; }
+    .btn-close { font-size: 28px; color: #bdc3c7; border: none; background: none; cursor: pointer; }
+
+    .modal-body p { color: #888; font-size: 15px; line-height: 1.5; margin-bottom: 20px; }
+    .option-label { font-weight: bold; margin: 15px 0 10px; display: block; color: #2c3e50; }
+
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn-opt {
+        border: 1px solid #eee; padding: 10px 25px; border-radius: 10px;
+        background: white; cursor: pointer; font-weight: 500; transition: 0.2s;
+    }
+    .btn-opt.active { background-color: #3482b9; color: white; border-color: #3482b9; }
+
+    /* Số lượng trong modal */
+    .qty-group { display: flex; border: 1px solid #ddd;; border-radius: 8px; width: fit-content; }
+    .qty-group button { border: none; background: #f5f5f5; width: 35px; height: 35px; cursor: pointer; font-size: 18px; color: #888; }
+    .qty-group input { border: none; background: none; width: 50px; text-align: center; font-weight: bold; font-size: 16px; }
+
+    .modal-footer { display: flex; gap: 15px; margin-top: 30px; }
+    .btn-cancel { flex: 1; padding: 12px; border-radius: 12px; border: none; background: #ff5e5e; color: white; font-weight: bold; cursor: pointer; }
+    .btn-confirm { flex: 1; padding: 12px; border-radius: 12px; border: none; background: #27ae60; color: white; font-weight: bold; cursor: pointer; }
+
+    /* Summary buttons */
+    .btn-pay { width: 100%; padding: 13px; background: #27ae60; color: white; border: none; border-radius: 6px; font-weight: bold; margin-bottom: 10px; font-size: 16px;}
+</style>
+
+<div class="cart-header">
+    <h2>Giỏ hàng</h2>
+    <button class="btn-delete-all">Xóa giỏ hàng</button>
+</div>
+
+<div class="cart-page">
+    <div class="cart-items">
+        <div class="cart-item">
+            <span class="btn-remove-item">×</span>
+            <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="Sản phẩm">
+            <div class="item-info">
+                <h4>Áo Thể Thao Nam Vải Thun Lạnh Sport Thoáng Khí...</h4>
+                <div class="item-meta">Kích cỡ: L | Màu: Đen</div>
+                <div class="price-row">
+                    <div class="qty-control-mini">
+                        <button>-</button>
+                        <input type="text" value="1">
+                        <button>+</button>
+                    </div>
+                    <div class="item-price">399.000 đ</div>
+                </div>
+                <button class="btn-edit-link" onclick="openModal()">Chỉnh sửa</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-summary">
+        <h4 style="margin-bottom: 20px;">Tóm tắt đơn hàng</h4>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #888;">
+            <span>Tổng số lượng</span>
+            <span style="font-weight: bold; color: #004a99;">1</span>
+        </div>
+
+        <hr style="margin: 15px 0; opacity: 0.1;">
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+            <span style="font-weight: bold;">Tạm tính</span>
+            <span style="font-weight: bold; color: #004a99; font-size: 18px;">399.000 đ</span>
+        </div>
+
+        <button class="btn-pay">Thanh toán</button>
+        <a href="{% url 'trangChuUser' %}" class="btn-continue">Tiếp tục mua sắm</a>
+    </div>
+</div>
+
+{% include 'user/gioHang/ChinhSuaGioHang.html' %}
+
+<script>
+    const modal = document.getElementById('editModal');
+    // Các hàm này vẫn hoạt động bình thường vì ID 'editModal' đã được include vào trang
+    function openModal() { modal.classList.add('active'); }
+    function closeModal() { modal.classList.remove('active'); }
+
+    window.onclick = function(event) {
+        if (event.target == modal) closeModal();
+    }
+</script>
+{% endblock %}

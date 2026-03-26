@@ -187,8 +187,18 @@
                     <i class="fa fa-truck-loading"></i> Quản lý nhập hàng
                 </a>
             </li>
-            <li><a href="#"><i class="fa fa-truck"></i> Quản lý nhà cung cấp</a></li>
-            <li><a href="#"><i class="fa fa-tags"></i> Quản lý khuyến mãi</a></li>
+            <li>
+                <a href="{% url 'quan_ly_ncc' %}"
+                   class="{% if request.resolver_match.url_name == 'quan_ly_ncc' %}active{% endif %}">
+                    <i class="fa fa-truck"></i> Quản lý nhà cung cấp
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'quan_ly_khuyen_mai' %}"
+                   class="{% if request.resolver_match.url_name == 'quan_ly_khuyen_mai' %}active{% endif %}">
+                    <i class="fa fa-tags"></i> Quản lý khuyến mãi
+                </a>
+            </li>
             <li><a href="#"><i class="fa fa-cog"></i> Cài đặt tài khoản</a></li>
         </ul>
 

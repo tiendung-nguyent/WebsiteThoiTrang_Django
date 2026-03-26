@@ -1,10 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user/base_user.html' %}
+{% load static %} {% block content %}
+<style>
+    .breadcrumb { margin-bottom: 20px; font-size: 13px; color: #888; }
+    .detail-container { display: flex; gap: 40px; }
+    .detail-left { flex: 1; }
+    .detail-left img { width: 100%; border-radius: 8px; }
+    .detail-right { flex: 1; }
+    .product-title { font-size: 22px; font-weight: 700; margin-bottom: 15px; }
+    .price-large { font-size: 24px; color: #004a99; font-weight: bold; margin-bottom: 20px; }
+    .option-group { margin-bottom: 20px; }
+    .option-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-option { border: 1px solid #ddd; padding: 8px 20px; background: white; cursor: pointer; }
+    .btn-option.active { background-color: #3482b9; color: white; border-color: #3482b9; }
+    .add-to-cart-btn {
+        width: 100%; padding: 15px; background: #28a745; color: white;
+        border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
+        text-decoration: none; display: block; text-align: center;
+    }
 
-</body>
-</html>
+
+
+    .quantity-container {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 25px;
+    }
+    .qty-btn {
+        width: 35px;
+        height: 35px;
+        border: 1px solid #ddd;
+        background: #f1f1f1;
+        cursor: pointer;
+        font-size: 18px;
+    }
+    .qty-input {
+        width: 60px;
+        height: 35px;
+        border: 1px solid #ddd;
+        border-left: none;
+        border-right: none;
+        text-align: center;
+        outline: none;
+    }
+    .stock-info {
+        margin-left: 20px;
+        color: #888;
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    /* Style mới cho mô tả */
+    .description-box {
+        margin-top: 40px;
+        padding: 25px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        line-height: 1.8;
+    }
+    .description-box h3 {
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #333;
+        display: inline-block;
+    }
+    .description-content {
+        font-size: 14px;
+        color: #444;
+    }
+</style>
+
+<div class="breadcrumb"><a href="{% url 'trangChuUser' %}">← Quay lại</a></div>
+
+<div class="detail-container">
+    <div class="detail-left">
+        <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="Product">
+    </div>
+
+    <div class="detail-right">
+        <p style="color: #888; font-size: 12px;">NAM / GYM</p>
+        <h1 class="product-title">Áo Thể Thao Nam Vải Thun Lạnh Sport Thoáng Khí</h1>
+        <div class="price-large">399.000 đ</div>
+
+        <div class="option-group">
+            <p class="option-title">Màu sắc</p>
+            <div class="btn-group">
+                <button class="btn-option active">Đen</button>
+                <button class="btn-option">Trắng</button>
+                <button class="btn-option">Xám</button>
+            </div>
+        </div>
+
+        <div class="option-group">
+            <p class="option-title">Kích cỡ</p>
+            <div class="btn-group">
+                <button class="btn-option">S</button>
+                <button class="btn-option active">L</button>
+                <button class="btn-option">XL</button>
+            </div>
+        </div>
+
+        <p class="option-title">Số lượng</p>
+        <div class="quantity-container">
+            <button class="qty-btn">-</button>
+            <input type="text" value="1" class="qty-input">
+            <button class="qty-btn">+</button>
+            <span class="stock-info">30 sản phẩm có sẵn</span>
+        </div>
+
+        <a href="{% url 'gioHang' %}" class="add-to-cart-btn" style="background-color: #28a745;">
+            <i class="fa fa-shopping-cart"></i> THÊM VÀO GIỎ HÀNG
+        </a>
+
+        <div class="description-box">
+            <h3>MÔ TẢ SẢN PHẨM</h3>
+            <div class="description-content">
+                Áo Thể Thao Nam Chính Hãng Shamdi Highlight Chuyên Tập Gym<br>
+                Áo thể thao nam chính hãng từ thương hiệu Shamdi Việt Nam. Phù hợp cho tập gym hoặc mặc hàng ngày. Thiết kế tay ngắn, cổ tròn, mang lại cảm giác thoải mái.<br>
+                Chất liệu thể thao (78% nylon, 22% spandex).<br>
+                Nhẹ và bền: có độ bền cao, chống mài mòn tốt và ít nhăn, dễ bảo quản.<br>
+                Bề mặt có lỗ thoáng khí, chạm mát tức thì. Trượt nước nhẹ.<br>
+                Thích hợp với phong cách thể thao hằng ngày, chạy bộ, tập gym, đi chơi dạo phố,...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
