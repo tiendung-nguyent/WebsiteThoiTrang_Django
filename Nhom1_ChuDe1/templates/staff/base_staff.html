@@ -173,9 +173,22 @@
             </li>
             <li><a href="#"><i class="fa fa-shopping-cart"></i> Quản lý đơn hàng</a></li>
             <li><a href="#"><i class="fa fa-box"></i> Quản lý sản phẩm</a></li>
+            <li><a href="QuanLyDanhMuc.html"><i class="fa fa-list"></i> Quản lý danh mục</a></li>
+            <li >
+                <a href="{% url 'quanLyDonHang' %}">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Quản lý đơn hàng</span>
+                </a>
+            </li>
+            <li><a href="{% url 'quanLySP' %}"><i class="fa fa-box"></i> Quản lý sản phẩm</a></li>
             <li><a href="#"><i class="fa fa-list"></i> Quản lý danh mục</a></li>
             <li><a href="#"><i class="fa fa-users"></i> Quản lý khách hàng</a></li>
-            <li><a href="#"><i class="fa fa-truck-loading"></i> Quản lý nhập hàng</a></li>
+            <li>
+                <a href="{% url 'quan_ly_nhap_hang' %}"
+                   class="{% if request.resolver_match.url_name == 'quan_ly_nhap_hang' %}active{% endif %}">
+                    <i class="fa fa-truck-loading"></i> Quản lý nhập hàng
+                </a>
+            </li>
             <li><a href="#"><i class="fa fa-truck"></i> Quản lý nhà cung cấp</a></li>
             <li><a href="#"><i class="fa fa-tags"></i> Quản lý khuyến mãi</a></li>
             <li><a href="#"><i class="fa fa-cog"></i> Cài đặt tài khoản</a></li>

@@ -1,0 +1,32 @@
+<div id="modalEdit" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Sửa danh mục</h2>
+            <button class="close-btn" onclick="closeModal('modalEdit')">&times;</button>
+        </div>
+
+        <div class="form-group">
+            <label>Mã danh mục</label>
+            <input type="text" id="editMaDanhMuc" class="readonly-input" readonly>
+            <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 5px;">
+                * Mã danh mục được tạo tự động và không thể thay đổi
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>Tên danh mục <span class="required">*</span></label>
+            <input type="text" id="editTenDanhMuc" placeholder="Nhập tên danh mục..."
+                   style="border: 2px solid #1e2937;">
+        </div>
+
+        <div style="background: #eff6ff; color: #1e40af; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-weight: 600;">
+            <i class="fa fa-info-circle"></i>
+            <span>Sản phẩm thuộc danh mục: <span id="editSoLuong">0</span></span>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('modalEdit')">Hủy</button>
+            <button class="btn-save" onclick="updateCategory()">Lưu</button>
+        </div>
+    </div>
+</div>
