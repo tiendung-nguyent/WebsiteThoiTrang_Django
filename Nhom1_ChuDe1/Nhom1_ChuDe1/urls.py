@@ -57,8 +57,8 @@ urlpatterns = [
 
     path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
 
-
     path('gio-hang-user/', views_user.gio_hang, name='gioHang'),
 
     path('quan-ly-don-hang-user/', views_user.quanLyDonDat, name='quanLyDonDat'),
+    path('thanh-toan/', views_user.thanh_toan_view, name='ThanhToan'),
 ]
