@@ -145,7 +145,7 @@
             <i class="fa fa-search"></i>
             <input type="text" placeholder="Tìm kiếm sản phẩm...">
         </div>
-        <a href="#" class="btn-add">
+        <a href="{% url 'add_quanLySP' %}" class="btn-add">
             <i class="fa fa-plus"></i> Thêm mới
         </a>
     </div>
@@ -166,8 +166,9 @@
                 <td>SP0000001</td>
                 <td>
                     <div class="product-info">
-                        <img src="https://via.placeholder.com/45" alt="product" class="product-img">
-                        <span>Áo thun thể thao Pro</span>
+                        {% load static %}
+                        <img src="{% static 'sanPham/BST-ao-7.jpg' %}" alt="product" class="product-img">
+                        <span>Áo Polo Nam Cộc Tay Cơ Bản</span>
                     </div>
                 </td>
                 <td>Áo thun nam</td>
@@ -175,19 +176,26 @@
                 <td><span class="badge badge-active">ĐANG BÁN</span></td>
                 <td>
                     <div class="actions">
-                        <i class="fa fa-eye btn-view"></i>
-                        <i class="fa fa-edit btn-edit"></i>
-                        <i class="fa fa-trash btn-delete"></i>
+                        <a href="{% url 'view_quanLySP' %}" class="btn-view">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <a href="{% url 'edit_quanLySP' %}" class="btn-view">
+                            <i class="fa fa-edit btn-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_quanLySP' %}" class="btn-delete">
+                            <i class="fa fa-trash"></i>
+                        </a>
                     </div>
                 </td>
             </tr>
 
             <tr>
-                <td>SP0000001</td>
+                <td>SP0000002</td>
                 <td>
                     <div class="product-info">
-                        <img src="https://via.placeholder.com/45" alt="product" class="product-img">
-                        <span>Áo thun thể thao Pro</span>
+                        {% load static %}
+                        <img src="{% static 'sanPham/boDoTheThaoNam.png' %}" alt="product" class="product-img">
+                        <span>Bộ Thể Thao Nam Vải Coolmax Cao Cấp</span>
                     </div>
                 </td>
                 <td>Áo thun nam</td>
@@ -203,15 +211,16 @@
             </tr>
 
             <tr>
-                <td>SP0000001</td>
+                <td>SP0000003</td>
                 <td>
                     <div class="product-info">
-                        <img src="https://via.placeholder.com/45" alt="product" class="product-img">
-                        <span>Áo thun thể thao Pro</span>
+                        {% load static %}
+                        <img src="{% static 'sanPham/Ao-Khoac-Golf-Nu-Storm.jpg' %}" alt="product" class="product-img"><img
+                        <span>Áo Khoác Golf Nữ Storm Fleece TaylorMade</span>
                     </div>
                 </td>
-                <td>Áo thun nam</td>
-                <td class="price">350.000 đ</td>
+                <td>Áo khoác nữ</td>
+                <td class="price">800.000 đ</td>
                 <td><span class="badge badge-out">HẾT HÀNG</span></td>
                 <td>
                     <div class="actions">
