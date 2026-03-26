@@ -39,15 +39,24 @@ urlpatterns = [
     path('staff/quanLySanPham/view/', views_staff_quanLySanPham.view_quanLySP, name='view_quanLySP'),
     path('staff/quanLySanPham/edit/', views_staff_quanLySanPham.edit_quanLySP, name='edit_quanLySP'),
     path('staff/quanLySanPham/delete/', views_staff_quanLySanPham.delete_quanLySP, name='delete_quanLySP'),
+
     path('staff/quan-ly-nhap-hang/', views_staff_QuanLyNhapHang.nhap_hang_view, name='quan_ly_nhap_hang'),
-    # path('staff/QuanLyDanhMuc/', views_staff_QuanLyDanhMuc.danh_muc_view, name='quanLyDM'),
+
+    path('staff/QuanLyDanhMuc/', views_staff.bao_cao_view, name='quanLyDM'),
+
     path('staff/QuanLyKhachHang/', views_staff_QuanLyKhachHang.khach_hang_view, name='quanLyKH'),
 
     path('staff/quanLyDonHang/', views_staff_quanLyDonHang.quanLyDonHang, name='quanLyDonHang'),
     path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
-    # path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
-    # path('staff/khuyen-mai/', views_staff_KhuyenMai.quan_ly_khuyen_mai_view, name='quan_ly_khuyen_mai'),
+
+    path('staff/nha-cung-cap/', views_staff.bao_cao_view, name='quan_ly_ncc'),
+
+    path('staff/khuyen-mai/', views_staff.bao_cao_view, name='quan_ly_khuyen_mai'),
+
     path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
+
+
     path('gio-hang-user/', views_user.gio_hang, name='gioHang'),
+
     path('quan-ly-don-hang-user/', views_user.quanLyDonDat, name='quanLyDonDat'),
 ]
