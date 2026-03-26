@@ -1,5 +1,5 @@
 {% extends 'user/base_user.html' %}
-{% block content %}
+{% load static %} {% block content %}
 <style>
     .breadcrumb { margin-bottom: 20px; font-size: 13px; color: #888; }
     .detail-container { display: flex; gap: 40px; }
@@ -12,12 +12,13 @@
     .option-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
     .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn-option { border: 1px solid #ddd; padding: 8px 20px; background: white; cursor: pointer; }
-    .btn-option.active { border-color: #004a99; color: #004a99; }
+    .btn-option.active { background-color: #3482b9; color: white; border-color: #3482b9; }
     .add-to-cart-btn {
-        width: 100%; padding: 15px; background: #28a745; color: white; 
+        width: 100%; padding: 15px; background: #28a745; color: white;
         border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
         text-decoration: none; display: block; text-align: center;
     }
+
 
 
     .quantity-container {
