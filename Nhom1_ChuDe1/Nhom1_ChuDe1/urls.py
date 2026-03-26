@@ -23,8 +23,7 @@ from app.views import (views_user, views_staff,
                        views_staff_QuanLyDanhMuc,
                        views_staff_QuanLyKhachHang,
                        views_staff_quanLyDonHang, views_staff_KhuyenMai, views_staff_QuanLyNhaCungCap,
-    # views_staff_QuanLyNhaCungCap,
-    # views_staff_KhuyenMai,
+                       views_staff_QuanLyNhaCungCap,views_staff_KhuyenMai,
                        )
 
 urlpatterns = [
@@ -49,9 +48,9 @@ urlpatterns = [
     path('staff/quanLyDonHang/', views_staff_quanLyDonHang.quanLyDonHang, name='quanLyDonHang'),
     path('staff/quanLyDonHang/view/<str:status>/', views_staff_quanLyDonHang.view_quanLyDonHang, name='view_quanLyDonHang'),
 
-    # path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
-    #
-    # path('staff/khuyen-mai/', views_staff_KhuyenMai.quan_ly_khuyen_mai_view, name='quan_ly_khuyen_mai'),
+    path('staff/nha-cung-cap/', views_staff_QuanLyNhaCungCap.quan_ly_ncc_view, name='quan_ly_ncc'),
+
+    path('staff/khuyen-mai/', views_staff_KhuyenMai.quan_ly_khuyen_mai_view, name='quan_ly_khuyen_mai'),
 
     path('san-pham-user/', views_user.chiTietSanPham, name='chiTietSanPham'),
 
