@@ -1,0 +1,323 @@
+{% extends "staff/base_staff.html" %}
+
+{% block content %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e2937;
+    }
+    .btn-create {
+        background: #1e40af;
+        color: white;
+        border: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+        padding: 16px 20px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        background: #f8fafc;
+    }
+    td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; }
+    .category-code { font-weight: 600; color: #1e40af; }
+    .badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .badge-nam { background: #dbeafe; color: #1e40af; }
+    .badge-nu  { background: #fce7f3; color: #be185d; }
+    .quantity-badge {
+        background: #fef3c7;
+        color: #d97706;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+    .action-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        margin: 0 6px;
+        cursor: pointer;
+    }
+    .readonly-input {
+        background-color: #f8fafc !important;
+        color: #94a3b8 !important;
+        font-style: italic !important;
+        font-weight: 400;
+        border: 1px solid #e2e8f0;
+        cursor: not-allowed;
+    }
+
+    .readonly-input::placeholder {
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.65);
+    }
+    .modal-content {
+        background: #fff;
+        margin: 8% auto;
+        padding: 28px 32px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .modal-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
+    .close-btn { font-size: 28px; color: #94a3b8; background: none; border: none; cursor: pointer; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; }
+    .required { color: #ef4444; }
+    input[type="text"] {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+    .gender-options { display: flex; gap: 12px; }
+    .gender-btn {
+        flex: 1;
+        padding: 14px;
+        border: 2px solid #e2e8f0;
+        background: #fff;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .gender-btn.active {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        color: #1e40af;
+    }
+    .modal-footer {
+        display: flex;
+        gap: 12px;
+        margin-top: 28px;
+    }
+    .btn-cancel, .btn-save {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-cancel { background: #ef4444; color: white; }
+    .btn-save   { background: #22c55e; color: white; }
+</style>
+
+<div class="page-header">
+    <h2 class="page-title">Quản lý danh mục</h2>
+    <button class="btn-create" onclick="openCreateModal()">
+        <i class="fa fa-plus"></i> Thêm mới
+    </button>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>MÃ DANH MỤC</th>
+                <th>TÊN DANH MỤC</th>
+                <th>THUỘC</th>
+                <th>SỐ LƯỢNG SP</th>
+                <th>THAO TÁC</th>
+            </tr>
+        </thead>
+        <tbody id="categoryTableBody"></tbody>
+    </table>
+</div>
+
+<!-- Include Modal -->
+{% include "staff/QuanLyDanhMuc/Them_DanhMuc.html" %}
+{% include "staff/QuanLyDanhMuc/XemChiTiet_DanhMuc.html" %}
+{% include "staff/QuanLyDanhMuc/Xoa_DanhMuc.html" %}
+
+<script>
+    let categories = [
+        { id: "DM001", name: "Gym", type: "NAM", quantity: 120 },
+        { id: "DM002", name: "Gym", type: "NỮ",  quantity: 85 },
+        { id: "DM003", name: "Fitness", type: "NAM", quantity: 120 },
+        { id: "DM004", name: "Fitness", type: "NỮ",  quantity: 85 },
+        { id: "DM005", name: "Pickle Ball", type: "NAM", quantity: 120 },
+        { id: "DM006", name: "Pickle Ball", type: "NỮ",  quantity: 85 }
+    ];
+
+    let selectedGender = 'NAM';
+
+    function renderTable() {
+        const tbody = document.getElementById('categoryTableBody');
+        tbody.innerHTML = '';
+        categories.forEach(cat => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="category-code">${cat.id}</span></td>
+                <td><strong>${cat.name}</strong></td>
+                <td><span class="badge ${cat.type === 'NAM' ? 'badge-nam' : 'badge-nu'}">${cat.type}</span></td>
+                <td><span class="quantity-badge">${cat.quantity}</span></td>
+                <td>
+                    <button class="action-btn" style="color:#64748b"><i class="fa fa-edit"></i></button>
+                    <button class="action-btn" style="color:#ef4444" onclick="deleteCategory('${cat.id}')"><i class="fa fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function selectGender(gender) {
+        selectedGender = gender;
+        document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(gender === 'NAM' ? 'btnNam' : 'btnNu').classList.add('active');
+    }
+
+    function openCreateModal() {
+        document.getElementById('modalCreate').style.display = 'block';
+        document.getElementById('maDanhMuc').value = 'DM' + String(1000 + categories.length + 1).padStart(3, '0');
+        document.getElementById('tenDanhMuc').value = '';
+        selectGender('NAM');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function saveNewCategory() {
+        const name = document.getElementById('tenDanhMuc').value.trim();
+        if (!name) {
+            alert("Vui lòng nhập tên danh mục!");
+            return;
+        }
+        const newId = document.getElementById('maDanhMuc').value;
+
+        categories.unshift({
+            id: newId,
+            name: name,
+            type: selectedGender,
+            quantity: 0
+        });
+
+        renderTable();
+        closeModal('modalCreate');
+    }
+
+    function deleteCategory(id) {
+        if (confirm(`Xóa danh mục ${id}?`)) {
+            categories = categories.filter(c => c.id !== id);
+            renderTable();
+        }
+    }
+    let currentEditId = null;
+
+    // Hàm mở modal Sửa (Ảnh 1)
+    function openEditModal(id) {
+        const cat = categories.find(c => c.id === id);
+        if (!cat) return;
+
+        currentEditId = id;
+        document.getElementById('editMaDanhMuc').value = cat.id;
+        document.getElementById('editTenDanhMuc').value = cat.name;
+        document.getElementById('editSoLuong').innerText = cat.quantity;
+
+        document.getElementById('modalEdit').style.display = 'block';
+    }
+
+    // Hàm lưu sau khi sửa
+    function updateCategory() {
+        const newName = document.getElementById('editTenDanhMuc').value.trim();
+        if (!newName) {
+            alert("Tên danh mục không được để trống!");
+            return;
+        }
+
+        const index = categories.findIndex(c => c.id === currentEditId);
+        if (index !== -1) {
+            categories[index].name = newName;
+            renderTable();
+            closeModal('modalEdit');
+        }
+    }
+
+    // Hàm mở modal Xóa (Ảnh 2)
+    function openDeleteModal(id) {
+        document.getElementById('deleteTargetId').value = id;
+        document.getElementById('modalDelete').style.display = 'block';
+    }
+
+    // Hàm xác nhận xóa thực sự
+    function confirmDelete() {
+        const id = document.getElementById('deleteTargetId').value;
+        categories = categories.filter(c => c.id !== id);
+        renderTable();
+        closeModal('modalDelete');
+    }
+
+    // Cập nhật lại hàm renderTable để gọi đúng modal
+    function renderTable() {
+        const tbody = document.getElementById('categoryTableBody');
+        tbody.innerHTML = '';
+        categories.forEach(cat => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="category-code">${cat.id}</span></td>
+                <td><strong>${cat.name}</strong></td>
+                <td><span class="badge ${cat.type === 'NAM' ? 'badge-nam' : 'badge-nu'}">${cat.type}</span></td>
+                <td><span class="quantity-badge">${cat.quantity}</span></td>
+                <td>
+                    <button class="action-btn" style="color:#64748b" onclick="openEditModal('${cat.id}')"><i class="fa fa-edit"></i></button>
+                    <button class="action-btn" style="color:#ef4444" onclick="openDeleteModal('${cat.id}')"><i class="fa fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.onload = renderTable;
+</script>
+
+{% endblock %}
