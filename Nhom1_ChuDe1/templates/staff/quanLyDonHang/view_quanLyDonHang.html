@@ -46,20 +46,29 @@
     <div class="modal-card">
         <div id="shippingSubModal">
             <div class="sub-modal-card">
-                <h3 style="margin-bottom: 15px; font-size: 16px;">Xác nhận vận chuyển</h3>
-                <label style="font-size: 13px; color: #666;">Mã vận chuyển</label>
+                <h3 style="margin-bottom: 5px; font-size: 18px; font-weight: 700;">Cập nhật vận chuyển</h3>
+                <p style="font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase;">ĐƠN HÀNG: {{ order_id }}</p>
+
+                <label style="font-size: 13px; font-weight: 600; color: #333;">Mã vận chuyển</label>
                 <input type="text" id="trackingCodeInput" class="sub-input" placeholder="Nhập mã vận đơn...">
 
-                <label style="font-size: 13px; color: #666;">Đơn vị vận chuyển</label>
-                <select class="sub-input">
-                    <option>Viettel Post</option>
-                    <option>GHTK</option>
-                    <option>GHN</option>
+                <label style="font-size: 13px; font-weight: 600; color: #333;">Đơn vị vận chuyển</label>
+                <select class="sub-input" id="shippingUnitInput">
+                    <option value="Viettel Post">Viettel Post</option>
+                    <option value="GHTK">GHTK</option>
+                    <option value="GHN">GHN</option>
                 </select>
 
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" style="background: #eee; color: #333;" onclick="closeShippingSub()">Hủy</button>
-                    <button class="btn btn-blue" onclick="processShipping()">Giao hàng</button>
+                <label style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí cước</label>
+                <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
+                    <input type="number" id="shippingFeeInput" placeholder="0"
+                           style="flex: 1; border: none; padding: 12px; outline: none; border-radius: 8px; font-size: 14px;">
+                    <span style="color: #999; font-size: 13px; font-weight: 500;">VNĐ</span>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                    <button class="btn" style="background: #e9ecef; color: #495057;" onclick="closeShippingSub()">Hủy</button>
+                    <button class="btn" style="background: #3b71ca; color: white;" onclick="processShipping()">Giao hàng</button>
                 </div>
             </div>
         </div>
