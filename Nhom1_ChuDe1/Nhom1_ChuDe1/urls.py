@@ -20,11 +20,11 @@ from django.urls import path
 from app.views import (views_user, views_staff,
                        views_staff_quanLySanPham,
                        views_staff_QuanLyNhapHang,
-    # views_staff_QuanLyDanhMuc,
+                        views_staff_QuanLyDanhMuc,
                        views_staff_QuanLyKhachHang,
                        views_staff_quanLyDonHang, views_staff_KhuyenMai, views_staff_QuanLyNhaCungCap,
-    # views_staff_QuanLyNhaCungCap,
-    # views_staff_KhuyenMai,
+                        views_staff_QuanLyNhaCungCap,
+                        views_staff_KhuyenMai,
                        )
 
 urlpatterns = [
