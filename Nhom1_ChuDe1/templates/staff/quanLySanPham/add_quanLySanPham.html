@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* --- MODAL OVERLAY --- */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0;
@@ -18,7 +17,6 @@
         padding: 20px; /* Tránh sát mép màn hình điện thoại/máy tính bảng */
     }
 
-    /* --- MODAL BOX (Fix tràn màn hình) --- */
     .modal-card {
         background: white;
         width: 100%;
@@ -50,7 +48,6 @@
     .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; font-size: 16px;}
     .close-btn { font-size: 22px; color: #aaa; cursor: pointer; }
 
-    /* --- FORM BODY (Thanh cuộn nằm ở đây) --- */
     .modal-body {
         padding: 20px 25px;
         overflow-y: auto; /* Tạo thanh cuộn riêng cho phần nhập liệu */
@@ -76,7 +73,6 @@
     .tag-item:hover, .tag-item.active { border-color: var(--primary-color); background: #f0f7ff; color: var(--primary-color); }
     .tag-add { padding: 5px 12px; border: 1px dashed #bbb; border-radius: 6px; color: #888; cursor: pointer; }
 
-    /* --- FOOTER (Cố định ở dưới) --- */
     .modal-footer {
         padding: 15px 25px;
         display: grid;

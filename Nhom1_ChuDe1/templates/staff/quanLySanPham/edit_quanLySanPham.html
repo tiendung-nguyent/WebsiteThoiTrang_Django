@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* --- MODAL OVERLAY --- */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0;
@@ -18,7 +17,6 @@
         padding: 20px;
     }
 
-    /* --- MODAL CARD --- */
     .modal-card {
         background: white;
         width: 100%;
@@ -50,7 +48,6 @@
     .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; }
     .close-btn { font-size: 22px; color: #aaa; cursor: pointer; }
 
-    /* --- FORM BODY (Scrollable) --- */
     .modal-body {
         padding: 20px 25px;
         overflow-y: auto;
@@ -70,12 +67,10 @@
     .input-icon-wrapper { position: relative; }
     .input-icon-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
 
-    /* Tags Styling */
     .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag-item { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
     
-    /* Màu xanh đậm cho các tag được chọn như trong ảnh */
-    .tag-item.active { 
+    .tag-item.active {
         background-color: #003366; 
         color: white; 
         border-color: #003366; 
@@ -83,7 +78,6 @@
     
     .tag-add { padding: 5px 12px; border: 1px dashed #bbb; border-radius: 6px; color: #888; cursor: pointer; }
 
-    /* --- FOOTER --- */
     .modal-footer {
         padding: 15px 25px;
         display: grid;
@@ -183,14 +177,12 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Tag Click Toggle
         document.querySelectorAll('.tag-item').forEach(tag => {
             tag.addEventListener('click', function() {
                 this.classList.toggle('active');
             });
         });
 
-        // Form Submit
         const form = document.getElementById('editProductForm');
         form.addEventListener('submit', function(e) {
             e.preventDefault();
