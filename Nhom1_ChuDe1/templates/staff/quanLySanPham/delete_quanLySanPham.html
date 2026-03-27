@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* --- MODAL OVERLAY --- */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0;
@@ -17,7 +16,6 @@
         z-index: 2000;
     }
 
-    /* --- DELETE CARD --- */
     .delete-card {
         background: white;
         width: 100%;
@@ -34,7 +32,6 @@
         to { transform: scale(1); opacity: 1; }
     }
 
-    /* --- ICON THÙNG RÁC --- */
     .icon-box {
         width: 100px;
         height: 100px;
@@ -49,11 +46,9 @@
     }
 
     .icon-box i {
-        /* Chỉnh icon thùng rác thanh mảnh */
         font-weight: 300;
     }
 
-    /* --- TEXT --- */
     .delete-title {
         font-size: 22px;
         font-weight: 700;
@@ -61,7 +56,6 @@
         margin-bottom: 30px;
     }
 
-    /* --- BUTTONS --- */
     .button-group {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -70,7 +64,7 @@
 
     .btn-cancel {
         background: white;
-        border: 1.5px solid #1a5c8b; /* Viền xanh đậm */
+        border: 1.5px solid #1a5c8b;
         color: #1a5c8b;
         padding: 12px;
         border-radius: 12px;
@@ -85,7 +79,7 @@
     }
 
     .btn-confirm {
-        background: #114a82; /* Màu xanh Navy đậm */
+        background: #114a82;
         border: none;
         color: white;
         padding: 12px;
@@ -118,17 +112,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Xử lý khi nhấn Đồng ý
         const btnDelete = document.getElementById('btnDeleteConfirm');
         btnDelete.addEventListener('click', function() {
-            // Hiển thị thông báo nhỏ
             alert("Đã xóa sản phẩm thành công!");
             
-            // Quay về trang danh sách
             window.location.href = "{% url 'quanLySP' %}";
         });
 
-        // Vẫn giữ active menu sidebar
         const links = document.querySelectorAll('.sidebar-menu a');
         links.forEach(link => {
             if (link.innerText.includes("Quản lý sản phẩm")) {

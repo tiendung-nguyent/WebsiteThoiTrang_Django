@@ -5,7 +5,6 @@
 
 {% block content %}
 <style>
-    /* --- HEADER & CONTROLS --- */
     .page-header {
         margin-bottom: 25px;
     }
@@ -77,7 +76,6 @@
         color: #555;
     }
 
-    /* --- TABLE STYLES --- */
     .order-table {
         width: 100%;
         border-collapse: collapse;
@@ -106,7 +104,6 @@
         text-decoration: none;
     }
 
-    /* --- STATUS BADGES --- */
     .badge {
         padding: 6px 12px;
         border-radius: 20px;
@@ -196,7 +193,6 @@
                             <i class="fa fa-eye btn-view-order"></i>
                         </a>
                 </td>
-<!--                <td><i class="fa fa-eye btn-view-order"></i></td>-->
             </tr>
 
             <tr>
@@ -225,7 +221,6 @@
                             <i class="fa fa-eye btn-view-order"></i>
                         </a>
                 </td>
-<!--                <td><i class="fa fa-eye btn-view-order"></i></td>-->
             </tr>
 
             <tr>
@@ -243,7 +238,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Active menu sidebar "Quản lý đơn hàng"
         const menuLinks = document.querySelectorAll('.sidebar-menu a');
         menuLinks.forEach(link => {
             if (link.innerText.includes("Quản lý đơn hàng")) {
