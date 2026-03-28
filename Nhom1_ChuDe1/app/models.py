@@ -122,17 +122,6 @@ class SanPham_KhuyenMai(models.Model):
         unique_together = (('SP_Ma', 'KM_Ma'),)
 
 
-class ChuCuaHang(models.Model):
-    TenTaiKhoan = models.CharField(max_length=100, primary_key=True)
-    MatKhau = models.CharField(max_length=128)
-    NgaySinh = models.DateField()
-    GioiTinh = models.CharField(max_length=10)
-    Email = models.EmailField(unique=True)
-
-    def __str__(self):
-        return self.TenTaiKhoan
-
-
 class NhaCungCap(models.Model):
     NCC_Ma = models.CharField(max_length=9, primary_key=True)
     NCC_Ten = models.CharField(max_length=100)
