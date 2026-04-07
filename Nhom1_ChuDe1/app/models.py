@@ -5,8 +5,6 @@ from django.db import models
 class KhachHang(models.Model):
     KH_Ma = models.CharField(max_length=9, primary_key=True)
     KH_Ten = models.CharField(max_length=100)
-    KH_SDT = models.CharField(max_length=10)
-    KH_DiaChi = models.TextField()
     KH_TongChiTieu = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     KH_SoDonHang = models.IntegerField(default=0)
 
@@ -14,49 +12,52 @@ class KhachHang(models.Model):
         return self.KH_Ten
 
 
+class ChiTietKhachHang(models.Model):
+    CTKH_Ma = models.CharField(max_length=9, primary_key=True)
+    KH_Ma = models.ForeignKey(KhachHang, on_delete=models.CASCADE)
+    CTKH_HoTenNguoiNhan = models.CharField(max_length=100)
+    CTKH_SDT = models.CharField(max_length=10)
+    CTKH_DiaChi = models.TextField()
+
+    def __str__(self):
+        return f"{self.CTKH_HoTenNguoiNhan} - {self.CTKH_Ma}"
+
+
 class GioHang(models.Model):
     GH_Ma = models.CharField(max_length=9, primary_key=True)
-    GH_TamTinh = models.DecimalField(max_digits=10, decimal_places=2)
-    GH_TongSL = models.IntegerField()
+    KH_Ma = models.ForeignKey(KhachHang, on_delete=models.CASCADE)
+    GH_TongSL = models.IntegerField(default=0)
+    GH_TamTinh = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return self.GH_Ma
 
 
-# 3. Bảng Thanh toán
-class ThanhToan(models.Model):
-    TT_Ma = models.CharField(max_length=9, primary_key=True)
-    GH_Ma = models.ForeignKey(GioHang, on_delete=models.CASCADE)
-    TT_HoTen = models.CharField(max_length=100)
-    TT_SDT = models.CharField(max_length=10)
-    TT_DiaChi = models.TextField()
-    TT_PhuongThuc = models.CharField(max_length=50)
-    TT_TongTienHang = models.DecimalField(max_digits=10, decimal_places=2)
+class DonDat(models.Model):
+    TT_Ma = models.CharField(max_length=9, primary_key=True)  # Mã thanh toán/đơn hàng
+    GH_Ma = models.ForeignKey(GioHang, on_delete=models.PROTECT)
+    CTKH_Ma = models.ForeignKey(ChiTietKhachHang, on_delete=models.PROTECT)
     TT_TongPhiVC = models.DecimalField(max_digits=10, decimal_places=2)
     TT_TongThanhToan = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.TT_Ma} - {self.TT_HoTen}"
-
-class DatHang(models.Model):
-    DH_Ma = models.CharField(max_length=9, primary_key=True)
-    TT_Ma = models.ForeignKey(ThanhToan, on_delete=models.PROTECT)
-    KH_Ma = models.ForeignKey(KhachHang, on_delete=models.CASCADE)
-    DH_Ngay = models.DateField(auto_now_add=True)
-    DH_TongSL = models.IntegerField()
     DH_TrangThai = models.CharField(max_length=50)
+    TT_PhuongThuc = models.CharField(max_length=100)
+    TT_TongTienHang = models.DecimalField(max_digits=10, decimal_places=2)
+    TT_NgayThanhToan = models.DateField(null=True, blank=True)
+    TT_NgayDatHang = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"Đơn {self.DH_Ma} ({self.DH_Ngay.strftime('%d/%m/%Y')})"
+        return f"Đơn {self.TT_Ma} - {self.DH_TrangThai}"
+
 
 class DonHangVanChuyen(models.Model):
     DH_MaVanChuyen = models.CharField(max_length=9, primary_key=True)
-    DH_Ma = models.OneToOneField(DatHang, on_delete=models.CASCADE)
-    DH_DViVanChuyen = models.CharField(max_length=100)
+    TT_Ma = models.ForeignKey(DonDat, on_delete=models.CASCADE)
+    DH_DViVanChuyen = models.CharField(max_length=200)
     DH_PhiCuoc = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.DH_DViVanChuyen
+        return self.DH_MaVanChuyen
+
 
 class DanhMuc(models.Model):
     DM_Ma = models.CharField(max_length=9, primary_key=True)
@@ -99,8 +100,8 @@ class ChiTietGioHang(models.Model):
     class Meta:
         unique_together = (('GH_Ma', 'SP_Ma'),)
 
-
-
+    def __str__(self):
+        return f"{self.SP_Ma.SP_Ten} trong giỏ {self.GH_Ma.GH_Ma} (SL: {self.GH_SL})"
 
 class KhuyenMai(models.Model):
     KM_Ma = models.CharField(max_length=9, primary_key=True)
@@ -121,6 +122,9 @@ class SanPham_KhuyenMai(models.Model):
     class Meta:
         unique_together = (('SP_Ma', 'KM_Ma'),)
 
+    def __str__(self):
+        return f"{self.SP_Ma.SP_Ten} - KM: {self.KM_Ma.KM_Ten}"
+
 
 class NhaCungCap(models.Model):
     NCC_Ma = models.CharField(max_length=9, primary_key=True)
@@ -138,6 +142,8 @@ class NhapHang(models.Model):
     NH_Ngay = models.DateField(auto_now_add=True)
     NH_TongTien = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return self.NH_Ma
 
 class BienTheSanPham(models.Model):
     BTSP_Ma = models.CharField(max_length=9, primary_key=True)
@@ -148,7 +154,6 @@ class BienTheSanPham(models.Model):
 
     def __str__(self):
         return f"{self.BTSP_Ma} - {self.SP_KichThuoc} - {self.SP_MauSac}"
-
 
 class ChiTietNhapHang(models.Model):
     BTSP_Ma = models.ForeignKey(BienTheSanPham, on_delete=models.CASCADE)
