@@ -1,0 +1,130 @@
+{% extends "staff/base_staff.html" %}
+
+{% block title %}Xác nhận xóa - Cen Sports{% endblock %}
+
+{% block content %}
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    .delete-card {
+        background: white;
+        width: 100%;
+        max-width: 450px;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: modalBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalBounce {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .icon-box {
+        width: 100px;
+        height: 100px;
+        background-color: #ff5252; /* Màu đỏ như ảnh */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 25px;
+        color: white;
+        font-size: 45px;
+    }
+
+    .icon-box i {
+        font-weight: 300;
+    }
+
+    .delete-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn-cancel {
+        background: white;
+        border: 1.5px solid #1a5c8b;
+        color: #1a5c8b;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f0f7ff;
+    }
+
+    .btn-confirm {
+        background: #114a82;
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-confirm:hover {
+        background: #0a3660;
+    }
+</style>
+
+<div class="modal-overlay">
+    <div class="delete-card">
+        <div class="icon-box">
+            <i class="fa-regular fa-trash-can"></i>
+        </div>
+
+        <h2 class="delete-title">Bạn có chắc chắn muốn xóa sản phẩm?</h2>
+
+        <div class="button-group">
+            <button class="btn-cancel" onclick="history.back()">Hủy</button>
+            <button class="btn-confirm" id="btnDeleteConfirm">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnDelete = document.getElementById('btnDeleteConfirm');
+        btnDelete.addEventListener('click', function() {
+            alert("Đã xóa sản phẩm thành công!");
+            
+            window.location.href = "{% url 'quanLySP' %}";
+        });
+
+        const links = document.querySelectorAll('.sidebar-menu a');
+        links.forEach(link => {
+            if (link.innerText.includes("Quản lý sản phẩm")) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}
