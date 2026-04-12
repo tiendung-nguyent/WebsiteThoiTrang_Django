@@ -170,9 +170,19 @@
                 </a>
             </li>
             <li><a href="{% url 'quanLySP' %}"><i class="fa fa-box"></i> Quản lý sản phẩm</a></li>
-            <li><a href="{% url 'quanLyDM' %}"><i class="fa fa-list"></i> Quản lý danh mục</a></li>
+            <li>
+                <a href="{% url 'quanLyDM' %}"
+                    class="{% if request.resolver_match.url_name == 'quanLyDM' %}active{% endif %}"
+                    ><i class="fa fa-list"></i> Quản lý danh mục
+                </a>
+            </li>
 
-            <li><a href="{% url 'quanLyKH' %}"><i class="fa fa-users"></i> Quản lý khách hàng</a></li>
+            <li>
+                <a href="{% url 'quanLyKH' %}"
+                class="{% if request.resolver_match.url_name == 'quanLyKH' %}active{% endif %}">
+                    <i class="fa fa-users"></i> Quản lý khách hàng</a>
+
+            </li>
             <li>
                 <a href="{% url 'quan_ly_nhap_hang' %}"
                    class="{% if request.resolver_match.url_name == 'quan_ly_nhap_hang' %}active{% endif %}">
