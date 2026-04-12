@@ -1,9 +1,11 @@
 from django.db import models
+from gioHang.models import GioHang
+from quanLyKhachHang.models import ChiTietKhachHang
 
 class DonDat(models.Model):
     TT_Ma = models.CharField(max_length=9, primary_key=True)
-    GH_Ma = models.ForeignKey('gioHang.GioHang', on_delete=models.PROTECT)
-    CTKH_Ma = models.ForeignKey('quanLyKhachHang.ChiTietKhachHang', on_delete=models.PROTECT)
+    GH_Ma = models.ForeignKey(GioHang, on_delete=models.PROTECT)
+    CTKH_Ma = models.ForeignKey(ChiTietKhachHang, on_delete=models.PROTECT)
     TT_TongPhiVC = models.DecimalField(max_digits=10, decimal_places=2)
     TT_TongThanhToan = models.DecimalField(max_digits=10, decimal_places=2)
     DH_TrangThai = models.CharField(max_length=50)

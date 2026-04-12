@@ -1,4 +1,5 @@
 from django.db import models
+from quanLySanPham.models import SanPham
 
 class KhuyenMai(models.Model):
     KM_Ma = models.CharField(max_length=9, primary_key=True)
@@ -12,7 +13,7 @@ class KhuyenMai(models.Model):
         return self.KM_Ten
 
 class SanPham_KhuyenMai(models.Model):
-    SP_Ma = models.ForeignKey('quanLySanPham.SanPham', on_delete=models.CASCADE)
+    SP_Ma = models.ForeignKey(SanPham, on_delete=models.CASCADE)
     KM_Ma = models.ForeignKey(KhuyenMai, on_delete=models.CASCADE)
 
     class Meta:

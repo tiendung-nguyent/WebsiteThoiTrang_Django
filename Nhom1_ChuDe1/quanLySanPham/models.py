@@ -1,4 +1,5 @@
 from django.db import models
+from QuanLyDanhMuc.models import DanhMuc
 
 class SanPham(models.Model):
     TRANG_THAI_CHOICES = [
@@ -8,7 +9,7 @@ class SanPham(models.Model):
     ]
 
     SP_Ma = models.CharField(max_length=10, primary_key=True)
-    DM_Ma = models.ForeignKey('QuanLyDanhMuc.DanhMuc', on_delete=models.CASCADE, related_name='san_pham_thuoc_dm')
+    DM_Ma = models.ForeignKey(DanhMuc, on_delete=models.CASCADE, related_name='san_pham_thuoc_dm')
     SP_Ten = models.CharField(max_length=100)
     SP_GiaBan = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     SP_MoTa = models.TextField(null=True, blank=True)

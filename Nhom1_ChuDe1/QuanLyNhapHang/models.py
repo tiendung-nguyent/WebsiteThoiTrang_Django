@@ -1,8 +1,10 @@
 from django.db import models
+from QuanLyNhaCungCap.models import NhaCungCap
+from quanLySanPham.models import BienTheSanPham
 
 class NhapHang(models.Model):
     NH_Ma = models.CharField(max_length=9, primary_key=True)
-    NCC_Ma = models.ForeignKey('QuanLyNhaCungCap.NhaCungCap', on_delete=models.CASCADE)
+    NCC_Ma = models.ForeignKey(NhaCungCap, on_delete=models.CASCADE)
     NH_Ngay = models.DateField(auto_now_add=True)
     NH_TongTien = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -10,7 +12,7 @@ class NhapHang(models.Model):
         return self.NH_Ma
 
 class ChiTietNhapHang(models.Model):
-    BTSP_Ma = models.ForeignKey('quanLySanPham.BienTheSanPham', on_delete=models.CASCADE)
+    BTSP_Ma = models.ForeignKey(BienTheSanPham, on_delete=models.CASCADE)
     NH_Ma = models.ForeignKey(NhapHang, on_delete=models.CASCADE)
     NH_DonGia = models.DecimalField(max_digits=10, decimal_places=2)
     NH_SL = models.IntegerField()
