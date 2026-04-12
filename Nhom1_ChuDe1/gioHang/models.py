@@ -1,8 +1,10 @@
 from django.db import models
+from quanLyKhachHang.models import KhachHang
+from quanLySanPham.models import SanPham
 
 class GioHang(models.Model):
     GH_Ma = models.CharField(max_length=9, primary_key=True)
-    KH_Ma = models.ForeignKey('quanLyKhachHang.KhachHang', on_delete=models.CASCADE)
+    KH_Ma = models.ForeignKey(KhachHang, on_delete=models.CASCADE)
     GH_TongSL = models.IntegerField(default=0)
     GH_TamTinh = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -11,7 +13,7 @@ class GioHang(models.Model):
 
 class ChiTietGioHang(models.Model):
     GH_Ma = models.ForeignKey(GioHang, on_delete=models.CASCADE)
-    SP_Ma = models.ForeignKey('quanLySanPham.SanPham', on_delete=models.CASCADE)
+    SP_Ma = models.ForeignKey(SanPham, on_delete=models.CASCADE)
     GH_SL = models.IntegerField(default=1)
     GH_TTien = models.DecimalField(max_digits=10, decimal_places=2)
 
