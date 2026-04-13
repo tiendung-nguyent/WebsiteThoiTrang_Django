@@ -1,13 +1,15 @@
 {% extends "staff/base_staff.html" %}
 
-{% block title %}Cập nhật sản phẩm: {{ sp.SP_Ma }} - Cen Sports{% endblock %}
+{% block title %}Cập nhật sản phẩm - Cen Sports{% endblock %}
 
 {% block content %}
 <style>
     .modal-overlay {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(5px);
         display: flex;
@@ -20,18 +22,26 @@
     .modal-card {
         background: white;
         width: 100%;
-        max-width: 850px;
-        max-height: 92vh;
-        border-radius: 16px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        max-width: 600px;
+        max-height: 90vh;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         display: flex;
         flex-direction: column;
         overflow: hidden;
         animation: modalFadeIn 0.3s ease-out;
     }
+
     @keyframes modalFadeIn {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 
     .modal-header {
@@ -43,9 +53,22 @@
         flex-shrink: 0;
     }
 
-    .modal-header h2 { font-size: 18px; color: #002140; }
-    .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; font-size: 16px;}
-    .close-btn { font-size: 22px; color: #aaa; cursor: pointer; }
+    .modal-header h2 {
+        font-size: 18px;
+        color: #002140;
+    }
+
+    .modal-header h2 span {
+        color: #888;
+        font-weight: normal;
+        margin-left: 8px;
+    }
+
+    .close-btn {
+        font-size: 22px;
+        color: #aaa;
+        cursor: pointer;
+    }
 
     .modal-body {
         padding: 20px 25px;
@@ -53,23 +76,84 @@
         flex-grow: 1;
     }
 
-    .modal-body::-webkit-scrollbar { width: 6px; }
-    .modal-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
-
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none;
+    .modal-body::-webkit-scrollbar {
+        width: 6px;
     }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-    .input-icon-wrapper { position: relative; }
-    .input-icon-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+    .modal-body::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
 
-    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag-item { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .tag-item:hover, .tag-item.active { border-color: #3482b9; background: #f0f7ff; color: #3482b9; }
-    .tag-add { padding: 5px 12px; border: 1px dashed #bbb; border-radius: 6px; color: #888; cursor: pointer; }
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tag-item {
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .tag-item.active {
+        background-color: #003366;
+        color: white;
+        border-color: #003366;
+    }
+
+    .tag-add {
+        padding: 5px 12px;
+        border: 1px dashed #bbb;
+        border-radius: 6px;
+        color: #888;
+        cursor: pointer;
+    }
 
     .modal-footer {
         padding: 15px 25px;
@@ -81,287 +165,123 @@
         background: white;
     }
 
-    .btn-hủy { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .btn-lưu { background: #001a33; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-
-    /* Preview style */
-    .current-img-preview {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 5px;
-        padding: 8px;
-        background: #f8f9fa;
+    .btn-hủy {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px;
         border-radius: 8px;
-        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
     }
-    .current-img-preview img {
-        width: 40px;
-        height: 40px;
-        object-fit: cover;
-        border-radius: 4px;
+
+    .btn-lưu {
+        background: #001a33;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
     }
 </style>
 
 <div class="modal-overlay">
     <div class="modal-card">
         <div class="modal-header">
-            <h2>Cập nhật sản phẩm: <span>{{ sp.SP_Ma }}</span></h2>
+            <h2>Cập nhật sản phẩm: <span>SP0000001</span></h2>
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
-        <form id="editProductForm" action="{% url 'edit_quanLySP' sp.SP_Ma %}" method="POST" enctype="multipart/form-data" style="display: contents;">
-            {% csrf_token %}
+        <form id="editProductForm" action="#" method="GET" style="display: contents;">
             <div class="modal-body">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
-                    {{ form.SP_Ten }}
+                    <input type="text" value="Áo thun thể thao Pro">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Danh mục</label>
-                        {{ form.DM_Ma }}
+                        <select>
+                            <option selected>Áo thun nam</option>
+                            <option>Quần nam</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Giá bán (VNĐ)</label>
-                        {{ form.SP_GiaBan }}
+                        <input type="number" value="350000">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Hình ảnh sản phẩm</label>
+                    <label>URL Hình ảnh</label>
                     <div class="input-icon-wrapper">
-                        {{ form.SP_HinhAnh }}
-                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9; position: absolute; right: 10px; top: 10px;" title="Nhấn để chọn ảnh mới"></i>
+                        <input type="text" value="https://images.unsplash.com/photo-1521572163474...">
+                        <i class="fa fa-image"></i>
                     </div>
-                    {% if sp.SP_HinhAnh %}
-                    <div class="current-img-preview">
-                        <img src="{{ sp.SP_HinhAnh.url }}" alt="Current">
-                        <span>Ảnh hiện tại: {{ sp.SP_HinhAnh.name }}</span>
-                    </div>
-                    {% endif %}
-                    <div style="font-size: 13px; color: #28a745; margin-top: 5px; display: none;" id="uploadText"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Kích cỡ</label>
-                    <div class="tag-list" id="size-list">
-                        <span class="tag-item size-tag" data-val="S">S</span>
-                        <span class="tag-item size-tag" data-val="M">M</span>
-                        <span class="tag-item size-tag" data-val="L">L</span>
-                        <span class="tag-item size-tag" data-val="XL">XL</span>
-                        <span class="tag-item size-tag" data-val="XXL">XXL</span>
-                        <input type="text" id="size-input" style="display: none; width: 60px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
-                        <span class="tag-add" id="add-size-btn">+</span>
+                    <div class="tag-list">
+                        <span class="tag-item">S</span>
+                        <span class="tag-item active">M</span>
+                        <span class="tag-item active">L</span>
+                        <span class="tag-item active">XL</span>
+                        <span class="tag-item">XXL</span>
+                        <span class="tag-add">+</span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Màu sắc</label>
-                    <div class="tag-list" id="color-list">
-                        <span class="tag-item color-tag" data-val="Đen">Đen</span>
-                        <span class="tag-item color-tag" data-val="Trắng">Trắng</span>
-                        <span class="tag-item color-tag" data-val="Xanh">Xanh</span>
-                        <span class="tag-item color-tag" data-val="Đỏ">Đỏ</span>
-                        <span class="tag-item color-tag" data-val="Xám">Xám</span>
-                        <span class="tag-item color-tag" data-val="Vàng">Vàng</span>
-                        <input type="text" id="color-input" style="display: none; width: 70px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
-                        <span class="tag-add" id="add-color-btn">+</span>
-                    </div>
-                </div>
-
-                <div class="form-group" id="variants-container" style="display: none;">
-                    <label>Chi tiết Biến thể (Nhập số lượng)</label>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
-                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
-                            <thead>
-                                <tr style="border-bottom: 1px solid #ddd; background: #f9f9f9; position: sticky; top: 0; z-index: 10;">
-                                    <th style="padding: 10px;">Kích cỡ</th>
-                                    <th style="padding: 10px;">Màu sắc</th>
-                                    <th style="padding: 10px;">Số lượng</th>
-                                </tr>
-                            </thead>
-                            <tbody id="variants-table-body">
-                                <!-- Rendered via JS -->
-                            </tbody>
-                        </table>
+                    <div class="tag-list">
+                        <span class="tag-item active">Đen</span>
+                        <span class="tag-item">Trắng</span>
+                        <span class="tag-item active">Xanh</span>
+                        <span class="tag-item">Đỏ</span>
+                        <span class="tag-item">Xám</span>
+                        <span class="tag-item">Vàng</span>
+                        <span class="tag-add">+</span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Mô tả chi tiết</label>
-                    {{ form.SP_MoTa }}
+                    <textarea rows="3">Áo thun thể thao chất liệu thoáng mát.</textarea>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0;">
+                <div class="form-group">
                     <label>Trạng thái</label>
-                    {{ form.SP_TrangThai }}
+                    <select>
+                        <option selected>Đang bán</option>
+                        <option>Ngừng bán</option>
+                    </select>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn-hủy" onclick="history.back()">Hủy</button>
-                <button type="submit" class="btn-lưu">Cập nhật</button>
+                <button type="submit" class="btn-lưu">Lưu</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Dữ liệu ban đầu từ server
-        const initialVariants = [
-            {% for v in existing_variants %}
-            { size: "{{ v.SP_KichThuoc }}", color: "{{ v.SP_MauSac }}", qty: {{ v.SP_SL }} },
-            {% endfor %}
-        ];
-
-        let selectedSizes = [];
-        let selectedColors = [];
-        let quantitiesMap = {}; // Để giữ lại số lượng khi thay đổi tag
-
-        // Khởi tạo quantitiesMap từ dữ liệu cũ
-        initialVariants.forEach(v => {
-            const key = `${v.size}-${v.color}`;
-            quantitiesMap[key] = v.qty;
-            if (!selectedSizes.includes(v.size)) selectedSizes.push(v.size);
-            if (!selectedColors.includes(v.color)) selectedColors.push(v.color);
-        });
-
-        // Highlight tags ban đầu
-        document.querySelectorAll('.size-tag').forEach(tag => {
-            const val = tag.getAttribute('data-val');
-            if (selectedSizes.includes(val)) tag.classList.add('active');
-        });
-        document.querySelectorAll('.color-tag').forEach(tag => {
-            const val = tag.getAttribute('data-val');
-            if (selectedColors.includes(val)) tag.classList.add('active');
-        });
-
-        generateVariantsTable();
-
-        function handleSizeTagClick(e) {
-            const tag = e.target;
-            tag.classList.toggle('active');
-            const val = tag.getAttribute('data-val');
-            if (tag.classList.contains('active')) {
-                if (!selectedSizes.includes(val)) selectedSizes.push(val);
-            } else {
-                selectedSizes = selectedSizes.filter(s => s !== val);
-            }
-            generateVariantsTable();
-        }
-
-        function handleColorTagClick(e) {
-            const tag = e.target;
-            tag.classList.toggle('active');
-            const val = tag.getAttribute('data-val');
-            if (tag.classList.contains('active')) {
-                if (!selectedColors.includes(val)) selectedColors.push(val);
-            } else {
-                selectedColors = selectedColors.filter(c => c !== val);
-            }
-            generateVariantsTable();
-        }
-
-        document.querySelectorAll('.size-tag').forEach(tag => tag.addEventListener('click', handleSizeTagClick));
-        document.querySelectorAll('.color-tag').forEach(tag => tag.addEventListener('click', handleColorTagClick));
-
-        // Add custom size/color (reused from add page)
-        const addSizeBtn = document.getElementById('add-size-btn');
-        const sizeInput = document.getElementById('size-input');
-        addSizeBtn.addEventListener('click', () => { addSizeBtn.style.display = 'none'; sizeInput.style.display = 'inline-block'; sizeInput.focus(); });
-        sizeInput.addEventListener('blur', confirmAddSize);
-        sizeInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') confirmAddSize(e); });
-
-        function confirmAddSize(e) {
-            if(e) e.preventDefault();
-            const val = sizeInput.value.trim();
-            if (val !== '') {
-                const newSpan = document.createElement('span');
-                newSpan.className = 'tag-item size-tag';
-                newSpan.setAttribute('data-val', val);
-                newSpan.innerText = val;
-                newSpan.addEventListener('click', handleSizeTagClick);
-                sizeInput.parentNode.insertBefore(newSpan, sizeInput);
-            }
-            sizeInput.value = ''; sizeInput.style.display = 'none'; addSizeBtn.style.display = 'inline-block';
-        }
-
-        const addColorBtn = document.getElementById('add-color-btn');
-        const colorInput = document.getElementById('color-input');
-        addColorBtn.addEventListener('click', () => { addColorBtn.style.display = 'none'; colorInput.style.display = 'inline-block'; colorInput.focus(); });
-        colorInput.addEventListener('blur', confirmAddColor);
-        colorInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') confirmAddColor(e); });
-
-        function confirmAddColor(e) {
-            if(e) e.preventDefault();
-            const val = colorInput.value.trim();
-            if (val !== '') {
-                const newSpan = document.createElement('span');
-                newSpan.className = 'tag-item color-tag';
-                newSpan.setAttribute('data-val', val);
-                newSpan.innerText = val;
-                newSpan.addEventListener('click', handleColorTagClick);
-                colorInput.parentNode.insertBefore(newSpan, colorInput);
-            }
-            colorInput.value = ''; colorInput.style.display = 'none'; addColorBtn.style.display = 'inline-block';
-        }
-
-        // Image upload handling
-        const uploadIcon = document.getElementById('uploadIcon');
-        const fileInput = document.getElementById('id_SP_HinhAnh');
-        const uploadText = document.getElementById('uploadText');
-
-        if(uploadIcon && fileInput) {
-            uploadIcon.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    uploadText.style.display = 'block';
-                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn ảnh mới: <b>${this.files[0].name}</b>`;
-                } else {
-                    uploadText.style.display = 'none';
-                }
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.tag-item').forEach(tag => {
+            tag.addEventListener('click', function () {
+                this.classList.toggle('active');
             });
-        }
+        });
 
-        function generateVariantsTable() {
-            const tbody = document.getElementById('variants-table-body');
-            const container = document.getElementById('variants-container');
-            
-            // Lưu lại số lượng hiện tại từ table trước khi xóa
-            document.querySelectorAll('.qty-input').forEach(input => {
-                const key = input.getAttribute('data-key');
-                quantitiesMap[key] = input.value;
-            });
-
-            tbody.innerHTML = '';
-            if (selectedSizes.length > 0 && selectedColors.length > 0) {
-                container.style.display = 'block';
-                selectedSizes.forEach(size => {
-                    selectedColors.forEach(color => {
-                        const key = `${size}-${color}`;
-                        const qty = quantitiesMap[key] || 0;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                                <input type="hidden" name="bienthe_size[]" value="${size}">${size}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                                <input type="hidden" name="bienthe_color[]" value="${color}">${color}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                                <input type="number" name="bienthe_soluong[]" value="${qty}" min="0" data-key="${key}" class="qty-input" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                });
-            } else {
-                container.style.display = 'none';
-            }
-        }
+        const form = document.getElementById('editProductForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert("Cập nhật thông tin thành công!");
+            window.location.href = "{% url 'quanLySP' %}";
+        });
     });
 </script>
 {% endblock %}

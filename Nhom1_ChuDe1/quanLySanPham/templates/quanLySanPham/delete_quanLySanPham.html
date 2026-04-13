@@ -6,8 +6,10 @@
 <style>
     .modal-overlay {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(5px);
         display: flex;
@@ -23,19 +25,27 @@
         padding: 40px 30px;
         border-radius: 20px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         animation: modalBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes modalBounce {
-        from { transform: scale(0.8); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 
     .icon-box {
         width: 100px;
         height: 100px;
-        background-color: #ff5252; /* Màu đỏ như ảnh */
+        background-color: #ff5252;
+        /* Màu đỏ như ảnh */
         border-radius: 50%;
         display: flex;
         justify-content: center;
@@ -101,22 +111,23 @@
             <i class="fa-regular fa-trash-can"></i>
         </div>
 
-        <h2 class="delete-title">Bạn có chắc chắn muốn xóa sản phẩm <strong>{{ sp.SP_Ten }}</strong> ({{ sp.SP_Ma }})?</h2>
+        <h2 class="delete-title">Bạn có chắc chắn muốn xóa sản phẩm?</h2>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="button-group">
-                <button type="button" class="btn-cancel" onclick="history.back()">Hủy</button>
-                <button type="submit" class="btn-confirm" id="btnDeleteConfirm">Đồng ý</button>
-            </div>
-        </form>
+        <div class="button-group">
+            <button class="btn-cancel" onclick="history.back()">Hủy</button>
+            <button class="btn-confirm" id="btnDeleteConfirm">Đồng ý</button>
+        </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const btnDelete = document.getElementById('btnDeleteConfirm');
-        // No alert needed here as the form submit will handle the process
+        btnDelete.addEventListener('click', function () {
+            alert("Đã xóa sản phẩm thành công!");
+
+            window.location.href = "{% url 'quanLySP' %}";
+        });
 
         const links = document.querySelectorAll('.sidebar-menu a');
         links.forEach(link => {
