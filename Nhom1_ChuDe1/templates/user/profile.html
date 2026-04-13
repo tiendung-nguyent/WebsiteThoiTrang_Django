@@ -1,0 +1,97 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .profile-container {
+        padding: 40px 0;
+    }
+
+    .flexrow {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .flexrow > div {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .infocell {
+        border: 2px solid #28a745;
+        border-radius: 5px 25px;
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .infocell h2 {
+        color: #28a745;
+        font-size: 22px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .info-list p {
+        margin-bottom: 12px;
+        font-size: 15px;
+        color: #333;
+    }
+
+    .info-list strong {
+        color: #555;
+        width: 120px;
+        display: inline-block;
+    }
+
+    .viewed-list a {
+        display: block;
+        padding: 10px;
+        color: #004a99;
+        text-decoration: none;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+    }
+
+    .viewed-list a:hover {
+        background-color: #f8f9fa;
+    }
+
+    .viewed-list p.empty {
+        color: #888;
+        font-style: italic;
+        padding: 10px;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="flexrow">
+        <!-- User Info Section -->
+        <div class="infocell">
+            <h2>Hồ sơ cá nhân</h2>
+            <div class="info-list">
+                <p><strong>Tên đăng nhập:</strong> {{ user.username }}</p>
+                <p><strong>Họ và tên:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><strong>Ngày tham gia:</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Lần đăng nhập cuối:</strong> {{ user.last_login|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+
+        <!-- Viewed Products Section -->
+        <div class="infocell">
+            <h2>Sản phẩm đã xem</h2>
+            <div class="viewed-list">
+                {% for prod_id, prod_title in viewed_products %}
+                    <a href="{% url 'view_quanLySP' prod_id %}">{{ prod_title }}</a>
+                {% empty %}
+                    <p class="empty">Chưa có sản phẩm nào được xem gần đây.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

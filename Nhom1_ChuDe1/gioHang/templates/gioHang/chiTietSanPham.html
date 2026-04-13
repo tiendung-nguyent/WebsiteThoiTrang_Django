@@ -1,4 +1,4 @@
-{% extends "user/base_user.html" %}
+% extends "user/base_user.html" %}
 {% load static %}
 
 {% block content %}
@@ -127,7 +127,7 @@
         transform: translateY(-1px);
     }
 
-    .option-item input:checked + label {
+    .option-item input:checked+label {
         background: #2f6fa8;
         border-color: #2f6fa8;
         color: #fff;
@@ -271,9 +271,9 @@
     <div class="product-wrapper">
         <div class="product-image-box">
             {% if san_pham.SP_URLHinhAnh %}
-                <img src="{{ san_pham.SP_URLHinhAnh }}" alt="{{ san_pham.SP_Ten }}">
+            <img src="{{ san_pham.SP_URLHinhAnh }}" alt="{{ san_pham.SP_Ten }}">
             {% else %}
-                <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="{{ san_pham.SP_Ten }}">
+            <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="{{ san_pham.SP_Ten }}">
             {% endif %}
         </div>
 
@@ -295,13 +295,8 @@
                     <div class="option-list">
                         {% for mau in mau_sacs %}
                         <div class="option-item">
-                            <input
-                                type="radio"
-                                name="mau_sac"
-                                id="mau_{{ forloop.counter }}"
-                                value="{{ mau }}"
-                                {% if forloop.first %}checked{% endif %}
-                            >
+                            <input type="radio" name="mau_sac" id="mau_{{ forloop.counter }}" value="{{ mau }}" {% if
+                                forloop.first %}checked{% endif %}>
                             <label for="mau_{{ forloop.counter }}">{{ mau }}</label>
                         </div>
                         {% endfor %}
@@ -315,13 +310,8 @@
                     <div class="option-list">
                         {% for size in kich_thuocs %}
                         <div class="option-item">
-                            <input
-                                type="radio"
-                                name="kich_thuoc"
-                                id="size_{{ forloop.counter }}"
-                                value="{{ size }}"
-                                {% if forloop.first %}checked{% endif %}
-                            >
+                            <input type="radio" name="kich_thuoc" id="size_{{ forloop.counter }}" value="{{ size }}" {%
+                                if forloop.first %}checked{% endif %}>
                             <label for="size_{{ forloop.counter }}">{{ size }}</label>
                         </div>
                         {% endfor %}
@@ -340,9 +330,9 @@
 
                         <div class="stock-text" id="stockText">
                             {% if bien_thes %}
-                                {{ bien_thes|length }} biến thể có sẵn
+                            {{ bien_thes|length }} biến thể có sẵn
                             {% else %}
-                                Sản phẩm có sẵn
+                            Sản phẩm có sẵn
                             {% endif %}
                         </div>
                     </div>

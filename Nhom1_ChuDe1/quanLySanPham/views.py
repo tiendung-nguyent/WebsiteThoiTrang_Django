@@ -2,9 +2,11 @@ import os
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from .forms import SanPhamForm
 from .models import SanPham, BienTheSanPham
 
+@user_passes_test(lambda u: u.is_staff)
 def quanLySP(request):
     products = SanPham.objects.all().order_by('-SP_Ma')
 
@@ -30,6 +32,7 @@ def get_next_sp_ma():
         # Phòng trường hợp mã cũ bị lỗi định dạng
         return "SP0000001"
 
+@user_passes_test(lambda u: u.is_staff)
 def add_quanLySP(request):
     if request.method == 'POST':
         form = SanPhamForm(request.POST, request.FILES)
@@ -77,13 +80,31 @@ def view_quanLySP(request, ma_sp):
     sizes_str = ", ".join(sizes) if sizes else "Không có"
     colors_str = ", ".join(colors) if colors else "Không có"
     
+    # Store recently viewed products in session
+    if request.user.is_authenticated:
+        viewed_products = request.session.get('viewed_products', [])
+        current_product = [sp.SP_Ma, sp.SP_Ten]
+        
+        # Remove if already exists to move to top
+        if current_product in viewed_products:
+            viewed_products.remove(current_product)
+        
+        # Insert at top
+        viewed_products.insert(0, current_product)
+        
+        # Limit to 10
+        request.session['viewed_products'] = viewed_products[:10]
+        request.session.modified = True
+    
     return render(request, 'quanLySanPham/view_quanLySanPham.html', {
         'sp': sp,
         'sizes_str': sizes_str,
         'colors_str': colors_str
     })
+@user_passes_test(lambda u: u.is_staff)
 def edit_quanLySP(request):
     return render(request, 'quanLySanPham/edit_quanLySanPham.html')
+@user_passes_test(lambda u: u.is_staff)
 def delete_quanLySP(request, ma_sp):
     sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
     

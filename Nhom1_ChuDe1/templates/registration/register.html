@@ -1,0 +1,195 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        background-color: #f0f4f8;
+        padding: 40px 20px;
+    }
+
+    .register-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+    }
+
+    .register-card h2 {
+        margin-bottom: 5px;
+        font-size: 28px;
+        font-weight: 700;
+        color: #000;
+    }
+
+    .register-card p.subtitle {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        background-color: #f9fafb;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+        border-color: #004a99;
+    }
+
+    .gender-group {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 20px;
+    }
+
+    .gender-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .gender-option input {
+        width: auto;
+    }
+
+    .password-hint {
+        font-size: 12px;
+        color: #888;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 14px;
+        background-color: #124e8d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-register:hover {
+        background-color: #0d3b6b;
+    }
+
+    .login-link {
+        margin-top: 25px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .login-link a {
+        color: #004a99;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .error-msg {
+        color: #d93025;
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <h2>Đăng ký tài khoản</h2>
+        <p class="subtitle">Tạo tài khoản mới để mua sắm tại Cen Sports</p>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Số điện thoại (Tên tài khoản)</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Giới tính</label>
+                <div class="gender-group">
+                    {% for radio in form.gender %}
+                        <label class="gender-option">
+                            {{ radio.tag }} {{ radio.label }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Ngày sinh</label>
+                {{ form.birth_date }}
+            </div>
+
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                {{ form.password }}
+                <p class="password-hint">Mật khẩu phải từ 8-12 ký tự, viết hoa chữ cái đầu và chứa ký tự đặc biệt</p>
+            </div>
+
+            <div class="form-group">
+                <label>Xác nhận mật khẩu</label>
+                {{ form.confirm_password }}
+                {% if form.confirm_password.errors %}
+                    {% for error in form.confirm_password.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-register">Đăng ký tài khoản</button>
+        </form>
+
+        <p class="login-link">Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
+    </div>
+</div>
+{% endblock %}
