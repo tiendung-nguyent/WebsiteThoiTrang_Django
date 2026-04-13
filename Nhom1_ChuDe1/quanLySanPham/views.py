@@ -84,8 +84,8 @@ def view_quanLySP(request, ma_sp):
     })
 def edit_quanLySP(request):
     return render(request, 'quanLySanPham/edit_quanLySanPham.html')
-def delete_quanLySP(request):
-    return render(request, 'quanLySanPham/delete_quanLySanPham.html')
+def delete_quanLySP(request, ma_sp):
+    sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
     
     if request.method == 'POST':
         sp.delete()
