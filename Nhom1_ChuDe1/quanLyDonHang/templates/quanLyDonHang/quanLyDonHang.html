@@ -167,71 +167,34 @@
             </tr>
         </thead>
         <tbody>
+            {% for order in orders %}
             <tr>
-                <td><a href="#" class="order-id">ORD-2026-001</a></td>
-                <td>Nguyễn Văn A</td>
-                <td>0987654321</td>
-                <td>29-08-2026</td>
-                <td style="font-weight: 600;">750.000 đ</td>
-                <td><span class="badge badge-pending">CHỜ XỬ LÝ</span></td>
+                <td><a href="{% url 'view_quanLyDonHang' order_id=order.TT_Ma %}" class="order-id">{{ order.TT_Ma }}</a></td>
+                <td>{{ order.CTKH_Ma.CTKH_HoTenNguoiNhan }}</td>
+                <td>{{ order.CTKH_Ma.CTKH_SDT }}</td>
+                <td>{{ order.TT_NgayDatHang|date:"d-m-Y" }}</td>
+                <td style="font-weight: 600;">{{ order.TT_TongThanhToan|floatformat:0 }} đ</td>
                 <td>
-                        <a href="{% url 'view_quanLyDonHang' status='cho_xu_ly' %}" style="text-decoration: none;">
+                    <span class="badge 
+                        {% if order.DH_TrangThai == 2 %}badge-pending
+                        {% elif order.DH_TrangThai == 0 %}badge-shipping
+                        {% elif order.DH_TrangThai == 1 %}badge-success
+                        {% elif order.DH_TrangThai == 3 %}badge-failed
+                        {% else %}badge-canceled{% endif %}">
+                        {{ order.get_DH_TrangThai_display|upper }}
+                    </span>
+                </td>
+                <td>
+                        <a href="{% url 'view_quanLyDonHang' order_id=order.TT_Ma %}" style="text-decoration: none;">
                             <i class="fa fa-eye btn-view-order"></i>
                         </a>
                 </td>
             </tr>
-
+            {% empty %}
             <tr>
-                <td><a href="#" class="order-id">ORD-2026-002</a></td>
-                <td>Trần Thị B</td>
-                <td>0123456789</td>
-                <td>29-08-2026</td>
-                <td style="font-weight: 600;">1.200.000 đ</td>
-                <td><span class="badge badge-shipping">ĐANG GIAO</span></td>
-                <td>
-                        <a href="{% url 'view_quanLyDonHang' status='dang_giao' %}" style="text-decoration: none;">
-                            <i class="fa fa-eye btn-view-order"></i>
-                        </a>
-                </td>
+                <td colspan="7" style="text-align: center; color: #999;">Không có đơn hàng nào.</td>
             </tr>
-
-            <tr>
-                <td><a href="#" class="order-id">ORD-2026-003</a></td>
-                <td>Lê Văn C</td>
-                <td>0909123456</td>
-                <td>28-08-2026</td>
-                <td style="font-weight: 600;">450.000 đ</td>
-                <td><span class="badge badge-success">ĐÃ GIAO</span></td>
-                <td>
-                        <a href="{% url 'view_quanLyDonHang' status='da_giao' %}" style="text-decoration: none;">
-                            <i class="fa fa-eye btn-view-order"></i>
-                        </a>
-                </td>
-            </tr>
-
-            <tr>
-                <td><a href="#" class="order-id">ORD-2026-004</a></td>
-                <td>Phạm Minh D</td>
-                <td>0888777666</td>
-                <td>28-08-2026</td>
-                <td style="font-weight: 600;">990.000 đ</td>
-                <td><span class="badge badge-failed">THẤT BẠI</span></td>
-                <td>
-                        <a href="{% url 'view_quanLyDonHang' status='da_huy' %}" style="text-decoration: none;">
-                            <i class="fa fa-eye btn-view-order"></i>
-                        </a>
-                </td>
-            </tr>
-
-            <tr>
-                <td><a href="#" class="order-id">ORD-2026-005</a></td>
-                <td>Hoàng Văn E</td>
-                <td>0777666555</td>
-                <td>27-08-2026</td>
-                <td style="font-weight: 600;">2.100.000 đ</td>
-                <td><span class="badge badge-canceled">ĐÃ HỦY</span></td>
-                <td><i class="fa fa-eye btn-view-order"></i></td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
