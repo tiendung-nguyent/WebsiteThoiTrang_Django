@@ -26,7 +26,7 @@
         text-decoration: none;
         color: inherit;
         display: block;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         transition: all 0.35s ease;
         border-bottom: 4px solid #2f6fa8;
         position: relative;
@@ -34,7 +34,7 @@
 
     .product-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.14);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.14);
     }
 
     .product-img-wrap {
@@ -130,10 +130,10 @@
     {% for sp in san_phams %}
     <a href="{% url 'chiTietSanPham' sp.SP_Ma %}" class="product-card">
         <div class="product-img-wrap">
-            {% if sp.SP_URLHinhAnh %}
-                <img src="{{ sp.SP_URLHinhAnh }}" class="product-img" alt="{{ sp.SP_Ten }}">
+            {% if sp.SP_HinhAnh %}
+            <img src="{{ sp.SP_HinhAnh.url }}" class="product-img" alt="{{ sp.SP_Ten }}">
             {% else %}
-                <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="{{ sp.SP_Ten }}">
+            <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="{{ sp.SP_Ten }}">
             {% endif %}
         </div>
 
@@ -150,7 +150,7 @@
         </div>
     </a>
     {% empty %}
-        <p>Chưa có sản phẩm nào.</p>
+    <p>Chưa có sản phẩm nào.</p>
     {% endfor %}
 </div>
 {% endblock %}
