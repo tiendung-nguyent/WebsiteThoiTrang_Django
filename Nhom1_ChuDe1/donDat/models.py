@@ -4,16 +4,26 @@ from quanLyKhachHang.models import ChiTietKhachHang
 
 # Create your models here.
 class DonDat(models.Model):
+    TRANG_THAI_CHOICES = [
+        (0, 'Đang giao'),
+        (1, 'Đã giao'),
+        (2, 'Chờ xử lý'),
+        (3, 'Thất bại'),
+
+    ]
     TT_Ma = models.CharField(max_length=9, primary_key=True)
     GH_Ma = models.ForeignKey(GioHang, on_delete=models.PROTECT)
     CTKH_Ma = models.ForeignKey(ChiTietKhachHang, on_delete=models.PROTECT)
     TT_TongPhiVC = models.DecimalField(max_digits=10, decimal_places=2)
     TT_TongThanhToan = models.DecimalField(max_digits=10, decimal_places=2)
-    DH_TrangThai = models.CharField(max_length=50)
+    DH_TrangThai = models.IntegerField(
+        choices=TRANG_THAI_CHOICES,
+        default=2,
+    )
     TT_PhuongThuc = models.CharField(max_length=100)
     TT_TongTienHang = models.DecimalField(max_digits=10, decimal_places=2)
     TT_NgayThanhToan = models.DateField(null=True, blank=True)
     TT_NgayDatHang = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"Đơn {self.TT_Ma} - {self.DH_TrangThai}"
+        return f"Đơn {self.TT_Ma} - {self.get_DH_TrangThai_display()}"
