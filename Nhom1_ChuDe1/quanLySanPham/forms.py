@@ -9,7 +9,7 @@ class SanPhamForm(forms.ModelForm):
             'SP_Ten': forms.TextInput(attrs={'placeholder': 'Nhập tên sản phẩm', 'required': True}),
             'DM_Ma': forms.Select(attrs={'required': True}),
             'SP_GiaBan': forms.NumberInput(attrs={'value': '0', 'required': True}),
-            'SP_HinhAnh': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'SP_HinhAnh': forms.FileInput(attrs={'class': 'form-control-file'}),
             'SP_MoTa': forms.Textarea(attrs={'rows': 3}),
             'SP_TrangThai': forms.Select(attrs={'required': True}),
         }

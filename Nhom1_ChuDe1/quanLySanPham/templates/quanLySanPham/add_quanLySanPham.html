@@ -114,7 +114,7 @@
                     <label>Tải ảnh sản phẩm</label>
                     <div class="input-icon-wrapper">
                         {{ form.SP_HinhAnh }}
-                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9; position: absolute; right: 10px; top: 10px;" title="Nhấn để chọn ảnh"></i>
+                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);" title="Nhấn để chọn ảnh"></i>
                     </div>
                     <div style="font-size: 13px; color: #28a745; margin-top: 5px; display: none;" id="uploadText"></div>
                 </div>
@@ -152,9 +152,10 @@
                         <table style="width: 100%; text-align: left; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 1px solid #ddd; background: #f9f9f9; position: sticky; top: 0; z-index: 10;">
-                                    <th style="padding: 10px;">Kích cỡ</th>
-                                    <th style="padding: 10px;">Màu sắc</th>
-                                    <th style="padding: 10px;">Số lượng</th>
+                                    <th style="padding: 10px; font-size: 14px;">Kích cỡ</th>
+                                    <th style="padding: 10px; font-size: 14px;">Màu sắc</th>
+                                    <th style="padding: 10px; font-size: 14px;">Số lượng</th>
+                                    <th style="padding: 10px; font-size: 14px; text-align: center;">Xóa</th>
                                 </tr>
                             </thead>
                             <tbody id="variants-table-body">
@@ -195,6 +196,7 @@
 
         let selectedSizes = [];
         let selectedColors = [];
+        let removedVariants = new Set();
 
         function handleSizeTagClick(e) {
             const tag = e.target;
@@ -204,6 +206,8 @@
                 selectedSizes.push(val);
             } else {
                 selectedSizes = selectedSizes.filter(s => s !== val);
+                // Reset removed state if tag toggled off
+                for (let color of selectedColors) removedVariants.delete(`${val}|${color}`);
             }
             generateVariantsTable();
         }
@@ -216,6 +220,8 @@
                 selectedColors.push(val);
             } else {
                 selectedColors = selectedColors.filter(c => c !== val);
+                // Reset removed state if tag toggled off
+                for (let size of selectedSizes) removedVariants.delete(`${size}|${val}`);
             }
             generateVariantsTable();
         }
@@ -310,7 +316,7 @@
             fileInput.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
                     uploadText.style.display = 'block';
-                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;
+<!--                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;-->
                 } else {
                     uploadText.style.display = 'none';
                 }
@@ -331,18 +337,24 @@
                 // Lồng 2 vòng lặp để tạo các cặp (Ví dụ: L-Đỏ, XL-Đỏ)
                 selectedSizes.forEach(size => {
                     selectedColors.forEach(color => {
+                        const key = `${size}|${color}`;
+                        if (removedVariants.has(key)) return;
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px; border-bottom: 1px solid #eee; font-size: 14px;">
                                 <input type="hidden" name="bienthe_size[]" value="${size}">
-                                <strong>${size}</strong>
+                                ${size}
                             </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px; border-bottom: 1px solid #eee; font-size: 14px;">
                                 <input type="hidden" name="bienthe_color[]" value="${color}">
-                                <strong>${color}</strong>
+                                ${color}
                             </td>
                             <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                                <input type="number" name="bienthe_soluong[]" value="0" min="0" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                <input type="number" name="bienthe_soluong[]" value="0" min="0" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
+                            </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+                                <i class="fa fa-times" style="color: #ff4d4f; cursor: pointer; font-size: 14px;" onclick="removeVariantRow('${key}')"></i>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -352,6 +364,11 @@
                 container.style.display = 'none';
             }
         }
+
+        window.removeVariantRow = function(key) {
+            removedVariants.add(key);
+            generateVariantsTable();
+        };
 
         // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
         {% if messages %}
