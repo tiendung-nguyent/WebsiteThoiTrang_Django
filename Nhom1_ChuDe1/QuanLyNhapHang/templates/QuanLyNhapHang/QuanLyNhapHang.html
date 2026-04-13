@@ -34,47 +34,80 @@
 </style>
 
 <div class="page-header">
-    <h2 class="page-title">Quản lý nhập hàng</h2>
-    <button class="btn-create" onclick="openModal('modalCreate')"><i class="fa fa-plus"></i> Tạo đơn nhập</button>
+    <h2 class="page-title">Quan ly nhap hang</h2>
+    <button class="btn-create" onclick="openModal('modalCreate')"><i class="fa fa-plus"></i> Tao don nhap</button>
 </div>
 
-<div class="filter-bar">
+<form method="GET" class="filter-bar" id="importSearchForm">
     <div class="search-input">
         <i class="fa fa-search"></i>
-        <input type="text" placeholder="Tìm theo mã đơn nhập">
+        <input
+            type="text"
+            name="ma_search"
+            id="maSearchInput"
+            placeholder="Tìm theo mã đơn nhập"
+            value="{{ ma_search }}"
+            autocomplete="off"
+        >
     </div>
     <div class="search-input">
         <i class="fa fa-search"></i>
-        <input type="text" placeholder="Tìm theo tên NCC">
+        <input
+            type="text"
+            name="ncc_search"
+            id="nccSearchInput"
+            placeholder="Tìm theo tên NCC"
+            value="{{ ncc_search }}"
+            autocomplete="off"
+        >
     </div>
     <div class="search-input">
         <i class="fa fa-calendar"></i>
-        <input type="text" placeholder="Tìm theo ngày nhập" onfocus="(this.type='date')">
+        <input
+            type="date"
+            name="ngay_search"
+            id="ngaySearchInput"
+            value="{{ ngay_search }}"
+            autocomplete="off"
+        >
     </div>
-</div>
+</form>
 
 <div class="table-container">
     <table>
         <thead>
             <tr>
-                <th>Mã đơn nhập</th>
-                <th>Nhà cung cấp</th>
-                <th>Ngày nhập</th>
-                <th>Tổng tiền</th>
-                <th>Thao tác</th>
+                <th>Ma don nhap</th>
+                <th>Nha cung cap</th>
+                <th>Ngay nhap</th>
+                <th>Tong tien</th>
+                <th>Thao tac</th>
             </tr>
         </thead>
         <tbody id="importTableBody">
+            {% for nhap in ds_nhap_hang %}
             <tr>
-                <td colspan="5" style="text-align: center; padding: 40px; color: #999;">Chưa có dữ liệu đơn nhập</td>
+                <td>{{ nhap.NH_Ma }}</td>
+                <td><b>{{ nhap.NCC_Ma.NCC_Ten }}</b></td>
+                <td>{{ nhap.NH_Ngay|date:"d-m-Y" }}</td>
+                <td><b>{{ nhap.NH_TongTien }} d</b></td>
+                <td>
+                    <button class="btn-action btn-view" onclick="openDetailModal('{{ nhap.NH_Ma }}')"><i class="fa fa-eye"></i></button>
+                    <button class="btn-action btn-delete" onclick="openDeleteModal('{{ nhap.NH_Ma }}', this)"><i class="fa fa-trash-alt"></i></button>
+                </td>
             </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #999;">Chua co du lieu don nhap</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
 
-{% include "staff/QuanLyNhapHang/Them_DonNhap.html" %}
-{% include "staff/QuanLyNhapHang/XemChiTiet_DonNhap.html" %}
-{% include "staff/QuanLyNhapHang/Xoa_DonNhap.html" %}
+{% include "QuanLyNhapHang/Them_DonNhap.html" %}
+{% include "QuanLyNhapHang/XemChiTiet_DonNhap.html" %}
+{% include "QuanLyNhapHang/Xoa_DonNhap.html" %}
 
 <script>
     function openModal(id) {
@@ -89,21 +122,245 @@
         }
     }
 
-    window.onload = function() {
-        const tableBody = document.getElementById('importTableBody');
-        const demoRow = `
-            <tr>
-                <td>DN0000001</td>
-                <td><b>Công ty May mặc Việt Tiến</b></td>
-                <td>15-01-2026</td>
-                <td><b>3.500.000 đ</b></td>
-                <td>
-                    <button class="btn-action btn-view" onclick="openModal('modalDetail')"><i class="fa fa-eye"></i></button>
-                    <button class="btn-action btn-delete" onclick="openModal('modalDelete')"><i class="fa fa-trash-alt"></i></button>
-                </td>
-            </tr>
-        `;
-        tableBody.innerHTML = demoRow + demoRow;
+    let importItems = [];
+    let searchTimer = null;
+
+    const importSearchForm = document.getElementById('importSearchForm');
+    const autoSearchInputs = [
+        document.getElementById('maSearchInput'),
+        document.getElementById('nccSearchInput'),
+        document.getElementById('ngaySearchInput')
+    ].filter(Boolean);
+
+    if (importSearchForm && autoSearchInputs.length) {
+        autoSearchInputs.forEach(function (input) {
+            const eventName = input.type === 'date' ? 'change' : 'input';
+            input.addEventListener(eventName, function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function () {
+                    importSearchForm.submit();
+                }, 300);
+            });
+        });
+    }
+
+    // Bien luu tru thong tin don nhap dang chon de xoa
+    let currentDeleteMaDn = null;
+    let currentDeleteRow = null;
+
+    function openDeleteModal(ma_dn, btnElement) {
+        currentDeleteMaDn = ma_dn;
+        currentDeleteRow = btnElement.closest('tr');
+        openModal('modalDelete');
+    }
+
+    function confirmDelete() {
+        if (!currentDeleteMaDn) return;
+
+        const csrfToken = document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1] || '';
+
+        fetch(`/quan-ly-nhap-hang/xoa-don-nhap/${currentDeleteMaDn}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                closeModal('modalDelete');
+                if (currentDeleteRow) {
+                    currentDeleteRow.remove();
+                }
+
+                const tbody = document.getElementById('importTableBody');
+                if (tbody && tbody.children.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">Chua co du lieu don nhap</td></tr>';
+                }
+            } else {
+                alert("Loi: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Da xay ra loi khi xoa don nhap.");
+        });
+    }
+
+    function openDetailModal(ma_dn) {
+        fetch(`/quan-ly-nhap-hang/chi-tiet-don-nhap/${ma_dn}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            document.getElementById('detail_title_ma').innerText = '- ' + data.ma_dn;
+            document.getElementById('detail_ma_dn').innerText = data.ma_dn;
+            document.getElementById('detail_ma_ncc').innerText = data.ncc_ma;
+            document.getElementById('detail_ten_ncc').innerText = data.ncc_ten;
+            document.getElementById('detail_ngay_nhap').innerText = data.ngay_nhap ? data.ngay_nhap : '';
+            document.getElementById('detail_tong_tien').innerText = data.tong_tien.toLocaleString();
+
+            const tbody = document.getElementById('detail_table_body');
+            tbody.innerHTML = '';
+            data.items.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.ten_sp}</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.mau_sac}</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.kich_thuoc}</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.so_luong}</td>
+                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">${item.don_gia.toLocaleString()} d</td>
+                        <td style="padding: 10px; text-align: right; font-weight: bold; color: #1a5c8b; border-bottom: 1px solid #eee;">${item.thanh_tien.toLocaleString()} d</td>
+                    </tr>
+                `;
+            });
+
+            openModal('modalDetail');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Da xay ra loi khi lay chi tiet don nhap.");
+        });
+    }
+
+    function fetchVariants(spMa) {
+        if(!spMa) return;
+
+        fetch(`/quan-ly-nhap-hang/get-variants/?sp_ma=${spMa}`)
+        .then(res => res.json())
+        .then(data => {
+            let options = '<option value="" selected disabled>-- Chon bien the --</option>';
+            data.variants.forEach(v => {
+                options += `<option value="${v.BTSP_Ma}" data-ten="${v.SP_KichThuoc} - ${v.SP_MauSac}">${v.SP_MauSac} - ${v.SP_KichThuoc}</option>`;
+            });
+            document.getElementById('select_btsp').innerHTML = options;
+            document.getElementById('don_gia').value = data.sp_gia_ban;
+        });
+    }
+
+    function addToTable() {
+        const spSelect = document.getElementById('select_sp');
+        const btspSelect = document.getElementById('select_btsp');
+        const donGiaInput = document.getElementById('don_gia');
+        const soLuongInput = document.getElementById('so_luong');
+
+        if (!spSelect.value || !btspSelect.value || !donGiaInput.value || !soLuongInput.value) {
+            alert("Vui long nhap day du thong tin san pham!");
+            return;
+        }
+
+        const spTen = spSelect.options[spSelect.selectedIndex].text;
+        const btspTen = btspSelect.options[btspSelect.selectedIndex].getAttribute('data-ten');
+        const donGia = parseFloat(donGiaInput.value);
+        const soLuong = parseInt(soLuongInput.value);
+        const thanhTien = donGia * soLuong;
+
+        const existingItemIndex = importItems.findIndex(item => item.btsp_id === btspSelect.value);
+        if (existingItemIndex > -1) {
+            importItems[existingItemIndex].so_luong += soLuong;
+            importItems[existingItemIndex].thanh_tien = importItems[existingItemIndex].so_luong * donGia;
+            importItems[existingItemIndex].don_gia = donGia;
+        } else {
+            importItems.push({
+                btsp_id: btspSelect.value,
+                sp_ten: spTen,
+                btsp_ten: btspTen,
+                don_gia: donGia,
+                so_luong: soLuong,
+                thanh_tien: thanhTien
+            });
+        }
+
+        updateTable();
+    }
+
+    function removeItem(index) {
+        importItems.splice(index, 1);
+        updateTable();
+    }
+
+    function updateTable() {
+        const tbody = document.getElementById('temp_body');
+        tbody.innerHTML = '';
+        let total = 0;
+
+        importItems.forEach((item, index) => {
+            total += item.thanh_tien;
+            tbody.innerHTML += `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                        <b>${item.sp_ten}</b><br>
+                        <small style="color: #666;">${item.btsp_ten}</small>
+                    </td>
+                    <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.so_luong}</td>
+                    <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">${item.don_gia.toLocaleString()} d</td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold; color: #1a5c8b; border-bottom: 1px solid #eee;">${item.thanh_tien.toLocaleString()} d</td>
+                    <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">
+                        <button onclick="removeItem(${index})" style="color: #ff6b6b; border: none; background: none; cursor: pointer; font-size: 16px;"><i class="fa fa-times"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('total_amount').innerText = total.toLocaleString();
+    }
+
+    function submitImport() {
+        const nccMa = document.getElementById('ncc_ma').value;
+        if (!nccMa) {
+            alert("Vui long chon nha cung cap!");
+            return;
+        }
+        if (importItems.length === 0) {
+            alert("Vui long them it nhat mot san pham vao don nhap!");
+            return;
+        }
+
+        const totalAmountStr = document.getElementById('total_amount').innerText.replace(/,/g, '');
+        const totalAmount = parseFloat(totalAmountStr);
+
+        const data = {
+            ncc_ma: nccMa,
+            tong_tien: totalAmount,
+            items: importItems.map(item => ({
+                btsp_ma: item.btsp_id,
+                so_luong: item.so_luong,
+                don_gia: item.don_gia,
+                thanh_tien: item.thanh_tien
+            }))
+        };
+
+        const csrfToken = document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1] || '';
+
+        fetch('/quan-ly-nhap-hang/tao-don-nhap/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert("Loi: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Da xay ra loi trong qua trinh luu du lieu.");
+        });
     }
 </script>
 {% endblock %}
