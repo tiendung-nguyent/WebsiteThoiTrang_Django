@@ -19,7 +19,6 @@
 
         body { display: flex; background-color: var(--bg-light); min-height: 100vh; }
 
-        /* --- SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--dark-blue);
@@ -68,7 +67,6 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Tự động sáng menu khi ở đúng trang */
         .sidebar-menu li a.active {
             background-color: var(--primary-color);
             color: white;
@@ -92,7 +90,6 @@
 
         .logout-btn:hover { background-color: rgba(255, 107, 107, 0.1); }
 
-        /* --- MAIN CONTENT --- */
         .main-content {
             margin-left: var(--sidebar-width);
             flex: 1;
@@ -101,7 +98,6 @@
             min-width: 0;
         }
 
-        /* TOPBAR */
         header {
             height: 70px;
             background: white;
@@ -135,21 +131,17 @@
 
         .container { padding: 30px; }
 
-        /* Scrollbar Sidebar */
         .sidebar-menu::-webkit-scrollbar { width: 4px; }
         .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
 
-        /* Khi sidebar có class .collapsed thì thu gọn lại */
         .sidebar.collapsed {
             margin-left: calc(var(--sidebar-width) * -1);
         }
 
-        /* Khi sidebar ẩn, nội dung chính phải tràn ra hết màn hình */
         .main-content.expanded {
             margin-left: 0;
         }
 
-        /* Thêm hiệu ứng chuyển động mượt mà */
         .sidebar, .main-content {
             transition: all 0.3s ease;
         }
@@ -178,9 +170,19 @@
                 </a>
             </li>
             <li><a href="{% url 'quanLySP' %}"><i class="fa fa-box"></i> Quản lý sản phẩm</a></li>
-            <li><a href="{% url 'quanLyDM' %}"><i class="fa fa-list"></i> Quản lý danh mục</a></li>
+            <li>
+                <a href="{% url 'quanLyDM' %}"
+                    class="{% if request.resolver_match.url_name == 'quanLyDM' %}active{% endif %}"
+                    ><i class="fa fa-list"></i> Quản lý danh mục
+                </a>
+            </li>
 
-            <li><a href="{% url 'quanLyKH' %}"><i class="fa fa-users"></i> Quản lý khách hàng</a></li>
+            <li>
+                <a href="{% url 'quanLyKH' %}"
+                class="{% if request.resolver_match.url_name == 'quanLyKH' %}active{% endif %}">
+                    <i class="fa fa-users"></i> Quản lý khách hàng</a>
+
+            </li>
             <li>
                 <a href="{% url 'quan_ly_nhap_hang' %}"
                    class="{% if request.resolver_match.url_name == 'quan_ly_nhap_hang' %}active{% endif %}">
@@ -193,6 +195,9 @@
                     <i class="fa fa-truck"></i> Quản lý nhà cung cấp
                 </a>
             </li>
+
+
+
             <li>
                 <a href="{% url 'quan_ly_khuyen_mai' %}"
                    class="{% if request.resolver_match.url_name == 'quan_ly_khuyen_mai' %}active{% endif %}">
@@ -237,7 +242,6 @@
         const mainContent = document.getElementById('mainContent');
 
         toggleBtn.addEventListener('click', () => {
-            // Toggle (bật/tắt) các class
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
         });
