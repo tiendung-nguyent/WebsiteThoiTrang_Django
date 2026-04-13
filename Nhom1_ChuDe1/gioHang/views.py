@@ -2,11 +2,13 @@ from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 
 from quanLySanPham.models import SanPham, BienTheSanPham
-from quanLyKhachHang.models import KhachHang
+from quanLyKhachHang.models import KhachHang, ChiTietKhachHang
+from QuanLyKhuyenMai.models import KhuyenMai
 from .models import GioHang, ChiTietGioHang
-
+from donDat.models import DonDat
 
 def tao_ma_khach_hang():
     so = KhachHang.objects.count() + 1
@@ -268,11 +270,112 @@ def giam_so_luong_gio(request, ctgh_id):
 
     cap_nhat_tong_gio_hang(gio_hang)
     return redirect('gioHang')
+
+
 def thanh_toan_view(request):
     gio_hang = lay_hoac_tao_gio_hang()
     cap_nhat_tong_gio_hang(gio_hang)
+    ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
+
+    if gio_hang.GH_TongSL == 0:
+        messages.error(request, 'Giỏ hàng của bạn đang trống!')
+        return redirect('gioHang')
+
+    ho_ten = request.POST.get('ho_ten', '').strip() if request.method == 'POST' else ''
+    so_dien_thoai = request.POST.get('so_dien_thoai', '').strip() if request.method == 'POST' else ''
+    dia_chi = request.POST.get('dia_chi', '').strip() if request.method == 'POST' else ''
+    ma_khuyen_mai = request.POST.get('ma_khuyen_mai', '') if request.method == 'POST' else ''
+    payment = request.POST.get('payment', 'COD') if request.method == 'POST' else 'COD'
+
+    hom_nay = timezone.now().date()
+    khuyen_mais = KhuyenMai.objects.filter(KM_NgayBD__lte=hom_nay, KM_NgayKT__gte=hom_nay)
+
+    phi_van_chuyen = Decimal('30000')
+    tong_tien_hang = gio_hang.GH_TamTinh
+    tong_thanh_toan = tong_tien_hang + phi_van_chuyen
+
+    khuyen_mai_obj = None
+    hien_thi_giam_gia = "0 đ"
+
+    if ma_khuyen_mai:
+        khuyen_mai_obj = KhuyenMai.objects.filter(KM_Ma=ma_khuyen_mai).first()
+        if khuyen_mai_obj:
+            giam_gia = khuyen_mai_obj.KM_GiaTri
+            if giam_gia < 100:
+                giam_gia_tien = tong_tien_hang * (giam_gia / Decimal('100'))
+                hien_thi_giam_gia = f"{giam_gia}%"
+            else:
+                giam_gia_tien = giam_gia
+                hien_thi_giam_gia = f"{giam_gia:,.0f} đ".replace(',', '.')
+
+            tong_thanh_toan = tong_thanh_toan - giam_gia_tien
+            if tong_thanh_toan < 0:
+                tong_thanh_toan = Decimal('0')
+
+    if request.method == 'POST':
+        loi = None
+        if not ho_ten:
+            loi = 'Họ tên không được để trống, vui lòng nhập lại'
+        elif not (len(so_dien_thoai) == 10 and so_dien_thoai.startswith('0')):
+            loi = 'Số điện thoại không hợp lệ, vui lòng đặt lại'
+        elif not dia_chi:
+            loi = 'Địa chỉ không được để trống.'
+
+        if loi:
+            messages.error(request, loi)
+        else:
+            so_ctkh = ChiTietKhachHang.objects.count() + 1
+            ctkh_ma = f"CTKH{so_ctkh:05d}"
+
+            kh = lay_hoac_tao_khach_hang_mac_dinh()
+
+            ctkh = ChiTietKhachHang.objects.create(
+                CTKH_Ma=ctkh_ma,
+                KH_Ma=kh,
+                CTKH_HoTenNguoiNhan=ho_ten,
+                CTKH_SDT=so_dien_thoai,
+                CTKH_DiaChi=dia_chi
+            )
+
+            so_don = DonDat.objects.count() + 1
+            tt_ma = f"DD{so_don:07d}"
+
+            phuong_thuc = "Thanh toán khi nhận hàng (COD)" if payment == "COD" else "Chuyển khoản qua ngân hàng"
+
+            don_dat = DonDat.objects.create(
+                TT_Ma=tt_ma,
+                GH_Ma=gio_hang,
+                CTKH_Ma=ctkh,
+                TT_TongPhiVC=phi_van_chuyen,
+                TT_TongThanhToan=tong_thanh_toan,
+                DH_TrangThai='Chờ xác nhận',
+                TT_PhuongThuc=phuong_thuc,
+                TT_TongTienHang=tong_tien_hang,
+                TT_NgayThanhToan=None
+            )
+
+            kh.KH_TongChiTieu += tong_thanh_toan
+            kh.KH_SoDonHang += 1
+            kh.save()
+
+            ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete()
+            cap_nhat_tong_gio_hang(gio_hang)
+
+            messages.success(request, 'Thanh toán thành công')
+            return redirect('trangChuUser')
 
     return render(request, 'gioHang/ThanhToan.html', {
         'gio_hang_obj': gio_hang,
+        'ds_chi_tiet': ds_chi_tiet,
         'cart_count': gio_hang.GH_TongSL,
+        'khuyen_mais': khuyen_mais,
+        'phi_van_chuyen': phi_van_chuyen,
+        'tong_thanh_toan': tong_thanh_toan,
+        'ho_ten': ho_ten,
+        'so_dien_thoai': so_dien_thoai,
+        'dia_chi': dia_chi,
+        'ma_khuyen_mai': ma_khuyen_mai,
+        'khuyen_mai_obj': khuyen_mai_obj,
+        'hien_thi_giam_gia': hien_thi_giam_gia,
+        'payment': payment,
     })

@@ -170,154 +170,91 @@
                 <th>THAO TÁC</th>
             </tr>
         </thead>
-        <tbody id="categoryTableBody"></tbody>
+        <tbody>
+            {% for dm in danh_mucs %}
+            <tr>
+                <td><span class="category-code">{{ dm.DM_Ma }}</span></td>
+                <td><strong>{{ dm.DM_Ten }}</strong></td>
+                <td>
+                    <span class="badge">{{ dm.DM_Thuoc }}</span>
+                </td>
+                <td><span class="quantity-badge">0</span></td>
+                <td>
+                    <button class="action-btn" onclick="openEditModal('{{ dm.DM_Ma }}','{{ dm.DM_Ten }}')">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="action-btn" onclick="openDeleteModal('{{ dm.DM_Ma }}')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Chưa có dữ liệu</td></tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
+{% if messages %}
+    {% for message in messages %}
+        <div style="margin-bottom: 15px; padding: 12px 16px; background: #dcfce7; color: #166534; border-radius: 10px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
 <!-- Include Modal -->
-{% include "staff/QuanLyDanhMuc/Them_DanhMuc.html" %}
-{% include "staff/QuanLyDanhMuc/XemChiTiet_DanhMuc.html" %}
-{% include "staff/QuanLyDanhMuc/Xoa_DanhMuc.html" %}
+{% include "QuanLyDanhMuc/Them_DanhMuc.html" %}
+{% include "QuanLyDanhMuc/XemChiTiet_DanhMuc.html" %}
+{% include "QuanLyDanhMuc/Xoa_DanhMuc.html" %}
 
 <script>
-    let categories = [
-        { id: "DM001", name: "Gym", type: "NAM", quantity: 120 },
-        { id: "DM002", name: "Gym", type: "NỮ",  quantity: 85 },
-        { id: "DM003", name: "Fitness", type: "NAM", quantity: 120 },
-        { id: "DM004", name: "Fitness", type: "NỮ",  quantity: 85 },
-        { id: "DM005", name: "Pickle Ball", type: "NAM", quantity: 120 },
-        { id: "DM006", name: "Pickle Ball", type: "NỮ",  quantity: 85 }
-    ];
-
     let selectedGender = 'NAM';
-
-    function renderTable() {
-        const tbody = document.getElementById('categoryTableBody');
-        tbody.innerHTML = '';
-        categories.forEach(cat => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><span class="category-code">${cat.id}</span></td>
-                <td><strong>${cat.name}</strong></td>
-                <td><span class="badge ${cat.type === 'NAM' ? 'badge-nam' : 'badge-nu'}">${cat.type}</span></td>
-                <td><span class="quantity-badge">${cat.quantity}</span></td>
-                <td>
-                    <button class="action-btn" style="color:#64748b"><i class="fa fa-edit"></i></button>
-                    <button class="action-btn" style="color:#ef4444" onclick="deleteCategory('${cat.id}')"><i class="fa fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
 
     function selectGender(gender) {
         selectedGender = gender;
-        document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(gender === 'NAM' ? 'btnNam' : 'btnNu').classList.add('active');
+        document.getElementById('createDMThuoc').value = gender;
+
+        document.querySelectorAll('#modalCreate .gender-btn').forEach(btn => btn.classList.remove('active'));
+        if (gender === 'NAM') {
+            document.getElementById('btnNam').classList.add('active');
+        } else {
+            document.getElementById('btnNu').classList.add('active');
+        }
     }
 
     function openCreateModal() {
         document.getElementById('modalCreate').style.display = 'block';
-        document.getElementById('maDanhMuc').value = 'DM' + String(1000 + categories.length + 1).padStart(3, '0');
+        document.getElementById('maDanhMuc').value = '{{ ma_danh_muc_moi }}';
         document.getElementById('tenDanhMuc').value = '';
         selectGender('NAM');
+    }
+
+    function openEditModal(id, name, thuoc) {
+        document.getElementById('editMaDanhMuc').value = id;
+        document.getElementById('editMaDanhMucDisplay').value = id;
+        document.getElementById('editTenDanhMuc').value = name;
+        document.getElementById('modalEdit').style.display = 'block';
+    }
+
+    function openDeleteModal(id) {
+        document.getElementById('deleteTargetId').value = id;
+        document.getElementById('deleteDMMa').value = id;
+        document.getElementById('modalDelete').style.display = 'block';
     }
 
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
     }
 
-    function saveNewCategory() {
-        const name = document.getElementById('tenDanhMuc').value.trim();
-        if (!name) {
-            alert("Vui lòng nhập tên danh mục!");
-            return;
-        }
-        const newId = document.getElementById('maDanhMuc').value;
+    window.onclick = function(event) {
+        const createModal = document.getElementById('modalCreate');
+        const editModal = document.getElementById('modalEdit');
+        const deleteModal = document.getElementById('modalDelete');
 
-        categories.unshift({
-            id: newId,
-            name: name,
-            type: selectedGender,
-            quantity: 0
-        });
-
-        renderTable();
-        closeModal('modalCreate');
+        if (event.target === createModal) closeModal('modalCreate');
+        if (event.target === editModal) closeModal('modalEdit');
+        if (event.target === deleteModal) closeModal('modalDelete');
     }
-
-    function deleteCategory(id) {
-        if (confirm(`Xóa danh mục ${id}?`)) {
-            categories = categories.filter(c => c.id !== id);
-            renderTable();
-        }
-    }
-    let currentEditId = null;
-
-    // Hàm mở modal Sửa (Ảnh 1)
-    function openEditModal(id) {
-        const cat = categories.find(c => c.id === id);
-        if (!cat) return;
-
-        currentEditId = id;
-        document.getElementById('editMaDanhMuc').value = cat.id;
-        document.getElementById('editTenDanhMuc').value = cat.name;
-        document.getElementById('editSoLuong').innerText = cat.quantity;
-
-        document.getElementById('modalEdit').style.display = 'block';
-    }
-
-    // Hàm lưu sau khi sửa
-    function updateCategory() {
-        const newName = document.getElementById('editTenDanhMuc').value.trim();
-        if (!newName) {
-            alert("Tên danh mục không được để trống!");
-            return;
-        }
-
-        const index = categories.findIndex(c => c.id === currentEditId);
-        if (index !== -1) {
-            categories[index].name = newName;
-            renderTable();
-            closeModal('modalEdit');
-        }
-    }
-
-    // Hàm mở modal Xóa (Ảnh 2)
-    function openDeleteModal(id) {
-        document.getElementById('deleteTargetId').value = id;
-        document.getElementById('modalDelete').style.display = 'block';
-    }
-
-    // Hàm xác nhận xóa thực sự
-    function confirmDelete() {
-        const id = document.getElementById('deleteTargetId').value;
-        categories = categories.filter(c => c.id !== id);
-        renderTable();
-        closeModal('modalDelete');
-    }
-
-    // Cập nhật lại hàm renderTable để gọi đúng modal
-    function renderTable() {
-        const tbody = document.getElementById('categoryTableBody');
-        tbody.innerHTML = '';
-        categories.forEach(cat => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><span class="category-code">${cat.id}</span></td>
-                <td><strong>${cat.name}</strong></td>
-                <td><span class="badge ${cat.type === 'NAM' ? 'badge-nam' : 'badge-nu'}">${cat.type}</span></td>
-                <td><span class="quantity-badge">${cat.quantity}</span></td>
-                <td>
-                    <button class="action-btn" style="color:#64748b" onclick="openEditModal('${cat.id}')"><i class="fa fa-edit"></i></button>
-                    <button class="action-btn" style="color:#ef4444" onclick="openDeleteModal('${cat.id}')"><i class="fa fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    window.onload = renderTable;
 </script>
 
 {% endblock %}
