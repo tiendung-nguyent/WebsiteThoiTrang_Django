@@ -89,35 +89,32 @@
 <div class="modal-overlay">
     <div class="modal-card">
         <div class="modal-header">
-            <h2>Thêm sản phẩm mới: <span>SP0000001</span></h2>
+            <h2>Thêm sản phẩm mới: <span>{{ next_ma }}</span></h2>
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
-    <form id="addProductForm" action="#" method="POST" style="display: contents;">
+    <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" style="display: contents;">
             {% csrf_token %} <div class="modal-body">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
-                    <input type="text" placeholder="Nhập tên sản phẩm" required>
+                    {{ form.SP_Ten }}
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Danh mục</label>
-                        <select>
-                            <option>Chọn danh mục</option>
-                            <option>Áo thun nam</option>
-                        </select>
+                        {{ form.DM_Ma }}
                     </div>
                     <div class="form-group">
                         <label>Giá bán (VNĐ)</label>
-                        <input type="number" value="0">
+                        {{ form.SP_GiaBan }}
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>URL Hình ảnh</label>
                     <div class="input-icon-wrapper">
-                        <input type="text" placeholder="https://...">
+                        {{ form.SP_URLHinhAnh }}
                         <i class="fa fa-image"></i>
                     </div>
                 </div>
@@ -149,15 +146,12 @@
 
                 <div class="form-group">
                     <label>Mô tả chi tiết</label>
-                    <textarea rows="3"></textarea>
+                    {{ form.SP_MoTa }}
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Trạng thái</label>
-                    <select>
-                        <option>Đang bán</option>
-                        <option>Ngừng bán</option>
-                    </select>
+                    {{ form.SP_TrangThai }}
                 </div>
             </div>
 
@@ -186,17 +180,15 @@
             });
         });
 
-        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG
-        const productForm = document.getElementById('addProductForm');
-        productForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Ngăn chặn trang bị load lại và lỗi 403
-
-            // Hiển thị thông báo
-            alert("Lưu sản phẩm thành công!");
-
-            // Quay về trang trước đó (Danh sách sản phẩm)
-            window.location.href = "{% url 'quanLySP' %}";
-        });
+        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
+        {% if messages %}
+            {% for message in messages %}
+                alert("{{ message }}");
+                {% if message.tags == 'success' %}
+                    window.location.href = "{% url 'quanLySP' %}";
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     });
 </script>
 {% endblock %}
