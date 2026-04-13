@@ -133,6 +133,12 @@
             <div style="margin-top: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                 <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tạm tính:</span> <b>{{ order.TT_TongTienHang|floatformat:0 }}đ</b></div>
                 <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+{{ order.TT_TongPhiVC|floatformat:0 }}đ</b></div>
+                {% if discount_amount > 0 %}
+                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;">
+                    <span>Khuyến mãi:</span> 
+                    <b style="color: #ff5e5e;">-{{ discount_amount|floatformat:0 }}đ</b>
+                </div>
+                {% endif %}
                 <div style="display: flex; justify-content: space-between; width: 220px; border-top: 2px solid #eee; padding-top: 8px; margin-top: 5px;">
                     <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">{{ order.TT_TongThanhToan|floatformat:0 }}đ</b>
                 </div>
