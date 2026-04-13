@@ -1,5 +1,6 @@
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from quanLySanPham.models import SanPham, BienTheSanPham
 from quanLyKhachHang.models import KhachHang
 from .models import GioHang, ChiTietGioHang
@@ -123,6 +124,7 @@ def them_vao_gio_hang(request, sp_ma):
     return redirect('chiTietSanPham', sp_ma=sp_ma)
 
 
+@login_required
 def gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang()
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('SP_Ma')
@@ -135,6 +137,7 @@ def gio_hang(request):
     })
 
 
+@login_required
 def thanh_toan_view(request):
     gio_hang = lay_hoac_tao_gio_hang()
     cap_nhat_tong_gio_hang(gio_hang)
