@@ -1,10 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user/base_user.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block content %}
+<style>
+    .delete-cart-box {
+        max-width: 950px;
+        margin: 0 auto;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 30px;
+        background: #fff;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    }
+
+    .delete-cart-title {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #d9534f;
+    }
+
+    .delete-cart-desc {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 25px;
+    }
+
+    .cart-preview {
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        padding: 18px 0;
+        margin-bottom: 25px;
+    }
+
+    .cart-item-preview {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .cart-item-preview:last-child {
+        border-bottom: none;
+    }
+
+    .cart-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cart-left img {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .cart-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+        line-height: 1.4;
+    }
+
+    .cart-meta {
+        font-size: 14px;
+        color: #777;
+    }
+
+    .cart-price {
+        font-weight: bold;
+        color: #004a99;
+        font-size: 16px;
+    }
+
+    .summary-delete {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .btn-back,
+    .btn-delete {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background: #f1f1f1;
+        color: #333;
+    }
+
+    .btn-delete {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+    .empty-cart-box {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+</style>
+
+<div class="delete-cart-box">
+    <div class="delete-cart-title">Xóa toàn bộ giỏ hàng</div>
+    <p class="delete-cart-desc">
+        Bạn có chắc chắn muốn xóa toàn bộ sản phẩm trong giỏ hàng không?
+    </p>
+
+    {% if ds_chi_tiet %}
+        <div class="cart-preview">
+            {% for item in ds_chi_tiet %}
+                <div class="cart-item-preview">
+                    <div class="cart-left">
+                        {% if item.BTSP_Ma.SP_Ma.SP_URLHinhAnh %}
+                            <img src="{{ item.BTSP_Ma.SP_Ma.SP_URLHinhAnh }}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                        {% else %}
+                            <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                        {% endif %}
+
+                        <div>
+                            <div class="cart-name">{{ item.BTSP_Ma.SP_Ma.SP_Ten }}</div>
+                            <div class="cart-meta">
+                                Màu: {{ item.BTSP_Ma.SP_MauSac }} |
+                                Size: {{ item.BTSP_Ma.SP_KichThuoc }} |
+                                Số lượng: {{ item.GH_SL }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cart-price">{{ item.GH_TTien }} đ</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="summary-delete">
+            <span>Tổng số lượng:</span>
+            <span>{{ gio_hang_obj.GH_TongSL }}</span>
+        </div>
+
+        <div class="summary-delete">
+            <span>Tạm tính:</span>
+            <span>{{ gio_hang_obj.GH_TamTinh }} đ</span>
+        </div>
+
+        <div class="action-group">
+            <a href="{% url 'gioHang' %}" class="btn-back">Hủy</a>
+
+            <form method="post" action="{% url 'xoaGioHang' %}" style="flex:1;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete" style="width:100%;">
+                    Đồng ý xóa giỏ hàng
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="empty-cart-box">
+            Giỏ hàng hiện đang trống.
+            <div style="margin-top:20px;">
+                <a href="{% url 'trangChuUser' %}" class="btn-back">Tiếp tục mua sắm</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

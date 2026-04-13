@@ -254,10 +254,11 @@
             </div>
 
             <div class="user-icons">
-                <a href="#" style="color: #333;"><i class="fa-regular fa-user"></i></a>
                 <a href="{% url 'gioHang' %}" class="cart-icon">
                     <i class="fa fa-shopping-cart"></i>
-                    <span class="cart-count">{{ cart_count|default:0 }}</span>
+                    {% if cart_count and cart_count > 0 %}
+                        <span class="cart-count">{{ cart_count }}</span>
+                    {% endif %}
                 </a>
             </div>
         </nav>
