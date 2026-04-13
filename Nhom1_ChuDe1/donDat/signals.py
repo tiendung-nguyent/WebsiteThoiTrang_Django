@@ -44,6 +44,8 @@ def quan_ly_kho(sender, instance, created, **kwargs):
         elif trang_thai_truoc_do == TRANG_THAI_HOAN_KHO and trang_thai_hien_tai in TRANG_THAI_GIAM_KHO:
             cap_nhat_so_luong(tang_so_luong=False)
 
+
+
 @receiver(pre_save, sender=DonDat)
 def luu_trang_thai_truoc_do(sender, instance, **kwargs):
     don_hang = instance
