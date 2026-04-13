@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'BaoCaoThongKe',
     'QuanLyDanhMuc',
     'quanLyDonHang',
-    'quanLyKhachHang',
+    'QuanLyKhachHang',
     'QuanLyKhuyenMai',
     'QuanLyNhaCungCap',
     'QuanLyNhapHang',

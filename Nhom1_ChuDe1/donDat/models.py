@@ -1,6 +1,6 @@
 from django.db import models
 from gioHang.models import GioHang
-from quanLyKhachHang.models import ChiTietKhachHang
+from QuanLyKhachHang.models import ChiTietKhachHang
 
 # Create your models here.
 class DonDat(models.Model):

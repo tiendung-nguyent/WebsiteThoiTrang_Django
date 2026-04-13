@@ -1,5 +1,5 @@
 from django.db import models
-from quanLyKhachHang.models import KhachHang
+from QuanLyKhachHang.models import KhachHang
 from quanLySanPham.models import SanPham
 
 class GioHang(models.Model):

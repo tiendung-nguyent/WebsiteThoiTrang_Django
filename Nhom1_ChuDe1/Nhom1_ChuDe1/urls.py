@@ -9,7 +9,7 @@ urlpatterns = [
     path('', include('BaoCaoThongKe.urls')),
     path('', include('QuanLyDanhMuc.urls')),
     path('', include('quanLyDonHang.urls')),
-    path('', include('quanLyKhachHang.urls')),
+    path('', include('QuanLyKhachHang.urls')),
     path('', include('QuanLyKhuyenMai.urls')),
     path('', include('QuanLyNhaCungCap.urls')),
     path('', include('QuanLyNhapHang.urls')),

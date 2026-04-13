@@ -53,68 +53,67 @@
                 <th>THAO TÁC</th>
             </tr>
         </thead>
-        <tbody id="customerTableBody"></tbody>
+        <tbody>
+            {% for kh in khach_hangs %}
+            <tr>
+                <td class="customer-id">{{ kh.KH_Ma }}</td>
+                <td>{{ kh.KH_Ten }}</td>
+                <td>{{ kh.so_dien_thoai }}</td>
+                <td>
+                    <button class="action-btn" style="color:#94a3b8"
+                        onclick="openDetailModal('{{ kh.KH_Ma }}', '{{ kh.KH_Ten }}', '{{ kh.so_dien_thoai }}', '{{ kh.KH_SoDonHang }}', '{{ kh.KH_TongChiTieu }}', '{{ kh.dia_chi }}')">
+                        <i class="fa fa-eye"></i>
+                    </button>
+
+                    <button class="action-btn" style="color:#ef4444"
+                        onclick="openDeleteModal('{{ kh.KH_Ma }}')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center;">Chưa có khách hàng</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
 </div>
 
-{% include "staff/QuanLyKhachHang/XemChiTiet_KhachHang.html" %}
-{% include "staff/QuanLyKhachHang/Xoa_KhachHang.html" %}
+{% include "QuanLyKhachHang/XemChiTiet_KhachHang.html" %}
+{% include "QuanLyKhachHang/Xoa_KhachHang.html" %}
 
-<script>
-    let customers = [
-        { id: "KH0000001", name: "Nguyễn Văn A", phone: "0901234567", orders: 3, totalSpend: "2.500.000", address: "Q.1, TP.HCM" },
-        { id: "KH0000002", name: "Nguyễn Văn B", phone: "0901234567", orders: 1, totalSpend: "500.000", address: "Q.3, TP.HCM" },
-        { id: "KH0000003", name: "Nguyễn Văn C", phone: "0901234567", orders: 12, totalSpend: "15.000.000", address: "Q.Bình Thạnh, TP.HCM" }
-    ];
+    <script>
+        function openDetailModal(id, name, phone, orders, spend, address) {
+            document.getElementById('detName').innerText = name || "Khách hàng";
+            document.getElementById('detPhoneHeader').innerText = phone || "";
+            document.getElementById('detId').innerText = ": " + (id || "");
+            document.getElementById('detOrders').innerText = ": " + (orders || "0");
+            document.getElementById('detSpend').innerText = ": " + (spend || "0") + " đ";
+            document.getElementById('detAddress').innerText = ": " + (address || "");
+            document.getElementById('modalDetail').style.display = 'block';
+        }
 
-    function renderTable() {
-        const tbody = document.getElementById('customerTableBody');
-        tbody.innerHTML = '';
-        customers.forEach(cust => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="customer-id">${cust.id}</td>
-                <td>${cust.name}</td>
-                <td>${cust.phone}</td>
-                <td>
-                    <button class="action-btn" style="color:#94a3b8" onclick="openDetailModal('${cust.id}')"><i class="fa fa-eye"></i></button>
-                    <button class="action-btn" style="color:#ef4444" onclick="openDeleteModal('${cust.id}')"><i class="fa fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
+        function openDeleteModal(id) {
+            document.getElementById('deleteTargetId').value = id;
+            document.getElementById('modalDelete').style.display = 'block';
+        }
 
-    function openDetailModal(id) {
-        const cust = customers.find(c => c.id === id);
-        if(!cust) return;
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
 
-        document.getElementById('detName').innerText = "Khách hàng " + cust.name;
-        document.getElementById('detPhoneHeader').innerText = cust.phone;
-        document.getElementById('detId').innerText = cust.id;
-        document.getElementById('detOrders').innerText = cust.orders;
-        document.getElementById('detSpend').innerText = cust.totalSpend + " đ";
-        document.getElementById('detAddress').innerText = cust.address;
+        window.onclick = function(event) {
+            const detailModal = document.getElementById('modalDetail');
+            const deleteModal = document.getElementById('modalDelete');
 
-        document.getElementById('modalDetail').style.display = 'block';
-    }
-
-    function openDeleteModal(id) {
-        document.getElementById('deleteTargetId').value = id;
-        document.getElementById('modalDelete').style.display = 'block';
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    function confirmDelete() {
-        const id = document.getElementById('deleteTargetId').value;
-        customers = customers.filter(c => c.id !== id);
-        renderTable();
-        closeModal('modalDelete');
-    }
-
-    window.onload = renderTable;
-</script>
+            if (event.target === detailModal) {
+                closeModal('modalDetail');
+            }
+            if (event.target === deleteModal) {
+                closeModal('modalDelete');
+            }
+        }
+    </script>
 {% endblock %}
