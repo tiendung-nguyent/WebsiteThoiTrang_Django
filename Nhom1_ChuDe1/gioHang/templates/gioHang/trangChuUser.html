@@ -3,47 +3,154 @@
 
 {% block content %}
 <style>
-    .section-title { text-align: center; margin-bottom: 30px; font-size: 24px; text-transform: uppercase; }
+    .section-title {
+        text-align: center;
+        margin-bottom: 35px;
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
     .product-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        padding-bottom: 50px;
+        gap: 24px;
+        padding-bottom: 60px;
     }
+
     .product-card {
-        border: 1px solid #eee;
-        border-radius: 8px;
+        background: #fff;
+        border-radius: 12px;
         overflow: hidden;
-        transition: 0.3s;
         text-decoration: none;
         color: inherit;
         display: block;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.35s ease;
+        border-bottom: 4px solid #2f6fa8;
+        position: relative;
     }
-    .product-card:hover { shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-5px); }
-    .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-    .product-info { padding: 15px; }
-    .product-category { font-size: 10px; color: #888; text-transform: uppercase; }
-    .product-name { font-size: 14px; font-weight: 600; margin: 5px 0; height: 40px; overflow: hidden; }
-    .product-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .price { color: #004a99; font-weight: bold; }
-    .add-btn { background: #004a99; color: white; border: none; padding: 5px 10px; border-radius: 4px; }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.14);
+    }
+
+    .product-img-wrap {
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .product-img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+        display: block;
+    }
+
+    .product-card:hover .product-img {
+        transform: scale(1.08);
+    }
+
+    .product-info {
+        padding: 14px 14px 18px;
+    }
+
+    .product-category {
+        font-size: 10px;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .product-name {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 14px 0;
+        min-height: 42px;
+        line-height: 1.4;
+        color: #222;
+    }
+
+    .product-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price {
+        color: #0a4f9c;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .cart-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #2f6fa8;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover .cart-btn {
+        background: #0b5ed7;
+        transform: scale(1.08);
+    }
+
+    @media (max-width: 1100px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <h2 class="section-title">Sản phẩm nổi bật</h2>
 
 <div class="product-grid">
-    {% for i in "12345678" %}
-    <a href="{% url 'chiTietSanPham' %}" class="product-card">
-        <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="Sản phẩm">
+    {% for sp in san_phams %}
+    <a href="{% url 'chiTietSanPham' sp.SP_Ma %}" class="product-card">
+        <div class="product-img-wrap">
+            {% if sp.SP_URLHinhAnh %}
+                <img src="{{ sp.SP_URLHinhAnh }}" class="product-img" alt="{{ sp.SP_Ten }}">
+            {% else %}
+                <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="{{ sp.SP_Ten }}">
+            {% endif %}
+        </div>
+
         <div class="product-info">
-            <p class="product-category">NAM / GYM</p>
-            <p class="product-name">Áo Thun Tập Gym Nam Premium Vải Co Giãn</p>
-            <div class="product-price-row">
-                <span class="price">299.000 đ</span>
-                <button class="add-btn"><i class="fa fa-cart-plus"></i></button>
+            <p class="product-category">{{ sp.DM_Ma.DM_Thuoc }} - {{ sp.DM_Ma.DM_Ten }}</p>
+            <p class="product-name">{{ sp.SP_Ten }}</p>
+
+            <div class="product-bottom">
+                <span class="price">{{ sp.SP_GiaBan }} đ</span>
+                <span class="cart-btn">
+                    <i class="fa fa-shopping-cart"></i>
+                </span>
             </div>
         </div>
     </a>
+    {% empty %}
+        <p>Chưa có sản phẩm nào.</p>
     {% endfor %}
 </div>
 {% endblock %}
