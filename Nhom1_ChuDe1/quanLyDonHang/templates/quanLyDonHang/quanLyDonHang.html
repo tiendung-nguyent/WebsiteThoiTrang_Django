@@ -136,23 +136,25 @@
 </div>
 
 <div class="table-card">
-    <div class="filter-bar">
-        <div class="search-box">
-            <i class="fa fa-search"></i>
-            <input type="text" placeholder="Tìm mã đơn, tên khách, SĐT...">
+    <form method="GET" action="{% url 'quanLyDonHang' %}">
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Tìm mã đơn, tên khách, SĐT...">
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="filter-btn"><i class="fa fa-filter"></i></button>
+                <select name="status" class="status-select" onchange="this.form.submit()">
+                    <option value="all" {% if status == 'all' or not status %}selected{% endif %}>Tất cả trạng thái</option>
+                    <option value="2" {% if status == '2' %}selected{% endif %}>Chờ xử lý</option>
+                    <option value="0" {% if status == '0' %}selected{% endif %}>Đang giao</option>
+                    <option value="1" {% if status == '1' %}selected{% endif %}>Đã giao</option>
+                    <option value="3" {% if status == '3' %}selected{% endif %}>Thất bại</option>
+                </select>
+            </div>
         </div>
-        
-        <div class="filter-actions">
-            <button class="filter-btn"><i class="fa fa-filter"></i></button>
-            <select class="status-select">
-                <option>Tất cả trạng thái</option>
-                <option>Chờ xử lý</option>
-                <option>Đang giao</option>
-                <option>Đã giao</option>
-                <option>Đã hủy</option>
-            </select>
-        </div>
-    </div>
+    </form>
 
     <table class="order-table">
         <thead>
