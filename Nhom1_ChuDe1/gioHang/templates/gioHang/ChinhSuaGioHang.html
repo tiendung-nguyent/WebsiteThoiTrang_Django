@@ -1,40 +1,63 @@
-<div class="modal-overlay" id="editModal">
+<div class="modal-overlay" id="editModal{{ item.id }}">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Chỉnh sửa sản phẩm</h2>
-            <button class="btn-close" onclick="closeModal()">×</button>
+            <button type="button" class="btn-close" onclick="closeModal({{ item.id }})">×</button>
         </div>
 
-        <div class="modal-body">
-            <p>Áo Thể Thao Nam Vải Thun Lạnh Sport Thoáng Khí Vận Động Thoải Mái Dành Cho Gym</p>
+        <form method="post" action="{% url 'capNhatSanPhamGio' item.id %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <p>{{ item.BTSP_Ma.SP_Ma.SP_Ten }}</p>
 
-            <span class="option-label">Màu sắc</span>
-            <div class="btn-group">
-                <button class="btn-opt active">Đen</button>
-                <button class="btn-opt">Trắng</button>
-                <button class="btn-opt">Xám</button>
+                <span class="option-label">Màu sắc</span>
+                <div class="btn-group">
+                    {% for bt in item.BTSP_Ma.SP_Ma.bienthesanpham_set.all %}
+                        {% ifchanged bt.SP_MauSac %}
+                        <label>
+                            <input type="radio"
+                                   name="mau_sac"
+                                   value="{{ bt.SP_MauSac }}"
+                                   {% if bt.SP_MauSac == item.BTSP_Ma.SP_MauSac %}checked{% endif %}
+                                   style="display:none;">
+                            <span class="btn-opt {% if bt.SP_MauSac == item.BTSP_Ma.SP_MauSac %}active{% endif %}">
+                                {{ bt.SP_MauSac }}
+                            </span>
+                        </label>
+                        {% endifchanged %}
+                    {% endfor %}
+                </div>
+
+                <span class="option-label">Kích cỡ</span>
+                <div class="btn-group">
+                    {% for bt in item.BTSP_Ma.SP_Ma.bienthesanpham_set.all %}
+                        {% ifchanged bt.SP_KichThuoc %}
+                        <label>
+                            <input type="radio"
+                                   name="kich_thuoc"
+                                   value="{{ bt.SP_KichThuoc }}"
+                                   {% if bt.SP_KichThuoc == item.BTSP_Ma.SP_KichThuoc %}checked{% endif %}
+                                   style="display:none;">
+                            <span class="btn-opt {% if bt.SP_KichThuoc == item.BTSP_Ma.SP_KichThuoc %}active{% endif %}">
+                                {{ bt.SP_KichThuoc }}
+                            </span>
+                        </label>
+                        {% endifchanged %}
+                    {% endfor %}
+                </div>
+
+                <span class="option-label">Số lượng</span>
+                <div class="qty-group">
+                    <button type="button" onclick="changeModalQty({{ item.id }}, -1)">-</button>
+                    <input id="modalQty{{ item.id }}" type="text" name="so_luong" value="{{ item.GH_SL }}">
+                    <button type="button" onclick="changeModalQty({{ item.id }}, 1)">+</button>
+                </div>
             </div>
 
-            <span class="option-label">Kích cỡ</span>
-            <div class="btn-group">
-                <button class="btn-opt">S</button>
-                <button class="btn-opt">M</button>
-                <button class="btn-opt active">L</button>
-                <button class="btn-opt">XL</button>
-                <button class="btn-opt">2XL</button>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal({{ item.id }})">Hủy</button>
+                <button type="submit" class="btn-confirm">Xác nhận</button>
             </div>
-
-            <span class="option-label">Số lượng</span>
-            <div class="qty-group">
-                <button>-</button>
-                <input type="text" value="1">
-                <button>+</button>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">Hủy</button>
-            <button class="btn-confirm" onclick="closeModal()">Xác nhận</button>
-        </div>
+        </form>
     </div>
 </div>
