@@ -4,3 +4,4 @@ from .models import SanPham, BienTheSanPham
 # Register your models here.
 admin.site.register(SanPham)
 admin.site.register(BienTheSanPham)
+

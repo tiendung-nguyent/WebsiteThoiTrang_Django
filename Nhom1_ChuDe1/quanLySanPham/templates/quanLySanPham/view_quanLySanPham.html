@@ -128,34 +128,45 @@
         </div>
 
         <div class="product-image-container">
-            <img src="{% static 'sanPham/BST-ao-7.jpg' %}" alt="Áo thun thể thao Pro">
+            {% if sp.SP_URLHinhAnh %}
+                <img src="{{ sp.SP_URLHinhAnh }}" alt="{{ sp.SP_Ten }}">
+            {% else %}
+                <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #eee; color: #ccc;">
+                    <i class="fa fa-image fa-3x"></i>
+                </div>
+            {% endif %}
         </div>
 
         <div class="product-details-body">
-            <h1 class="product-title">Áo Polo Nam Cộc Tay Cơ Bản</h1>
-            <span class="product-price">350.000 đ</span>
+            <h1 class="product-title">{{ sp.SP_Ten }}</h1>
+            <span class="product-price">{{ sp.SP_GiaBan|floatformat:0 }} đ</span>
 
             <ul class="details-list">
                 <li class="details-item">
                     <span class="details-label">Danh mục:</span>
-                    <span class="details-value">Áo thun nam</span>
+                    <span class="details-value">{{ sp.DM_Ma }}</span>
                 </li>
                 <li class="details-item">
                     <span class="details-label">Kích cỡ:</span>
-                    <span class="details-value">M, L, XL</span>
+                    <span class="details-value">{{ sizes_str }}</span>
                 </li>
                 <li class="details-item">
                     <span class="details-label">Màu sắc:</span>
-                    <span class="details-value">Đen, Xanh</span>
+                    <span class="details-value">{{ colors_str }}</span>
                 </li>
                 <li class="details-item">
                     <span class="details-label">Trạng thái:</span>
-                    <span class="details-value" style="color: #28a745; font-weight: 600;">Đang bán</span>
+                    <span class="details-value" style="font-weight: 600;
+                        {% if sp.SP_TrangThai == 0 %}color: #28a745;{% elif sp.SP_TrangThai == 1 %}color: #faad14;{% else %}color: #dc3545;{% endif %}">
+                        {% if sp.SP_TrangThai == 0 %}Đang bán
+                        {% elif sp.SP_TrangThai == 1 %}Hết hàng
+                        {% else %}Ngừng bán{% endif %}
+                    </span>
                 </li>
                 <li class="details-item description">
                     <span class="details-label">Mô tả:</span>
                     <div class="details-value">
-                        Áo thun thể thao chất liệu thoáng mát, thấm hút mồ hôi tốt, phù hợp cho các hoạt động gym và chạy bộ. Chất vải co giãn 4 chiều mang lại cảm giác thoải mái tối đa khi vận động cường độ cao.
+                        {{ sp.SP_MoTa|default:"Chưa có mô tả" }}
                     </div>
                 </li>
             </ul>
