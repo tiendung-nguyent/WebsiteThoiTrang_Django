@@ -34,7 +34,8 @@ def lay_hoac_tao_khach_hang_mac_dinh():
 
 def lay_hoac_tao_gio_hang():
     kh = lay_hoac_tao_khach_hang_mac_dinh()
-    gio_hang = GioHang.objects.filter(KH_Ma=kh).first()
+    # Tim gio hang chua thanh toan (chua co DonDat lien ket)
+    gio_hang = GioHang.objects.filter(KH_Ma=kh, dondat__isnull=True).last()
 
     if not gio_hang:
         gio_hang = GioHang.objects.create(
@@ -348,7 +349,7 @@ def thanh_toan_view(request):
                 CTKH_Ma=ctkh,
                 TT_TongPhiVC=phi_van_chuyen,
                 TT_TongThanhToan=tong_thanh_toan,
-                DH_TrangThai='Chờ xác nhận',
+                # DH_TrangThai='Chờ xác nhận',
                 TT_PhuongThuc=phuong_thuc,
                 TT_TongTienHang=tong_tien_hang,
                 TT_NgayThanhToan=None
@@ -358,7 +359,7 @@ def thanh_toan_view(request):
             kh.KH_SoDonHang += 1
             kh.save()
 
-            ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete()
+            # ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete() # Giu lai de luu lich su don hang
             cap_nhat_tong_gio_hang(gio_hang)
 
             messages.success(request, 'Thanh toán thành công')

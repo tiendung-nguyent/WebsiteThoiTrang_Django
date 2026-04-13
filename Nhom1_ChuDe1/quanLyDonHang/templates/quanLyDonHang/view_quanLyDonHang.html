@@ -114,17 +114,16 @@
                 {% for item in order_items %}
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                     {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
-                    <img src="{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh.url }}" class="product-img-item" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                    <img src="/media/{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh }}" class="product-img-item" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
                     {% else %}
-                    <img src="{% static 'sanPham/default.jpg' %}" class="product-img-item" alt="Sản phẩm">
+                    <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img-item" alt="Sản phẩm">
                     {% endif %}
                     <div style="flex: 1;">
-                        <b style="display: block; font-size: 15px;">{{ item.BTSP_Ma.SP_Ma.SP_Ten }}</b>
-                        <small style="color: #999;">Size: {{ item.BTSP_Ma.SP_KichThuoc }} | Màu: {{ item.BTSP_Ma.SP_MauSac }}</small>
+                        <b style="display: block; font-size: 15px;">{{ item.BTSP_Ma.SP_Ma.SP_Ten|truncatechars:40 }}</b>
+                        <small style="color: #999;">Kích cỡ: {{ item.BTSP_Ma.SP_KichThuoc }} | Màu: {{ item.BTSP_Ma.SP_MauSac }} | Số lượng: {{ item.GH_SL }}</small>
                     </div>
                     <div style="text-align: right;">
-                        <small style="color: #bbb; display: block;">x{{ item.GH_SL }}</small>
-                        <b style="color: #333;">{{ item.GH_TTien|floatformat:0 }} đ</b>
+                        <b style="color: #004a99;">{{ item.GH_TTien|floatformat:0 }} đ</b>
                     </div>
                 </div>
                 {% endfor %}
@@ -143,9 +142,9 @@
                 {% endif %}
             </div>
 
-            <div class="profit-box {% if status == 'da_huy' %}profit-red{% else %}profit-green{% endif %}">
-                <span style="font-weight: 500;">{% if status == 'da_huy' %}TỔNG GIÁ TRỊ ĐƠN HÀNG{% else %}TỔNG GIÁ TRỊ ĐƠN HÀNG{% endif %}</span>
-                <span style="font-size: 18px; font-weight: 800;">{{ order.TT_TongThanhToan|floatformat:0 }}đ</span>
+            <div class="profit-box {% if profit < 0 %}profit-red{% else %}profit-green{% endif %}">
+                <span style="font-weight: 500;">{% if profit < 0 %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
+                <span style="font-size: 18px; font-weight: 800;">{% if profit < 0 %}- {% endif %}{{ profit|floatformat:0|cut:"-" }}đ</span>
             </div>
         </div>
 
