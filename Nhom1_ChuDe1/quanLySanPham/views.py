@@ -125,5 +125,12 @@ def edit_quanLySP(request, ma_sp):
         'sp': sp,
         'existing_variants': existing_variants
     })
-def delete_quanLySP(request):
-    return render(request, 'quanLySanPham/delete_quanLySanPham.html')
+def delete_quanLySP(request, ma_sp):
+    sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
+    
+    if request.method == 'POST':
+        sp.delete()
+        messages.success(request, f'Xóa sản phẩm {ma_sp} thành công!')
+        return redirect('quanLySP')
+        
+    return render(request, 'quanLySanPham/delete_quanLySanPham.html', {'sp': sp})
