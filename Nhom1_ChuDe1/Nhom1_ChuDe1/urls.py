@@ -6,7 +6,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('quanLySanPham.urls')),
     path('', include('gioHang.urls')),
-    path('', include('donDat.urls')),
+    path('don-dat/', include('donDat.urls')),
     path('', include('BaoCaoThongKe.urls')),
     path('', include('QuanLyDanhMuc.urls')),
     path('', include('quanLyDonHang.urls')),
