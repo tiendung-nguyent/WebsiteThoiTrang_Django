@@ -3,10 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+import json
 
 from quanLySanPham.models import SanPham, BienTheSanPham
 from quanLyKhachHang.models import KhachHang, ChiTietKhachHang
-from QuanLyKhuyenMai.models import KhuyenMai
+from QuanLyKhuyenMai.models import KhuyenMai, SanPham_KhuyenMai
 from .models import GioHang, ChiTietGioHang
 from donDat.models import DonDat
 
@@ -226,9 +227,7 @@ def cap_nhat_san_pham_gio(request, ctgh_id):
 
 def xac_nhan_xoa_gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang()
-    ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related(
-        'BTSP_Ma', 'BTSP_Ma__SP_Ma'
-    )
+    ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
     cap_nhat_tong_gio_hang(gio_hang)
 
     return render(request, 'gioHang/XoaGioHang.html', {
@@ -291,10 +290,49 @@ def thanh_toan_view(request):
     payment = request.POST.get('payment', 'COD') if request.method == 'POST' else 'COD'
 
     hom_nay = timezone.now().date()
+    # Lấy các mã sản phẩm trong giỏ hàng
+    sp_ids_trong_gio = [ct.BTSP_Ma.SP_Ma_id for ct in ds_chi_tiet]
+    # Tìm các khuyến mãi có liên kết với sản phẩm trong giỏ
+    km_hop_le_ids = SanPham_KhuyenMai.objects.filter(SP_Ma_id__in=sp_ids_trong_gio).values_list('KM_Ma_id', flat=True)
+
     khuyen_mais = KhuyenMai.objects.filter(
+        KM_Ma__in=km_hop_le_ids,
         KM_NgayBD__lte=hom_nay,
         KM_NgayKT__gte=hom_nay
-    )
+    ).distinct()
+
+    giam_gia_dict = {}
+    for km in khuyen_mais:
+        sp_ap_dung_ids = SanPham_KhuyenMai.objects.filter(KM_Ma=km).values_list('SP_Ma_id', flat=True)
+        tong_tien_sp_ap_dung = sum(ct.GH_TTien for ct in ds_chi_tiet if ct.BTSP_Ma.SP_Ma_id in sp_ap_dung_ids)
+
+        giam_gia = km.KM_GiaTri
+        loai = km.KM_Loai
+
+        if loai == 'Phần trăm (%)':
+            giam_gia_tien = tong_tien_sp_ap_dung * (giam_gia / Decimal('100'))
+            display_val = f"{giam_gia:g}%"
+        else:
+            giam_gia_tien = giam_gia
+            if giam_gia_tien > tong_tien_sp_ap_dung:
+                giam_gia_tien = tong_tien_sp_ap_dung
+            display_val = f"{giam_gia:,.0f} đ".replace(',', '.')
+
+        giam_gia_dict[km.KM_Ma] = {
+            'amount': float(giam_gia_tien),
+            'display': display_val,
+            'name': km.KM_Ten
+        }
+
+        # Tìm tên các sản phẩm trong giỏ hàng mà khuyến mãi này áp dụng
+        sp_names = SanPham.objects.filter(
+            SP_Ma__in=SanPham_KhuyenMai.objects.filter(KM_Ma=km).values_list('SP_Ma_id', flat=True)
+        ).filter(SP_Ma__in=sp_ids_trong_gio).values_list('SP_Ten', flat=True)
+        km.sp_ap_dung_names = ", ".join(sp_names)
+        km.hien_thi_dropdown = f"Giảm {display_val} cho {km.sp_ap_dung_names}"
+
+    giam_gia_json = json.dumps(giam_gia_dict)
+    # Remove the redundant overwrite that was showing all promotions regardless of cart validity
 
     phi_van_chuyen = Decimal('30000')
     tong_tien_hang = gio_hang.GH_TamTinh
@@ -307,11 +345,19 @@ def thanh_toan_view(request):
         khuyen_mai_obj = KhuyenMai.objects.filter(KM_Ma=ma_khuyen_mai).first()
         if khuyen_mai_obj:
             giam_gia = khuyen_mai_obj.KM_GiaTri
-            if giam_gia < 100:
-                giam_gia_tien = tong_tien_hang * (giam_gia / Decimal('100'))
-                hien_thi_giam_gia = f"{giam_gia}%"
+            loai = khuyen_mai_obj.KM_Loai
+
+            # Tính tổng tiền của các sản phẩm TRONG GIỎ HÀNG được áp dụng mã này
+            sp_ap_dung_ids = SanPham_KhuyenMai.objects.filter(KM_Ma=khuyen_mai_obj).values_list('SP_Ma_id', flat=True)
+            tong_tien_sp_ap_dung = sum(ct.GH_TTien for ct in ds_chi_tiet if ct.BTSP_Ma.SP_Ma_id in sp_ap_dung_ids)
+
+            if loai == 'Phần trăm (%)':
+                giam_gia_tien = tong_tien_sp_ap_dung * (giam_gia / Decimal('100'))
+                hien_thi_giam_gia = f"{giam_gia:g}%"
             else:
                 giam_gia_tien = giam_gia
+                if giam_gia_tien > tong_tien_sp_ap_dung:
+                    giam_gia_tien = tong_tien_sp_ap_dung
                 hien_thi_giam_gia = f"{giam_gia:,.0f} đ".replace(',', '.')
 
             tong_thanh_toan -= giam_gia_tien
@@ -391,4 +437,5 @@ def thanh_toan_view(request):
         'khuyen_mai_obj': khuyen_mai_obj,
         'hien_thi_giam_gia': hien_thi_giam_gia,
         'payment': payment,
+        'giam_gia_json': giam_gia_json,
     })

@@ -88,12 +88,17 @@ def view_quanLyDonHang(request, order_id):
         actual_shipping = shipping_info.DH_PhiCuoc if shipping_info else 0
         profit = order.TT_TongThanhToan - actual_shipping
 
+    # Tính tiền giảm giá
+    discount_amount = (order.TT_TongTienHang + order.TT_TongPhiVC) - order.TT_TongThanhToan
+    if discount_amount < 0: discount_amount = 0
+
     context = {
         'order': order,
         'order_items': order_items,
         'shipping_info': shipping_info,
         'status': status_str, # Keep this for template compatibility
         'order_id': order.TT_Ma,
-        'profit': profit
+        'profit': profit,
+        'discount_amount': discount_amount
     }
     return render(request, 'quanLyDonHang/view_quanLyDonHang.html', context)

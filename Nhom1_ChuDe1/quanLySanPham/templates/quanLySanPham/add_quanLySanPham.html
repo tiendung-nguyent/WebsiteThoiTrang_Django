@@ -6,8 +6,10 @@
 <style>
     .modal-overlay {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(5px);
         display: flex;
@@ -20,18 +22,29 @@
     .modal-card {
         background: white;
         width: 100%;
-        max-width: 850px; /* Tăng từ 600px lên 850px */
-        max-height: 92vh; /* Tăng nhẹ chiều cao để tận dụng không gian */
-        border-radius: 16px; /* Bo góc mượt hơn cho form rộng */
-        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        max-width: 850px;
+        /* Tăng từ 600px lên 850px */
+        max-height: 92vh;
+        /* Tăng nhẹ chiều cao để tận dụng không gian */
+        border-radius: 16px;
+        /* Bo góc mượt hơn cho form rộng */
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
         overflow: hidden;
         animation: modalFadeIn 0.3s ease-out;
     }
+
     @keyframes modalFadeIn {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 
     .modal-header {
@@ -43,9 +56,23 @@
         flex-shrink: 0;
     }
 
-    .modal-header h2 { font-size: 18px; color: #002140; }
-    .modal-header h2 span { color: #888; font-weight: normal; margin-left: 8px; font-size: 16px;}
-    .close-btn { font-size: 22px; color: #aaa; cursor: pointer; }
+    .modal-header h2 {
+        font-size: 18px;
+        color: #002140;
+    }
+
+    .modal-header h2 span {
+        color: #888;
+        font-weight: normal;
+        margin-left: 8px;
+        font-size: 16px;
+    }
+
+    .close-btn {
+        font-size: 22px;
+        color: #aaa;
+        cursor: pointer;
+    }
 
     .modal-body {
         padding: 20px 25px;
@@ -53,23 +80,84 @@
         flex-grow: 1;
     }
 
-    .modal-body::-webkit-scrollbar { width: 6px; }
-    .modal-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
-
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none;
+    .modal-body::-webkit-scrollbar {
+        width: 6px;
     }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-    .input-icon-wrapper { position: relative; }
-    .input-icon-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+    .modal-body::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
 
-    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag-item { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .tag-item:hover, .tag-item.active { border-color: var(--primary-color); background: #f0f7ff; color: var(--primary-color); }
-    .tag-add { padding: 5px 12px; border: 1px dashed #bbb; border-radius: 6px; color: #888; cursor: pointer; }
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tag-item {
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .tag-item:hover,
+    .tag-item.active {
+        border-color: var(--primary-color);
+        background: #f0f7ff;
+        color: var(--primary-color);
+    }
+
+    .tag-add {
+        padding: 5px 12px;
+        border: 1px dashed #bbb;
+        border-radius: 6px;
+        color: #888;
+        cursor: pointer;
+    }
 
     .modal-footer {
         padding: 15px 25px;
@@ -81,8 +169,24 @@
         background: white;
     }
 
-    .btn-hủy { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .btn-lưu { background: #001a33; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .btn-hủy {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-lưu {
+        background: #001a33;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
 </style>
 
 <div class="modal-overlay">
@@ -92,7 +196,8 @@
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
-    <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" enctype="multipart/form-data" style="display: contents;">
+        <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" enctype="multipart/form-data"
+            style="display: contents;">
             {% csrf_token %} <div class="modal-body">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
@@ -114,7 +219,9 @@
                     <label>Tải ảnh sản phẩm</label>
                     <div class="input-icon-wrapper">
                         {{ form.SP_HinhAnh }}
-                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);" title="Nhấn để chọn ảnh"></i>
+                        <i class="fa fa-image" id="uploadIcon"
+                            style="cursor: pointer; color: #3482b9; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);"
+                            title="Nhấn để chọn ảnh"></i>
                     </div>
                     <div style="font-size: 13px; color: #28a745; margin-top: 5px; display: none;" id="uploadText"></div>
                 </div>
@@ -127,7 +234,8 @@
                         <span class="tag-item size-tag" data-val="L">L</span>
                         <span class="tag-item size-tag" data-val="XL">XL</span>
                         <span class="tag-item size-tag" data-val="XXL">XXL</span>
-                        <input type="text" id="size-input" style="display: none; width: 60px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
+                        <input type="text" id="size-input"
+                            style="display: none; width: 60px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
                         <span class="tag-add" id="add-size-btn">+</span>
                     </div>
                 </div>
@@ -141,17 +249,19 @@
                         <span class="tag-item color-tag" data-val="Đỏ">Đỏ</span>
                         <span class="tag-item color-tag" data-val="Xám">Xám</span>
                         <span class="tag-item color-tag" data-val="Vàng">Vàng</span>
-                        <input type="text" id="color-input" style="display: none; width: 70px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
+                        <input type="text" id="color-input"
+                            style="display: none; width: 70px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
                         <span class="tag-add" id="add-color-btn">+</span>
                     </div>
                 </div>
 
-               <div class="form-group" id="variants-container" style="display: none;">
+                <div class="form-group" id="variants-container" style="display: none;">
                     <label>Chi tiết Biến thể (Nhập số lượng)</label>
                     <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
                         <table style="width: 100%; text-align: left; border-collapse: collapse;">
                             <thead>
-                                <tr style="border-bottom: 1px solid #ddd; background: #f9f9f9; position: sticky; top: 0; z-index: 10;">
+                                <tr
+                                    style="border-bottom: 1px solid #ddd; background: #f9f9f9; position: sticky; top: 0; z-index: 10;">
                                     <th style="padding: 10px; font-size: 14px;">Kích cỡ</th>
                                     <th style="padding: 10px; font-size: 14px;">Màu sắc</th>
                                     <th style="padding: 10px; font-size: 14px;">Số lượng</th>
@@ -159,7 +269,6 @@
                                 </tr>
                             </thead>
                             <tbody id="variants-table-body">
-                                <!-- JavaScript sẽ render các HTML tr vào đây -->
                             </tbody>
                         </table>
                     </div>
@@ -185,7 +294,7 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         // Active menu sidebar
         const menuLinks = document.querySelectorAll('.sidebar-menu a');
         menuLinks.forEach(link => {
@@ -237,7 +346,7 @@
         const addSizeBtn = document.getElementById('add-size-btn');
         const sizeInput = document.getElementById('size-input');
 
-        addSizeBtn.addEventListener('click', function() {
+        addSizeBtn.addEventListener('click', function () {
             this.style.display = 'none';
             sizeInput.style.display = 'inline-block';
             sizeInput.focus();
@@ -246,17 +355,17 @@
         function confirmAddSize(e) {
             if (e && e.type === 'keydown' && e.key !== 'Enter') return;
             if (e) e.preventDefault(); // Ngăn submit form nếu ấn enter
-            
+
             const val = sizeInput.value.trim();
             if (val !== '') {
                 const newSpan = document.createElement('span');
                 newSpan.className = 'tag-item size-tag';
                 newSpan.setAttribute('data-val', val);
                 newSpan.innerText = val;
-                
+
                 // Gắn sự kiện click để kết hợp biến thể
                 newSpan.addEventListener('click', handleSizeTagClick);
-                
+
                 // Chèn vào phía trước input
                 sizeInput.parentNode.insertBefore(newSpan, sizeInput);
             }
@@ -271,7 +380,7 @@
         const addColorBtn = document.getElementById('add-color-btn');
         const colorInput = document.getElementById('color-input');
 
-        addColorBtn.addEventListener('click', function() {
+        addColorBtn.addEventListener('click', function () {
             this.style.display = 'none';
             colorInput.style.display = 'inline-block';
             colorInput.focus();
@@ -280,17 +389,17 @@
         function confirmAddColor(e) {
             if (e && e.type === 'keydown' && e.key !== 'Enter') return;
             if (e) e.preventDefault(); // Ngăn submit form nếu ấn enter
-            
+
             const val = colorInput.value.trim();
             if (val !== '') {
                 const newSpan = document.createElement('span');
                 newSpan.className = 'tag-item color-tag';
                 newSpan.setAttribute('data-val', val);
                 newSpan.innerText = val;
-                
+
                 // Gắn sự kiện click để kết hợp biến thể
                 newSpan.addEventListener('click', handleColorTagClick);
-                
+
                 // Chèn vào phía trước input
                 colorInput.parentNode.insertBefore(newSpan, colorInput);
             }
@@ -308,15 +417,15 @@
         const fileInput = document.getElementById('id_SP_HinhAnh');
         const uploadText = document.getElementById('uploadText');
 
-        if(uploadIcon && fileInput) {
+        if (uploadIcon && fileInput) {
             uploadIcon.addEventListener('click', () => {
                 fileInput.click();
             });
 
-            fileInput.addEventListener('change', function() {
+            fileInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     uploadText.style.display = 'block';
-<!--                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;-->
+                    <!--                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;-->
                 } else {
                     uploadText.style.display = 'none';
                 }
@@ -326,7 +435,7 @@
         function generateVariantsTable() {
             const tbody = document.getElementById('variants-table-body');
             const container = document.getElementById('variants-container');
-            
+
             // Xóa nội dung bảng cũ
             tbody.innerHTML = '';
 
@@ -365,19 +474,19 @@
             }
         }
 
-        window.removeVariantRow = function(key) {
+        window.removeVariantRow = function (key) {
             removedVariants.add(key);
             generateVariantsTable();
         };
 
         // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
         {% if messages %}
-            {% for message in messages %}
-                alert("{{ message }}");
-                {% if message.tags == 'success' %}
-                    window.location.href = "{% url 'quanLySP' %}";
-                {% endif %}
-            {% endfor %}
+        {% for message in messages %}
+        alert("{{ message }}");
+        {% if message.tags == 'success' %}
+        window.location.href = "{% url 'quanLySP' %}";
+        {% endif %}
+        {% endfor %}
         {% endif %}
     });
 </script>

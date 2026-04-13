@@ -1,53 +1,196 @@
-
 {% extends 'user/base_user.html' %}
 {% load static %}
 
 {% block content %}
 <style>
     /* --- Bố cục Thanh toán --- */
-    .checkout-breadcrumb { margin-bottom: 20px; font-size: 14px; color: #888; }
-    .checkout-breadcrumb a { text-decoration: none; color: #888; }
+    .checkout-breadcrumb {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #888;
+    }
 
-    .checkout-container { display: flex; gap: 30px; align-items: flex-start; }
-    .checkout-left { flex: 2; }
-    .checkout-right { flex: 1; border: 1px solid #eee; padding: 25px; border-radius: 12px; background: #fff; position: sticky; top: 20px; }
+    .checkout-breadcrumb a {
+        text-decoration: none;
+        color: #888;
+    }
+
+    .checkout-container {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+    }
+
+    .checkout-left {
+        flex: 2;
+    }
+
+    .checkout-right {
+        flex: 1;
+        border: 1px solid #eee;
+        padding: 25px;
+        border-radius: 12px;
+        background: #fff;
+        position: sticky;
+        top: 20px;
+    }
 
     /* --- Form Section --- */
-    .checkout-section { background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 12px; margin-bottom: 25px; }
-    .section-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #333; }
+    .checkout-section {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
 
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #555; }
-    .form-group label span { color: red; }
-    .form-control { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f9f9f9; outline: none; font-size: 14px; }
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #555;
+    }
+
+    .form-group label span {
+        color: red;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #f9f9f9;
+        outline: none;
+        font-size: 14px;
+    }
 
     /* Promo Code Group */
-    .promo-group { display: flex; gap: 10px; margin-top: 5px; }
-    .btn-apply { padding: 0 20px; background: #3482b9; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .promo-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .btn-apply {
+        padding: 0 20px;
+        background: #3482b9;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+    }
 
     /* Payment Methods */
-    .payment-option { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
-    .payment-option:hover { border-color: #3482b9; }
-    .payment-option input { cursor: pointer; }
-    .payment-icon { width: 30px; height: 30px; object-fit: contain; }
-    .payment-text b { display: block; font-size: 14px; }
-    .payment-text small { color: #888; font-size: 12px; }
+    .payment-option {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .payment-option:hover {
+        border-color: #3482b9;
+    }
+
+    .payment-option input {
+        cursor: pointer;
+    }
+
+    .payment-icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+    }
+
+    .payment-text b {
+        display: block;
+        font-size: 14px;
+    }
+
+    .payment-text small {
+        color: #888;
+        font-size: 12px;
+    }
 
     /* --- Order Summary (Right) --- */
-    .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
-    .summary-total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-weight: bold; font-size: 18px; }
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        font-weight: bold;
+        font-size: 18px;
+    }
 
     .btn-confirm-order {
-        width: 100%; padding: 15px; background: #15A34A; color: white;
-        border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-        font-size: 16px; margin-top: 20px; text-decoration: none; display: block; text-align: center;
+        width: 100%;
+        padding: 15px;
+        background: #15A34A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+        text-decoration: none;
+        display: block;
+        text-align: center;
     }
 
     /* Product in Summary */
-    .summary-product { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f5f5f5; }
-    .summary-product img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
-    .summary-product-info h5 { font-size: 14px; margin-bottom: 5px; line-height: 1.4; }
-    .summary-product-info p { font-size: 12px; color: #888; }
+    .summary-product {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .summary-product img {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .summary-product-info h5 {
+        font-size: 14px;
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+
+    .summary-product-info p {
+        font-size: 12px;
+        color: #888;
+    }
 </style>
 
 <div class="checkout-breadcrumb">
@@ -63,96 +206,131 @@
     <div class="checkout-container">
         <div class="checkout-left">
             <div class="checkout-section">
-            <h3 class="section-title">Thông tin người nhận</h3>
-            <div class="form-group">
-                <label>Họ và tên <span>*</span></label>
-                <input type="text" name="ho_ten" class="form-control" placeholder="Nhập họ và tên" value="{{ ho_ten }}">
-            </div>
-            <div class="form-group">
-                <label>Số điện thoại <span>*</span></label>
-                <input type="text" name="so_dien_thoai" class="form-control" placeholder="0123456789" value="{{ so_dien_thoai }}">
-            </div>
-            <div class="form-group">
-                <label>Địa chỉ giao hàng <span>*</span></label>
-                <input type="text" name="dia_chi" class="form-control" placeholder="Nhập địa chỉ đầy đủ" value="{{ dia_chi }}">
-            </div>
-            <div class="form-group">
-                <label>Mã khuyến mãi (tùy chọn)</label>
-                <div class="promo-group">
-                    <select name="ma_khuyen_mai" class="form-control">
-                        <option value="">Chọn mã giảm giá</option>
-                        {% for km in khuyen_mais %}
-                            <option value="{{ km.KM_Ma }}" {% if ma_khuyen_mai == km.KM_Ma %}selected{% endif %}>{{ km.KM_Ten }} (Giá trị: {{ km.KM_GiaTri }})</option>
-                        {% endfor %}
-                    </select>
+                <h3 class="section-title">Thông tin người nhận</h3>
+                <div class="form-group">
+                    <label>Họ và tên <span>*</span></label>
+                    <input type="text" name="ho_ten" class="form-control" placeholder="Nhập họ và tên"
+                        value="{{ ho_ten }}">
                 </div>
+                <div class="form-group">
+                    <label>Số điện thoại <span>*</span></label>
+                    <input type="text" name="so_dien_thoai" class="form-control" placeholder="0123456789"
+                        value="{{ so_dien_thoai }}">
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ giao hàng <span>*</span></label>
+                    <input type="text" name="dia_chi" class="form-control" placeholder="Nhập địa chỉ đầy đủ"
+                        value="{{ dia_chi }}">
+                </div>
+                <div class="form-group">
+                    <label>Mã khuyến mãi (tùy chọn)</label>
+                    <div class="promo-group">
+                        <select name="ma_khuyen_mai" class="form-control">
+                            <option value="">Chọn mã giảm giá</option>
+                            {% for km in khuyen_mais %}
+                            <option value="{{ km.KM_Ma }}" {% if ma_khuyen_mai == km.KM_Ma %}selected{% endif %}>{{ km.hien_thi_dropdown }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-section">
+                <h3 class="section-title">Phương thức thanh toán</h3>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="COD" {% if payment == 'COD' or not payment %}checked{% endif %}>
+                    <img src="https://cdn-icons-png.flaticon.com/512/1554/1554401.png" class="payment-icon" alt="COD">
+                    <div class="payment-text">
+                        <b>Thanh toán khi nhận hàng (COD)</b>
+                        <small>Thanh toán bằng tiền mặt khi nhận hàng</small>
+                    </div>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="Bank" {% if payment == 'Bank' %}checked{% endif %}>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" class="payment-icon" alt="Bank">
+                    <div class="payment-text">
+                        <b>Chuyển khoản qua ngân hàng</b>
+                        <small>Chuyển khoản trực tiếp vào tài khoản Cen Sports</small>
+                    </div>
+                </label>
             </div>
         </div>
 
-        <div class="checkout-section">
-            <h3 class="section-title">Phương thức thanh toán</h3>
-            <label class="payment-option">
-                <input type="radio" name="payment" value="COD" {% if payment == 'COD' or not payment %}checked{% endif %}>
-                <img src="https://cdn-icons-png.flaticon.com/512/1554/1554401.png" class="payment-icon" alt="COD">
-                <div class="payment-text">
-                    <b>Thanh toán khi nhận hàng (COD)</b>
-                    <small>Thanh toán bằng tiền mặt khi nhận hàng</small>
-                </div>
-            </label>
-            <label class="payment-option">
-                <input type="radio" name="payment" value="Bank" {% if payment == 'Bank' %}checked{% endif %}>
-                <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" class="payment-icon" alt="Bank">
-                <div class="payment-text">
-                    <b>Chuyển khoản qua ngân hàng</b>
-                    <small>Chuyển khoản trực tiếp vào tài khoản Cen Sports</small>
-                </div>
-            </label>
-        </div>
-    </div>
+        <div class="checkout-right">
+            <h3 class="section-title">Đơn hàng của bạn</h3>
 
-    <div class="checkout-right">
-        <h3 class="section-title">Đơn hàng của bạn</h3>
-
-        {% for chi_tiet in ds_chi_tiet %}
-        <div class="summary-product">
-            {% if chi_tiet.BTSP_Ma.SP_Ma.SP_HinhAnh %}
+            {% for chi_tiet in ds_chi_tiet %}
+            <div class="summary-product">
+                {% if chi_tiet.BTSP_Ma.SP_Ma.SP_HinhAnh %}
                 <img src="/media/{{ chi_tiet.BTSP_Ma.SP_Ma.SP_HinhAnh }}" alt="Sản phẩm">
-            {% else %}
+                {% else %}
                 <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="Sản phẩm">
-            {% endif %}
-            <div class="summary-product-info">
-                <h5>{{ chi_tiet.BTSP_Ma.SP_Ma.SP_Ten|truncatechars:40 }}</h5>
-                <p>Kích cỡ: {{ chi_tiet.BTSP_Ma.SP_KichThuoc }} | Màu: {{ chi_tiet.BTSP_Ma.SP_MauSac }} | Số lượng: {{ chi_tiet.GH_SL }}</p>
-                <b style="color: #004a99;">{{ chi_tiet.GH_TTien }} đ</b>
+                {% endif %}
+                <div class="summary-product-info">
+                    <h5>{{ chi_tiet.BTSP_Ma.SP_Ma.SP_Ten|truncatechars:40 }}</h5>
+                    <p>Kích cỡ: {{ chi_tiet.BTSP_Ma.SP_KichThuoc }} | Màu: {{ chi_tiet.BTSP_Ma.SP_MauSac }} | Số lượng:
+                        {{ chi_tiet.GH_SL }}</p>
+                    <b style="color: #004a99;">{{ chi_tiet.GH_TTien }} đ</b>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
 
-        <div class="summary-item">
-            <span>Tổng tiền hàng</span>
-            <span>{{ gio_hang_obj.GH_TamTinh }} đ</span>
-        </div>
-        <div class="summary-item">
-            <span>Phí vận chuyển</span>
-            <span>{{ phi_van_chuyen }} đ</span>
-        </div>
+            <div class="summary-item">
+                <span>Tổng tiền hàng</span>
+                <span>{{ gio_hang_obj.GH_TamTinh }} đ</span>
+            </div>
+            <div class="summary-item">
+                <span>Phí vận chuyển</span>
+                <span>{{ phi_van_chuyen }} đ</span>
+            </div>
 
-        {% if khuyen_mai_obj %}
-        <div class="summary-item">
-            <span>Khuyến mãi ({{ khuyen_mai_obj.KM_Ten }})</span>
-            <span style="color: #ff5e5e;">- {{ hien_thi_giam_gia }}</span>
-        </div>
-        {% endif %}
+            <div class="summary-item" id="khuyen_mai_row" style="display: {% if khuyen_mai_obj %}flex{% else %}none{% endif %};">
+                <span>Khuyến mãi (<span id="khuyen_mai_name">{% if khuyen_mai_obj %}{{ khuyen_mai_obj.KM_Ten }}{% endif %}</span>)</span>
+                <span style="color: #ff5e5e;">- <span id="khuyen_mai_value">{% if khuyen_mai_obj %}{{ hien_thi_giam_gia }}{% endif %}</span></span>
+            </div>
 
-        <div class="summary-total">
-            <span>Tổng thanh toán</span>
-            <span style="color: #004a99;">{{ tong_thanh_toan }} đ</span>
-        </div>
+            <div class="summary-total">
+                <span>Tổng thanh toán</span>
+                <span style="color: #004a99;"><span id="tong_thanh_toan_value">{{ tong_thanh_toan }}</span> đ</span>
+            </div>
 
-        <button type="submit" class="btn-confirm-order">
-            Xác nhận thanh toán
-        </button>
+            <button type="submit" class="btn-confirm-order">
+                Xác nhận thanh toán
+            </button>
+        </div>
     </div>
-</div>
 </form>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const giamGiaDict = JSON.parse('{{ giam_gia_json|escapejs }}');
+        const tongTienHang = parseFloat("{{ gio_hang_obj.GH_TamTinh|stringformat:'f' }}");
+        const phiVanChuyen = parseFloat("{{ phi_van_chuyen|stringformat:'f' }}");
+
+        document.querySelector('select[name="ma_khuyen_mai"]').addEventListener('change', function () {
+            const maKm = this.value;
+            const kmRow = document.getElementById('khuyen_mai_row');
+            const kmNameSpan = document.getElementById('khuyen_mai_name');
+            const kmValueSpan = document.getElementById('khuyen_mai_value');
+            const totalSpan = document.getElementById('tong_thanh_toan_value');
+
+            let giamGiaAmount = 0;
+
+            if (maKm && giamGiaDict.hasOwnProperty(maKm)) {
+                const kmData = giamGiaDict[maKm];
+                giamGiaAmount = kmData.amount;
+                
+                kmNameSpan.innerText = kmData.name;
+                kmValueSpan.innerText = kmData.display;
+                kmRow.style.display = 'flex';
+            } else {
+                kmRow.style.display = 'none';
+            }
+
+            let finalTotal = tongTienHang + phiVanChuyen - giamGiaAmount;
+            if (finalTotal < 0) finalTotal = 0;
+
+            totalSpan.innerText = new Intl.NumberFormat('vi-VN').format(finalTotal);
+        });
+    });
+</script>
 {% endblock %}
