@@ -9,6 +9,7 @@ def quanLyDonDat(request):
 
     for don in ds_don:
         don.ds_san_pham = ChiTietGioHang.objects.filter(GH_Ma=don.GH_Ma)
+        print("DON:", don.TT_Ma, "GH:", don.GH_Ma, "SO SP:", don.ds_san_pham.count())
 
     return render(request, 'donDat/quanLyDonDat.html', {
         'ds_don': ds_don

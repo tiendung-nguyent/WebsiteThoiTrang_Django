@@ -339,6 +339,10 @@
                 <span class="price">{{ item.GH_TTien|floatformat:0 }} đ</span>
             </div>
         </div>
+        {% empty %}
+        <div style="padding: 18px 0; color: #d62828; font-weight: 600;">
+            Đơn này không còn dữ liệu sản phẩm.
+        </div>
         {% endfor %}
 
         <div class="order-summary">

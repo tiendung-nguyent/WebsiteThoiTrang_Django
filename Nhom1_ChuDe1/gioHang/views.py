@@ -276,7 +276,9 @@ def giam_so_luong_gio(request, ctgh_id):
 def thanh_toan_view(request):
     gio_hang = lay_hoac_tao_gio_hang()
     cap_nhat_tong_gio_hang(gio_hang)
-    ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
+    ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related(
+        'BTSP_Ma', 'BTSP_Ma__SP_Ma'
+    )
 
     if gio_hang.GH_TongSL == 0:
         messages.error(request, 'Giỏ hàng của bạn đang trống!')
@@ -289,7 +291,10 @@ def thanh_toan_view(request):
     payment = request.POST.get('payment', 'COD') if request.method == 'POST' else 'COD'
 
     hom_nay = timezone.now().date()
-    khuyen_mais = KhuyenMai.objects.filter(KM_NgayBD__lte=hom_nay, KM_NgayKT__gte=hom_nay)
+    khuyen_mais = KhuyenMai.objects.filter(
+        KM_NgayBD__lte=hom_nay,
+        KM_NgayKT__gte=hom_nay
+    )
 
     phi_van_chuyen = Decimal('30000')
     tong_tien_hang = gio_hang.GH_TamTinh
@@ -309,7 +314,7 @@ def thanh_toan_view(request):
                 giam_gia_tien = giam_gia
                 hien_thi_giam_gia = f"{giam_gia:,.0f} đ".replace(',', '.')
 
-            tong_thanh_toan = tong_thanh_toan - giam_gia_tien
+            tong_thanh_toan -= giam_gia_tien
             if tong_thanh_toan < 0:
                 tong_thanh_toan = Decimal('0')
 
@@ -343,13 +348,12 @@ def thanh_toan_view(request):
 
             phuong_thuc = "Thanh toán khi nhận hàng (COD)" if payment == "COD" else "Chuyển khoản qua ngân hàng"
 
-            don_dat = DonDat.objects.create(
+            DonDat.objects.create(
                 TT_Ma=tt_ma,
                 GH_Ma=gio_hang,
                 CTKH_Ma=ctkh,
                 TT_TongPhiVC=phi_van_chuyen,
                 TT_TongThanhToan=tong_thanh_toan,
-                # DH_TrangThai='Chờ xác nhận',
                 TT_PhuongThuc=phuong_thuc,
                 TT_TongTienHang=tong_tien_hang,
                 TT_NgayThanhToan=None
@@ -359,11 +363,19 @@ def thanh_toan_view(request):
             kh.KH_SoDonHang += 1
             kh.save()
 
-            # ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete() # Giu lai de luu lich su don hang
+            # Giữ nguyên chi tiết giỏ hàng của đơn vừa thanh toán
             cap_nhat_tong_gio_hang(gio_hang)
 
+            # Tạo giỏ hàng mới cho lần mua tiếp theo
+            GioHang.objects.create(
+                GH_Ma=tao_ma_gio_hang(),
+                KH_Ma=kh,
+                GH_TongSL=0,
+                GH_TamTinh=0
+            )
+
             messages.success(request, 'Thanh toán thành công')
-            return redirect('trangChuUser')
+            return redirect('quanLyDonDat')
 
     return render(request, 'gioHang/ThanhToan.html', {
         'gio_hang_obj': gio_hang,
