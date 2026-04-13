@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import DanhMuc
+from django.db.models import Count
 
 
 def tao_ma_danh_muc():
@@ -61,7 +62,9 @@ def danh_muc_view(request):
             messages.success(request, "Xóa danh mục thành công.")
             return redirect("quanLyDM")
 
-    danh_mucs = DanhMuc.objects.all().order_by("DM_Ma")
+    danh_mucs = DanhMuc.objects.annotate(
+        so_luong_sp=Count('san_pham_thuoc_dm')
+    ).order_by("DM_Ma")
 
     context = {
         "danh_mucs": danh_mucs,
