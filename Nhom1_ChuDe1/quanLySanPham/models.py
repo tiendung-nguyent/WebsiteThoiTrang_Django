@@ -37,6 +37,17 @@ class SanPham(models.Model):
 
 class BienTheSanPham(models.Model):
     BTSP_Ma = models.CharField(max_length=9, primary_key=True)
+    def save(self, *args, **kwargs):
+        if not self.BTSP_Ma:
+            last_bt = BienTheSanPham.objects.all().order_by('BTSP_Ma').last()
+            if not last_bt:
+                self.BTSP_Ma = 'BT0000001'
+            else:
+                last_number = int(last_bt.BTSP_Ma[2:])
+                new_number = last_number + 1
+                self.BTSP_Ma = 'BT' + str(new_number).zfill(7)
+
+        super(BienTheSanPham, self).save(*args, **kwargs)
     SP_Ma = models.ForeignKey(SanPham, on_delete=models.CASCADE)
     SP_SL = models.IntegerField(default=0)
     SP_KichThuoc = models.CharField(max_length=5)

@@ -20,16 +20,15 @@
     .modal-card {
         background: white;
         width: 100%;
-        max-width: 600px;
-        max-height: 90vh;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 850px; /* Tăng từ 600px lên 850px */
+        max-height: 92vh; /* Tăng nhẹ chiều cao để tận dụng không gian */
+        border-radius: 16px; /* Bo góc mượt hơn cho form rộng */
+        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
         display: flex;
         flex-direction: column;
         overflow: hidden;
         animation: modalFadeIn 0.3s ease-out;
     }
-
     @keyframes modalFadeIn {
         from { transform: translateY(-20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -93,7 +92,7 @@
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
-    <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" style="display: contents;">
+    <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" enctype="multipart/form-data" style="display: contents;">
             {% csrf_token %} <div class="modal-body">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
@@ -112,35 +111,59 @@
                 </div>
 
                 <div class="form-group">
-                    <label>URL Hình ảnh</label>
+                    <label>URL / Tải ảnh lên</label>
                     <div class="input-icon-wrapper">
+                        <input type="file" name="hinh_anh_upload" accept="image/*" id="fileUploadInput" style="display: none;">
+                        
                         {{ form.SP_URLHinhAnh }}
-                        <i class="fa fa-image"></i>
+                        
+                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9;" title="Nhấn vào tải ảnh từ máy lên"></i>
                     </div>
+                    <div style="font-size: 13px; color: #28a745; margin-top: 5px; display: none;" id="uploadText"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Kích cỡ</label>
-                    <div class="tag-list">
-                        <span class="tag-item">S</span>
-                        <span class="tag-item">M</span>
-                        <span class="tag-item">L</span>
-                        <span class="tag-item">XL</span>
-                        <span class="tag-item">XXL</span>
-                        <span class="tag-add">+</span>
+                    <div class="tag-list" id="size-list">
+                        <span class="tag-item size-tag" data-val="S">S</span>
+                        <span class="tag-item size-tag" data-val="M">M</span>
+                        <span class="tag-item size-tag" data-val="L">L</span>
+                        <span class="tag-item size-tag" data-val="XL">XL</span>
+                        <span class="tag-item size-tag" data-val="XXL">XXL</span>
+                        <input type="text" id="size-input" style="display: none; width: 60px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
+                        <span class="tag-add" id="add-size-btn">+</span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Màu sắc</label>
-                    <div class="tag-list">
-                        <span class="tag-item">Đen</span>
-                        <span class="tag-item">Trắng</span>
-                        <span class="tag-item">Xanh</span>
-                        <span class="tag-item">Đỏ</span>
-                        <span class="tag-item">Xám</span>
-                        <span class="tag-item">Vàng</span>
-                        <span class="tag-add">+</span>
+                    <div class="tag-list" id="color-list">
+                        <span class="tag-item color-tag" data-val="Đen">Đen</span>
+                        <span class="tag-item color-tag" data-val="Trắng">Trắng</span>
+                        <span class="tag-item color-tag" data-val="Xanh">Xanh</span>
+                        <span class="tag-item color-tag" data-val="Đỏ">Đỏ</span>
+                        <span class="tag-item color-tag" data-val="Xám">Xám</span>
+                        <span class="tag-item color-tag" data-val="Vàng">Vàng</span>
+                        <input type="text" id="color-input" style="display: none; width: 70px; padding: 4px 8px; border: 1px dashed #bbb; border-radius: 6px; font-size: 12px; outline: none; margin:0; line-height: 1;">
+                        <span class="tag-add" id="add-color-btn">+</span>
+                    </div>
+                </div>
+
+               <div class="form-group" id="variants-container" style="display: none;">
+                    <label>Chi tiết Biến thể (Nhập số lượng)</label>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #ddd; background: #f9f9f9; position: sticky; top: 0; z-index: 10;">
+                                    <th style="padding: 10px;">Kích cỡ</th>
+                                    <th style="padding: 10px;">Màu sắc</th>
+                                    <th style="padding: 10px;">Số lượng</th>
+                                </tr>
+                            </thead>
+                            <tbody id="variants-table-body">
+                                <!-- JavaScript sẽ render các HTML tr vào đây -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -173,12 +196,179 @@
             }
         });
 
-        // Hiệu ứng chọn Tag (Click để đổi màu)
-        document.querySelectorAll('.tag-item').forEach(tag => {
-            tag.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
+        let selectedSizes = [];
+        let selectedColors = [];
+
+        function handleSizeTagClick(e) {
+            const tag = e.target;
+            tag.classList.toggle('active');
+            const val = tag.getAttribute('data-val');
+            if (tag.classList.contains('active')) {
+                selectedSizes.push(val);
+            } else {
+                selectedSizes = selectedSizes.filter(s => s !== val);
+            }
+            generateVariantsTable();
+        }
+
+        function handleColorTagClick(e) {
+            const tag = e.target;
+            tag.classList.toggle('active');
+            const val = tag.getAttribute('data-val');
+            if (tag.classList.contains('active')) {
+                selectedColors.push(val);
+            } else {
+                selectedColors = selectedColors.filter(c => c !== val);
+            }
+            generateVariantsTable();
+        }
+
+        document.querySelectorAll('.size-tag').forEach(tag => {
+            tag.addEventListener('click', handleSizeTagClick);
         });
+
+        document.querySelectorAll('.color-tag').forEach(tag => {
+            tag.addEventListener('click', handleColorTagClick);
+        });
+
+        const addSizeBtn = document.getElementById('add-size-btn');
+        const sizeInput = document.getElementById('size-input');
+
+        addSizeBtn.addEventListener('click', function() {
+            this.style.display = 'none';
+            sizeInput.style.display = 'inline-block';
+            sizeInput.focus();
+        });
+
+        function confirmAddSize(e) {
+            if (e && e.type === 'keydown' && e.key !== 'Enter') return;
+            if (e) e.preventDefault(); // Ngăn submit form nếu ấn enter
+            
+            const val = sizeInput.value.trim();
+            if (val !== '') {
+                const newSpan = document.createElement('span');
+                newSpan.className = 'tag-item size-tag';
+                newSpan.setAttribute('data-val', val);
+                newSpan.innerText = val;
+                
+                // Gắn sự kiện click để kết hợp biến thể
+                newSpan.addEventListener('click', handleSizeTagClick);
+                
+                // Chèn vào phía trước input
+                sizeInput.parentNode.insertBefore(newSpan, sizeInput);
+            }
+            sizeInput.value = '';
+            sizeInput.style.display = 'none';
+            addSizeBtn.style.display = 'inline-block';
+        }
+
+        sizeInput.addEventListener('blur', confirmAddSize);
+        sizeInput.addEventListener('keydown', confirmAddSize);
+
+        const addColorBtn = document.getElementById('add-color-btn');
+        const colorInput = document.getElementById('color-input');
+
+        addColorBtn.addEventListener('click', function() {
+            this.style.display = 'none';
+            colorInput.style.display = 'inline-block';
+            colorInput.focus();
+        });
+
+        function confirmAddColor(e) {
+            if (e && e.type === 'keydown' && e.key !== 'Enter') return;
+            if (e) e.preventDefault(); // Ngăn submit form nếu ấn enter
+            
+            const val = colorInput.value.trim();
+            if (val !== '') {
+                const newSpan = document.createElement('span');
+                newSpan.className = 'tag-item color-tag';
+                newSpan.setAttribute('data-val', val);
+                newSpan.innerText = val;
+                
+                // Gắn sự kiện click để kết hợp biến thể
+                newSpan.addEventListener('click', handleColorTagClick);
+                
+                // Chèn vào phía trước input
+                colorInput.parentNode.insertBefore(newSpan, colorInput);
+            }
+            // Trả lại trạng thái ban đầu
+            colorInput.value = '';
+            colorInput.style.display = 'none';
+            addColorBtn.style.display = 'inline-block';
+        }
+
+        colorInput.addEventListener('blur', confirmAddColor);
+        colorInput.addEventListener('keydown', confirmAddColor);
+
+        // Xử lý nút Upload ảnh thông qua Icon
+        const uploadIcon = document.getElementById('uploadIcon');
+        const fileUploadInput = document.getElementById('fileUploadInput');
+        const uploadText = document.getElementById('uploadText');
+        const urlInput = document.querySelector('input[name="SP_URLHinhAnh"]');
+
+        if(uploadIcon && fileUploadInput) {
+            uploadIcon.addEventListener('click', () => {
+                fileUploadInput.click();
+            });
+
+            fileUploadInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    // Cập nhật dòng text phụ và làm mờ ô input URL
+                    uploadText.style.display = 'block';
+                    uploadText.innerHTML = `<i class="fa fa-check"></i> Sẽ tải lên file cục bộ: <b>${this.files[0].name}</b>`;
+                    
+                    if(urlInput) {
+                        urlInput.readOnly = true;
+                        urlInput.value = '';
+                        urlInput.placeholder = 'Đã chọn ảnh từ máy tính...';
+                        urlInput.style.backgroundColor = '#f0f0f0';
+                    }
+                } else {
+                    uploadText.style.display = 'none';
+                    if(urlInput) {
+                        urlInput.readOnly = false;
+                        urlInput.placeholder = 'https://...';
+                        urlInput.style.backgroundColor = '#fff';
+                    }
+                }
+            });
+        }
+
+        function generateVariantsTable() {
+            const tbody = document.getElementById('variants-table-body');
+            const container = document.getElementById('variants-container');
+            
+            // Xóa nội dung bảng cũ
+            tbody.innerHTML = '';
+
+            // Nếu có chọn ít nhất 1 size và 1 color thì mới hiện bảng
+            if (selectedSizes.length > 0 && selectedColors.length > 0) {
+                container.style.display = 'block';
+
+                // Lồng 2 vòng lặp để tạo các cặp (Ví dụ: L-Đỏ, XL-Đỏ)
+                selectedSizes.forEach(size => {
+                    selectedColors.forEach(color => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                <input type="hidden" name="bienthe_size[]" value="${size}">
+                                <strong>${size}</strong>
+                            </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                <input type="hidden" name="bienthe_color[]" value="${color}">
+                                <strong>${color}</strong>
+                            </td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                <input type="number" name="bienthe_soluong[]" value="0" min="0" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
         // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
         {% if messages %}
