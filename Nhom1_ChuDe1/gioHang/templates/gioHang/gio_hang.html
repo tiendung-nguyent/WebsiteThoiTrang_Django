@@ -329,8 +329,8 @@
             <div class="cart-item">
                 <a href="{% url 'xoaSanPhamKhoiGio' item.id %}" class="btn-remove-item">×</a>
 
-                {% if item.BTSP_Ma.SP_Ma.SP_URLHinhAnh %}
-                    <img src="{{ item.BTSP_Ma.SP_Ma.SP_URLHinhAnh }}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
+                    <img src="{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh.url }}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
                 {% else %}
                     <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
                 {% endif %}
