@@ -93,9 +93,6 @@ def add_nhap_hang(request):
                     NH_TTien=item["thanh_tien"],
                 )
 
-                btsp.SP_SL += int(item["so_luong"])
-                btsp.save()
-
             return JsonResponse(
                 {
                     "status": "success",
@@ -122,11 +119,6 @@ def delete_nhap_hang(request, ma_dn):
             don_nhap = NhapHang.objects.get(NH_Ma=ma_dn)
 
             chi_tiets = ChiTietNhapHang.objects.filter(NH_Ma=don_nhap)
-            for ct in chi_tiets:
-                btsp = ct.BTSP_Ma
-                btsp.SP_SL -= ct.NH_SL
-                btsp.save()
-
             don_nhap.delete()
 
             return JsonResponse(
