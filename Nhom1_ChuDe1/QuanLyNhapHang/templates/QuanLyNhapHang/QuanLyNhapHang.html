@@ -18,7 +18,18 @@
     .btn-view { color: #888; }
     .btn-delete { color: #ff6b6b; }
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-    .modal-content { background: white; margin: 5% auto; padding: 25px; border-radius: 15px; width: 70%; position: relative; }
+.modal-content {
+    background: white;
+    margin: 2% auto; /* Chỉnh lại margin cho cân đối */
+    padding: 25px;
+    border-radius: 15px;
+    width: 850px;
+    position: relative;
+
+    /* THÊM 2 DÒNG NÀY */
+    max-height: 90vh; /* Giới hạn chiều cao popup tối đa bằng 90% màn hình */
+    overflow-y: auto; /* Nếu popup dài quá thì hiện thanh cuộn cả popup */
+}
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
     .close { font-size: 24px; cursor: pointer; color: #999; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -240,7 +251,7 @@
                 options += `<option value="${v.BTSP_Ma}" data-ten="${v.SP_KichThuoc} - ${v.SP_MauSac}">${v.SP_MauSac} - ${v.SP_KichThuoc}</option>`;
             });
             document.getElementById('select_btsp').innerHTML = options;
-            document.getElementById('don_gia').value = data.sp_gia_ban;
+            document.getElementById('don_gia').value = '';
         });
     }
 
