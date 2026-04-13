@@ -218,6 +218,60 @@
             font-size: 13px;
             opacity: 0.8;
         }
+
+        /* Styling for premium alerts */
+        .messages-container {
+            max-width: 1200px;
+            margin: 10px auto;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error, .alert-danger {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .close-alert {
+            cursor: pointer;
+            font-size: 20px;
+            opacity: 0.6;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .close-alert:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -274,6 +328,20 @@
     </header>
 
     <main>
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <span>
+                            <i class="fa {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}" style="margin-right: 8px;"></i>
+                            {{ message }}
+                        </span>
+                        <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block content %}
         <h2 >Nội dung sẽ nằm ở đây</h2>
         {% endblock %}

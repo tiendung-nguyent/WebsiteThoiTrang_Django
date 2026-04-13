@@ -56,18 +56,7 @@
 
 <h1 style="margin-bottom: 30px; font-size: 28px;">Thanh toán</h1>
 
-{% if messages %}
-    <div style="margin-bottom: 20px;">
-        {% for message in messages %}
-            <div style="padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 14px;
-                {% if message.tags == 'error' %}background-color: #fde8e8; color: #c81e1e; border: 1px solid #f8b4b4;
-                {% elif message.tags == 'success' %}background-color: #def7ec; color: #03543f; border: 1px solid #a3e4d7;
-                {% else %}background-color: #e1effe; color: #1e429f; border: 1px solid #c3ddfd;{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+
 
 <form method="POST" action="{% url 'ThanhToan' %}">
     {% csrf_token %}
