@@ -8,17 +8,22 @@
             Bạn có chắc chắn muốn xóa khách hàng?
         </h2>
 
-        <input type="hidden" id="deleteTargetId">
-
         <div style="display: flex; gap: 15px;">
-            <button onclick="closeModal('modalDelete')"
+            <button type="button" onclick="closeModal('modalDelete')"
                     style="flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid #003366; background: white; color: #003366; font-size: 17px; font-weight: 700; cursor: pointer;">
                 Hủy
             </button>
-            <button onclick="confirmDelete()"
-                    style="flex: 1; padding: 14px; border-radius: 12px; border: none; background: #003366; color: white; font-size: 17px; font-weight: 700; cursor: pointer;">
-                Đồng ý
-            </button>
+
+            <form method="POST" style="flex: 1;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="KH_Ma" id="deleteTargetId">
+
+                <button type="submit"
+                        style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: #003366; color: white; font-size: 17px; font-weight: 700; cursor: pointer;">
+                    Đồng ý
+                </button>
+            </form>
         </div>
     </div>
 </div>

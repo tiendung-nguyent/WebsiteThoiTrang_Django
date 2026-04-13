@@ -2,6 +2,7 @@ from django.db import models
 from gioHang.models import GioHang
 from quanLyKhachHang.models import ChiTietKhachHang
 
+
 # Create your models here.
 class DonDat(models.Model):
     TRANG_THAI_CHOICES = [
