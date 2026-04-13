@@ -4,7 +4,7 @@ from .models import DonHangVanChuyen
 from gioHang.models import ChiTietGioHang
 
 def quanLyDonHang(request):
-    orders = DonDat.objects.all().order_by('-TT_NgayDatHang')
+    orders = DonDat.objects.all().order_by('-TT_Ma')
     return render(request, 'quanLyDonHang/quanLyDonHang.html', {'orders': orders})
 
 def view_quanLyDonHang(request, order_id):
@@ -35,7 +35,7 @@ def view_quanLyDonHang(request, order_id):
             return redirect('view_quanLyDonHang', order_id=order_id)
             
         elif action == 'cancel':
-            order.DH_TrangThai = 3 # Thất bại / Đã hủy (using 3 as Fail from choices)
+            order.DH_TrangThai = 3 # Thất bại / Đã hủy 
             order.save()
             return redirect('view_quanLyDonHang', order_id=order_id)
             
@@ -60,11 +60,16 @@ def view_quanLyDonHang(request, order_id):
     }
     status_str = status_map.get(order.DH_TrangThai, 'cho_xu_ly')
 
+    profit = order.TT_TongThanhToan
+    if shipping_info:
+        profit -= shipping_info.DH_PhiCuoc
+
     context = {
         'order': order,
         'order_items': order_items,
         'shipping_info': shipping_info,
         'status': status_str, # Keep this for template compatibility
-        'order_id': order.TT_Ma
+        'order_id': order.TT_Ma,
+        'profit': profit
     }
     return render(request, 'quanLyDonHang/view_quanLyDonHang.html', context)
