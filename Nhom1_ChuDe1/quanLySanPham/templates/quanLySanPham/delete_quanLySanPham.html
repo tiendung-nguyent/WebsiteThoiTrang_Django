@@ -113,22 +113,18 @@
 
         <h2 class="delete-title">Bạn có chắc chắn muốn xóa sản phẩm?</h2>
 
-        <div class="button-group">
-            <button class="btn-cancel" onclick="history.back()">Hủy</button>
-            <button class="btn-confirm" id="btnDeleteConfirm">Đồng ý</button>
-        </div>
+        <form method="POST" id="formDelete">
+            {% csrf_token %}
+            <div class="button-group">
+                <button type="button" class="btn-cancel" onclick="history.back()">Hủy</button>
+                <button type="submit" class="btn-confirm" id="btnDeleteConfirm">Đồng ý</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const btnDelete = document.getElementById('btnDeleteConfirm');
-        btnDelete.addEventListener('click', function () {
-            alert("Đã xóa sản phẩm thành công!");
-
-            window.location.href = "{% url 'quanLySP' %}";
-        });
-
         const links = document.querySelectorAll('.sidebar-menu a');
         links.forEach(link => {
             if (link.innerText.includes("Quản lý sản phẩm")) {
