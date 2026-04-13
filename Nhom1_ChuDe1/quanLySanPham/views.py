@@ -3,16 +3,35 @@ from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Q
 from .forms import SanPhamForm
 from .models import SanPham, BienTheSanPham
 
 
 @user_passes_test(lambda u: u.is_staff)
 def quanLySP(request):
+    query = request.GET.get('q', '')
     products = SanPham.objects.all().order_by('-SP_Ma')
 
+    if query:
+        # Mapping status strings to integers
+        status_map = {
+            'đang bán': 0,
+            'hết hàng': 1,
+            'ngừng bán': 2
+        }
+        
+        q_obj = Q(SP_Ma__icontains=query) | Q(SP_Ten__icontains=query)
+        
+        # Check if query matches a status
+        if query.lower() in status_map:
+            q_obj |= Q(SP_TrangThai=status_map[query.lower()])
+            
+        products = products.filter(q_obj)
+
     return render(request, 'quanLySanPham/quanLySanPham.html', {
-        'products': products
+        'products': products,
+        'query': query
     })
 
 

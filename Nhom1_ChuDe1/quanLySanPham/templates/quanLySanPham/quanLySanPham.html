@@ -162,10 +162,10 @@
 
 <div class="card">
     <div class="table-controls">
-        <div class="search-box">
+        <form method="GET" action="{% url 'quanLySP' %}" class="search-box">
             <i class="fa fa-search"></i>
-            <input type="text" placeholder="Tìm kiếm sản phẩm...">
-        </div>
+            <input type="text" name="q" value="{{ query }}" placeholder="Tìm kiếm sản phẩm...">
+        </form>
         <a href="{% url 'add_quanLySP' %}" class="btn-add">
             <i class="fa fa-plus"></i> Thêm mới
         </a>

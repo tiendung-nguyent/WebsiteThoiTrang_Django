@@ -1,11 +1,30 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from donDat.models import DonDat
 from .models import DonHangVanChuyen
 from gioHang.models import ChiTietGioHang
 
 def quanLyDonHang(request):
+    query = request.GET.get('q', '')
+    status = request.GET.get('status', '')
+
     orders = DonDat.objects.all().order_by('-TT_Ma')
-    return render(request, 'quanLyDonHang/quanLyDonHang.html', {'orders': orders})
+
+    if query:
+        orders = orders.filter(
+            Q(TT_Ma__icontains=query) |
+            Q(CTKH_Ma__CTKH_HoTenNguoiNhan__icontains=query) |
+            Q(CTKH_Ma__CTKH_SDT__icontains=query)
+        )
+
+    if status and status != 'all':
+        orders = orders.filter(DH_TrangThai=status)
+
+    return render(request, 'quanLyDonHang/quanLyDonHang.html', {
+        'orders': orders,
+        'query': query,
+        'status': status
+    })
 
 def view_quanLyDonHang(request, order_id):
     order = get_object_or_404(DonDat, TT_Ma=order_id)
