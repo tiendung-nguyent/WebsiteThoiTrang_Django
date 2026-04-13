@@ -46,30 +46,34 @@
     <div class="modal-card">
         <div id="shippingSubModal">
             <div class="sub-modal-card">
-                <h3 style="margin-bottom: 5px; font-size: 18px; font-weight: 700;">Cập nhật vận chuyển</h3>
-                <p style="font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase;">ĐƠN HÀNG: {{ order_id }}</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="ship">
+                    <h3 style="margin-bottom: 5px; font-size: 18px; font-weight: 700;">Cập nhật vận chuyển</h3>
+                    <p style="font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase;">ĐƠN HÀNG: {{ order_id }}</p>
 
-                <label style="font-size: 13px; font-weight: 600; color: #333;">Mã vận chuyển</label>
-                <input type="text" id="trackingCodeInput" class="sub-input" placeholder="Nhập mã vận đơn...">
+                    <label style="font-size: 13px; font-weight: 600; color: #333;">Mã vận chuyển</label>
+                    <input type="text" name="tracking_code" id="trackingCodeInput" class="sub-input" placeholder="Nhập mã vận đơn..." required>
 
-                <label style="font-size: 13px; font-weight: 600; color: #333;">Đơn vị vận chuyển</label>
-                <select class="sub-input" id="shippingUnitInput">
-                    <option value="Viettel Post">Viettel Post</option>
-                    <option value="GHTK">GHTK</option>
-                    <option value="GHN">GHN</option>
-                </select>
+                    <label style="font-size: 13px; font-weight: 600; color: #333;">Đơn vị vận chuyển</label>
+                    <select class="sub-input" name="shipping_unit" id="shippingUnitInput">
+                        <option value="Viettel Post">Viettel Post</option>
+                        <option value="GHTK">GHTK</option>
+                        <option value="GHN">GHN</option>
+                    </select>
 
-                <label style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí cước</label>
-                <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
-                    <input type="number" id="shippingFeeInput" placeholder="0"
-                           style="flex: 1; border: none; padding: 12px; outline: none; border-radius: 8px; font-size: 14px;">
-                    <span style="color: #999; font-size: 13px; font-weight: 500;">VNĐ</span>
-                </div>
+                    <label style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí cước</label>
+                    <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
+                        <input type="number" name="shipping_fee" id="shippingFeeInput" placeholder="0"
+                               style="flex: 1; border: none; padding: 12px; outline: none; border-radius: 8px; font-size: 14px;" required>
+                        <span style="color: #999; font-size: 13px; font-weight: 500;">VNĐ</span>
+                    </div>
 
-                <div style="display: flex; gap: 15px; margin-top: 10px;">
-                    <button class="btn" style="background: #e9ecef; color: #495057;" onclick="closeShippingSub()">Hủy</button>
-                    <button class="btn" style="background: #3b71ca; color: white;" onclick="processShipping()">Giao hàng</button>
-                </div>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <button type="button" class="btn" style="background: #e9ecef; color: #495057;" onclick="closeShippingSub()">Hủy</button>
+                        <button type="submit" class="btn" style="background: #3b71ca; color: white;">Giao hàng</button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -84,59 +88,64 @@
             <div class="info-grid">
                 <div class="info-section">
                     <h3>Thông tin khách hàng</h3>
-                    <div class="info-row"><span class="info-label">Họ tên:</span> <span class="info-value">Nguyễn Văn A</span></div>
-                    <div class="info-row"><span class="info-label">SĐT:</span> <span class="info-value">0901234567</span></div>
-                    <div class="info-row"><span class="info-label">Địa chỉ:</span> <span class="info-value">123 Lê Lợi, Q.1, TP.HCM</span></div>
+                    <div class="info-row"><span class="info-label">Họ tên:</span> <span class="info-value">{{ order.CTKH_Ma.CTKH_HoTenNguoiNhan }}</span></div>
+                    <div class="info-row"><span class="info-label">SĐT:</span> <span class="info-value">{{ order.CTKH_Ma.CTKH_SDT }}</span></div>
+                    <div class="info-row"><span class="info-label">Địa chỉ:</span> <span class="info-value">{{ order.CTKH_Ma.CTKH_DiaChi }}</span></div>
                 </div>
                 <div class="info-section">
                     <h3>Thông tin đơn hàng</h3>
-                    <div class="info-row"><span class="info-label">Ngày đặt:</span> <span class="info-value">2026-01-29</span></div>
-                    <div class="info-row"><span class="info-label">Thanh toán:</span> <span class="info-value">COD</span></div>
+                    <div class="info-row"><span class="info-label">Ngày đặt:</span> <span class="info-value">{{ order.TT_NgayDatHang|date:"Y-m-d" }}</span></div>
+                    <div class="info-row"><span class="info-label">Thanh toán:</span> <span class="info-value">{{ order.TT_PhuongThuc }}</span></div>
                     <div class="info-row">
                         <span class="info-label">Trạng thái:</span>
                         <span class="status-badge
                             {% if status == 'cho_xu_ly' %}bg-pending{% elif status == 'dang_giao' %}bg-shipping{% elif status == 'da_huy' %}bg-canceled{% else %}bg-success{% endif %}">
-                            {% if status == 'cho_xu_ly' %}CHỜ XỬ LÝ{% elif status == 'dang_giao' %}ĐANG GIAO{% elif status == 'da_huy' %}ĐÃ HỦY{% else %}ĐÃ GIAO{% endif %}
+                            {{ order.get_DH_TrangThai_display|upper }}
                         </span>
                     </div>
                     {% if status == 'dang_giao' or status == 'da_giao' %}
-                    <div class="info-row"><span class="info-label">Mã vận chuyển:</span> <span class="info-value">ABC1234XYZ</span></div>
-                    <div class="info-row"><span class="info-label">Đơn vị vận chuyển:</span> <span class="info-value">Viettel post</span></div>
+                    <div class="info-row"><span class="info-label">Mã vận chuyển:</span> <span class="info-value">{{ shipping_info.DH_MaVanChuyen }}</span></div>
+                    <div class="info-row"><span class="info-label">Đơn vị vận chuyển:</span> <span class="info-value">{{ shipping_info.DH_DViVanChuyen }}</span></div>
                     {% endif %}
                 </div>
             </div>
 
             <div style="border-top: 1px solid #eee; padding-top: 15px;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <img src="{% static 'sanPham/BST-ao-7.jpg' %}" class="product-img-item" alt="Sản phẩm">
+                {% for item in order_items %}
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
+                    <img src="{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh.url }}" class="product-img-item" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                    {% else %}
+                    <img src="{% static 'sanPham/default.jpg' %}" class="product-img-item" alt="Sản phẩm">
+                    {% endif %}
                     <div style="flex: 1;">
-                        <b style="display: block; font-size: 15px;">Áo thun thể thao Pro</b>
-                        <small style="color: #999;">Size: L | Màu: Đen</small>
+                        <b style="display: block; font-size: 15px;">{{ item.BTSP_Ma.SP_Ma.SP_Ten }}</b>
+                        <small style="color: #999;">Size: {{ item.BTSP_Ma.SP_KichThuoc }} | Màu: {{ item.BTSP_Ma.SP_MauSac }}</small>
                     </div>
                     <div style="text-align: right;">
-                        <small style="color: #bbb; display: block;">x2</small>
-                        <b style="color: #333;">350.000 đ</b>
+                        <small style="color: #bbb; display: block;">x{{ item.GH_SL }}</small>
+                        <b style="color: #333;">{{ item.GH_TTien|floatformat:0 }} đ</b>
                     </div>
                 </div>
+                {% endfor %}
             </div>
 
             <div style="margin-top: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tạm tính:</span> <b>750.000đ</b></div>
-                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Voucher:</span> <b style="color: red;">-50.000đ</b></div>
-                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+30.000đ</b></div>
+                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tạm tính:</span> <b>{{ order.TT_TongTienHang|floatformat:0 }}đ</b></div>
+                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+{{ order.TT_TongPhiVC|floatformat:0 }}đ</b></div>
                 <div style="display: flex; justify-content: space-between; width: 220px; border-top: 2px solid #eee; padding-top: 8px; margin-top: 5px;">
-                    <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">730.000đ</b>
+                    <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">{{ order.TT_TongThanhToan|floatformat:0 }}đ</b>
                 </div>
-                {% if status != 'cho_xu_ly' %}
+                {% if shipping_info %}
                 <div style="display: flex; justify-content: space-between; width: 220px; font-style: italic; color: #888; font-size: 13px;">
-                    <span>Tiền ship thực tế:</span> <b>20.000đ</b>
+                    <span>Tiền ship thực tế:</span> <b>{{ shipping_info.DH_PhiCuoc|floatformat:0 }}đ</b>
                 </div>
                 {% endif %}
             </div>
 
             <div class="profit-box {% if status == 'da_huy' %}profit-red{% else %}profit-green{% endif %}">
-                <span style="font-weight: 500;">{% if status == 'da_huy' %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
-                <span style="font-size: 18px; font-weight: 800;">{% if status == 'da_huy' %}- 10.000đ{% else %}+ 400.000đ{% endif %}</span>
+                <span style="font-weight: 500;">{% if status == 'da_huy' %}TỔNG GIÁ TRỊ ĐƠN HÀNG{% else %}TỔNG GIÁ TRỊ ĐƠN HÀNG{% endif %}</span>
+                <span style="font-size: 18px; font-weight: 800;">{{ order.TT_TongThanhToan|floatformat:0 }}đ</span>
             </div>
         </div>
 
@@ -145,12 +154,25 @@
                 <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Cập nhật trạng thái</p>
                 <div class="btn-group">
                     <button class="btn btn-blue" onclick="openShippingSub()">Giao cho vận chuyển</button>
-                    <button class="btn btn-red" onclick="cancelOrder()">Hủy đơn hàng</button>                </div>
+                    <form method="POST" style="flex: 1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-red" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">Hủy đơn hàng</button>
+                    </form>
+                </div>
             {% elif status == 'dang_giao' %}
                 <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Xác nhận kết quả giao hàng</p>
                 <div class="btn-group">
-                    <button class="btn btn-red" onclick="window.location.href='{% url 'view_quanLyDonHang' status='da_huy' %}'">Giao hàng thất bại</button>
-                    <button class="btn btn-green" onclick="window.location.href='{% url 'view_quanLyDonHang' status='da_giao' %}'">Giao hàng thành công</button>
+                    <form method="POST" style="flex: 1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="fail">
+                        <button type="submit" class="btn btn-red" style="width: 100%;">Giao hàng thất bại</button>
+                    </form>
+                    <form method="POST" style="flex: 1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="complete">
+                        <button type="submit" class="btn btn-green" style="width: 100%;">Giao hàng thành công</button>
+                    </form>
                 </div>
             {% else %}
                 <a href="{% url 'quanLyDonHang' %}" class="btn btn-blue" style="width: 100%; text-decoration: none; display: block;">
@@ -170,21 +192,6 @@
         document.getElementById('shippingSubModal').style.display = 'none';
     }
 
-    function processShipping() {
-        const code = document.getElementById('trackingCodeInput').value;
-        if (!code) {
-            alert("Vui lòng nhập mã vận chuyển!");
-            return;
-        }
-        window.location.href = "{% url 'view_quanLyDonHang' status='dang_giao' %}";
-    }
-    function cancelOrder() {
-            if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
-                alert("Đã hủy đơn hàng thành công!");
-
-                window.location.href = "{% url 'view_quanLyDonHang' status='da_huy' %}";
-            }
-        }
     document.addEventListener("DOMContentLoaded", function() {
         const menuLinks = document.querySelectorAll('.sidebar-menu a');
         menuLinks.forEach(link => {
