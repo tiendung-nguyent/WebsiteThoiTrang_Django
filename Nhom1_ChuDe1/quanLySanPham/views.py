@@ -102,8 +102,64 @@ def view_quanLySP(request, ma_sp):
         'colors_str': colors_str
     })
 @user_passes_test(lambda u: u.is_staff)
-def edit_quanLySP(request):
-    return render(request, 'quanLySanPham/edit_quanLySanPham.html')
+def edit_quanLySP(request, ma_sp):
+    sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
+    variants = BienTheSanPham.objects.filter(SP_Ma=sp)
+    
+    if request.method == 'POST':
+        form = SanPhamForm(request.POST, request.FILES, instance=sp)
+        if form.is_valid():
+            updated_sp = form.save()
+            
+            # Xử lý biến thể: Xóa các biến thể cũ và tạo mới để đồng bộ
+            # (Hoặc có thể cập nhật, nhưng xóa/tạo mới đơn giản hơn cho logic này)
+            BienTheSanPham.objects.filter(SP_Ma=updated_sp).delete()
+            
+            sizes = request.POST.getlist('bienthe_size[]')
+            colors = request.POST.getlist('bienthe_color[]')
+            quantities = request.POST.getlist('bienthe_soluong[]')
+            
+            if sizes and colors and quantities:
+                for i in range(len(sizes)):
+                    try:
+                        qty = int(quantities[i])
+                        if qty >= 0:
+                            BienTheSanPham.objects.create(
+                                SP_Ma=updated_sp,
+                                SP_KichThuoc=sizes[i],
+                                SP_MauSac=colors[i],
+                                SP_SL=qty
+                            )
+                    except ValueError:
+                        pass
+            
+            messages.success(request, f'Cập nhật sản phẩm {ma_sp} thành công!')
+            return redirect('quanLySP')
+    else:
+        form = SanPhamForm(instance=sp)
+
+    # Lấy danh sách kích thước và màu sắc hiện tại để pre-activate tags trong template
+    existing_sizes = list(variants.values_list('SP_KichThuoc', flat=True).distinct())
+    existing_colors = list(variants.values_list('SP_MauSac', flat=True).distinct())
+    
+    # Tạo mapping để pre-fill số lượng trong bảng biến thể
+    variant_data = []
+    for v in variants:
+        variant_data.append({
+            'size': v.SP_KichThuoc,
+            'color': v.SP_MauSac,
+            'qty': v.SP_SL
+        })
+
+    return render(request, 'quanLySanPham/edit_quanLySanPham.html', {
+        'form': form,
+        'sp': sp,
+        'existing_sizes': existing_sizes,
+        'existing_colors': existing_colors,
+        'variant_data': variant_data,
+        'default_sizes': ['S', 'M', 'L', 'XL', 'XXL'],
+        'default_colors': ['Đen', 'Trắng', 'Xanh', 'Đỏ', 'Xám', 'Vàng']
+    })
 @user_passes_test(lambda u: u.is_staff)
 def delete_quanLySP(request, ma_sp):
     sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
