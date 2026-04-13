@@ -1,37 +1,89 @@
 <div id="modalCreate" class="modal">
-    <div class="modal-content" style="width: 800px;">
+    <div class="modal-content" style="width: 850px;">
         <div class="modal-header">
             <h3>Tạo đơn nhập hàng mới</h3>
             <span class="close" onclick="closeModal('modalCreate')">&times;</span>
         </div>
+
         <div class="form-grid">
             <div class="input-group">
-                <label>Tên nhà cung cấp</label>
-                <input type="text" placeholder="Nhập tên NCC">
+                <label>Nhà cung cấp</label>
+                <select id="ncc_ma">
+                    <option value="" selected disabled></option>
+                    {% for ncc in nha_cung_cap %}
+                    <option value="{{ ncc.NCC_Ma }}">{{ ncc.NCC_Ten }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="input-group">
                 <label>Ngày nhập hàng</label>
-                <input type="date">
+                <input type="date" id="ngay_nhap" value="{% now 'Y-m-d' %}" readonly>
             </div>
         </div>
+
         <div class="product-selection">
             <div class="form-grid" style="grid-template-columns: 2fr 1fr;">
-                <div class="input-group"><label>Tên sản phẩm (Chung)</label><input type="text" placeholder="Tên sản phẩm"></div>
-                <div class="input-group"><label>Đơn giá nhập (VNĐ)</label><input type="number" value="0"></div>
+                <div class="input-group">
+                    <label>Sản phẩm (Chung)</label>
+                    <select id="select_sp" onchange="fetchVariants(this.value)">
+                        <option value="" selected disabled></option>
+                        {% for sp in san_pham %}
+                        <option value="{{ sp.SP_Ma }}">{{ sp.SP_Ten }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Đơn giá nhập (VNĐ)</label>
+                    <input type="number" id="don_gia" placeholder="Nhập giá nhập...">
+                </div>
             </div>
-            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-                <div class="input-group"><select><option>-- Chọn màu --</option></select></div>
-                <div class="input-group"><select><option>-- Chọn size --</option></select></div>
-                <div class="input-group"><input type="number" value="1"></div>
-                <button class="add-to-list">Thêm xuống</button>
+            <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr;">
+                <div class="input-group">
+                    <label>Biến thể (Màu - Size)</label>
+                    <select id="select_btsp">
+                        <option value="" selected disabled></option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Số lượng</label>
+                    <input type="number" id="so_luong" value="1" min="1">
+                </div>
+                <button class="add-to-list" onclick="addToTable()" style="margin-top: 25px; height: 40px; background-color: #0056b3;">
+                    <i class="fa fa-arrow-down"></i> Thêm xuống
+                </button>
             </div>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-            <button type="button" class="btn-no" onclick="closeModal('modalCreate')" style="padding: 12px 30px;">
+
+        <div style="max-height: 250px; overflow-y: auto; margin-top: 20px; border: 1px solid #eee; border-radius: 8px;">
+            <table class="table-temp" style="width:100%; border-collapse: collapse;">
+                <thead style="background:#f8f9fa; position: sticky; top: 0;">
+                    <tr>
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Sản phẩm & Biến thể</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">SL</th>
+                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd;">Giá nhập</th>
+                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd;">Thành tiền</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Xóa</th>
+                    </tr>
+                </thead>
+                <tbody id="temp_body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right; margin-top: 15px; padding-right: 10px;">
+            <strong style="font-size: 16px;">Tổng tiền hàng:
+                <span id="total_amount" style="color: #d9534f; font-size: 20px;">0</span>
+                <span style="color: #d9534f;">đ</span>
+            </strong>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
+            <button type="button" class="btn-no" onclick="closeModal('modalCreate')">
                 Hủy bỏ
             </button>
-            <button type="button" class="btn-yes" style="padding: 12px 30px; background-color: #002d52;">
-                Lưu & Nhập hàng
+
+            <button type="button" class="btn-yes" onclick="submitImport()" style="background-color: #002d52; min-width: 150px;">
+                Lưu
             </button>
         </div>
     </div>
