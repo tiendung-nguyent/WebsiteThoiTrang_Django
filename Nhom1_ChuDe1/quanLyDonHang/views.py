@@ -60,9 +60,14 @@ def view_quanLyDonHang(request, order_id):
     }
     status_str = status_map.get(order.DH_TrangThai, 'cho_xu_ly')
 
-    profit = order.TT_TongThanhToan
-    if shipping_info:
-        profit -= shipping_info.DH_PhiCuoc
+    if order.DH_TrangThai == 3:
+        # Với đơn thất bại: Lợi nhuận = Tiền ship - Tiền ship thực tế
+        actual_shipping = shipping_info.DH_PhiCuoc if shipping_info else 0
+        profit = order.TT_TongPhiVC - actual_shipping
+    else:
+        # Lợi nhuận bình thường
+        actual_shipping = shipping_info.DH_PhiCuoc if shipping_info else 0
+        profit = order.TT_TongThanhToan - actual_shipping
 
     context = {
         'order': order,
