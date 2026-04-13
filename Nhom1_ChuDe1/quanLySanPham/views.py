@@ -8,7 +8,6 @@ from .models import SanPham, BienTheSanPham
 def quanLySP(request):
     products = SanPham.objects.all().order_by('-SP_Ma')
 
-    # Truyền biến 'products' vào template
     return render(request, 'quanLySanPham/quanLySanPham.html', {
         'products': products
     })
@@ -33,25 +32,9 @@ def get_next_sp_ma():
 
 def add_quanLySP(request):
     if request.method == 'POST':
-        form = SanPhamForm(request.POST)
+        form = SanPhamForm(request.POST, request.FILES)
         if form.is_valid():
-            new_sp = form.save(commit=False)
-            
-            # Xử lý upload tập tin
-            if 'hinh_anh_upload' in request.FILES:
-                hinh_anh = request.FILES['hinh_anh_upload']
-                
-                static_sanpham_dir = os.path.join(settings.BASE_DIR, 'static', 'sanPham')
-                os.makedirs(static_sanpham_dir, exist_ok=True)
-                
-                save_path = os.path.join(static_sanpham_dir, hinh_anh.name)
-                with open(save_path, "wb") as output_file:
-                    for chunk in hinh_anh.chunks():
-                        output_file.write(chunk)
-                
-                new_sp.SP_URLHinhAnh = f'/static/sanPham/{hinh_anh.name}'
-
-            new_sp.save()
+            new_sp = form.save()
             
             # Lấy dữ liệu mảng các biến thể từ Form UI HTML
             sizes = request.POST.getlist('bienthe_size[]')
@@ -62,7 +45,6 @@ def add_quanLySP(request):
                 for i in range(len(sizes)):
                     try:
                         qty = int(quantities[i])
-                        # Chỉ lưu nếu input hợp lệ
                         if qty >= 0:
                             BienTheSanPham.objects.create(
                                 SP_Ma=new_sp,
@@ -100,7 +82,48 @@ def view_quanLySP(request, ma_sp):
         'sizes_str': sizes_str,
         'colors_str': colors_str
     })
-def edit_quanLySP(request):
-    return render(request, 'quanLySanPham/edit_quanLySanPham.html')
+def edit_quanLySP(request, ma_sp):
+    sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
+    
+    if request.method == 'POST':
+        form = SanPhamForm(request.POST, request.FILES, instance=sp)
+        if form.is_valid():
+            updated_sp = form.save()
+            
+            # Xử lý biến thể: Xóa cũ, thêm mới (theo logic tương tự add)
+            sizes = request.POST.getlist('bienthe_size[]')
+            colors = request.POST.getlist('bienthe_color[]')
+            quantities = request.POST.getlist('bienthe_soluong[]')
+            
+            if sizes and colors and quantities:
+                # Xóa các biến thể hiện tại để cập nhật mới
+                BienTheSanPham.objects.filter(SP_Ma=updated_sp).delete()
+                
+                for i in range(len(sizes)):
+                    try:
+                        qty = int(quantities[i])
+                        if qty >= 0:
+                            BienTheSanPham.objects.create(
+                                SP_Ma=updated_sp,
+                                SP_KichThuoc=sizes[i],
+                                SP_MauSac=colors[i],
+                                SP_SL=qty
+                            )
+                    except ValueError:
+                        pass
+            
+            messages.success(request, f'Cập nhật sản phẩm {ma_sp} thành công!')
+            return redirect('quanLySP')
+    else:
+        form = SanPhamForm(instance=sp)
+
+    # Lấy danh sách biến thể hiện có để hiển thị trên UI
+    existing_variants = BienTheSanPham.objects.filter(SP_Ma=sp)
+    
+    return render(request, 'quanLySanPham/edit_quanLySanPham.html', {
+        'form': form,
+        'sp': sp,
+        'existing_variants': existing_variants
+    })
 def delete_quanLySP(request):
     return render(request, 'quanLySanPham/delete_quanLySanPham.html')

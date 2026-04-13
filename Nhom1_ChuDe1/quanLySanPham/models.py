@@ -25,8 +25,7 @@ class SanPham(models.Model):
     SP_Ten = models.CharField(max_length=100)
     SP_GiaBan = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     SP_MoTa = models.TextField(null=True, blank=True)
-    SP_URLHinhAnh = models.URLField(max_length=500, null=True, blank=True)
-
+    SP_HinhAnh = models.ImageField(upload_to="sanpham/", null=True, blank=True)
     SP_TrangThai = models.IntegerField(
         choices=TRANG_THAI_CHOICES,
         default=0
