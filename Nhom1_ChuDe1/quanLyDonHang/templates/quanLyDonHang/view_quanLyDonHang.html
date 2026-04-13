@@ -56,11 +56,12 @@
                     <input type="text" name="tracking_code" id="trackingCodeInput" class="sub-input" placeholder="Nhập mã vận đơn..." required>
 
                     <label style="font-size: 13px; font-weight: 600; color: #333;">Đơn vị vận chuyển</label>
-                    <select class="sub-input" name="shipping_unit" id="shippingUnitInput">
-                        <option value="Viettel Post">Viettel Post</option>
-                        <option value="GHTK">GHTK</option>
-                        <option value="GHN">GHN</option>
-                    </select>
+                    <input type="text" class="sub-input" name="shipping_unit" id="shippingUnitInput" list="shippingUnits" placeholder="Chọn hoặc nhập đơn vị...">
+                    <datalist id="shippingUnits">
+                        <option value="Viettel Post">
+                        <option value="GHTK">
+                        <option value="GHN">
+                    </datalist>
 
                     <label style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí cước</label>
                     <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
@@ -142,8 +143,8 @@
                 {% endif %}
             </div>
 
-            <div class="profit-box {% if profit < 0 %}profit-red{% else %}profit-green{% endif %}">
-                <span style="font-weight: 500;">{% if profit < 0 %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
+            <div class="profit-box {% if order.DH_TrangThai == 3 or profit < 0 %}profit-red{% else %}profit-green{% endif %}">
+                <span style="font-weight: 500;">{% if order.DH_TrangThai == 3 or profit < 0 %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
                 <span style="font-size: 18px; font-weight: 800;">{% if profit < 0 %}- {% endif %}{{ profit|floatformat:0|cut:"-" }}đ</span>
             </div>
         </div>
