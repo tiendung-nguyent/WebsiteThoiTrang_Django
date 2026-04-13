@@ -163,8 +163,8 @@
                 <td>{{ sp.SP_Ma }}</td>
                 <td>
                     <div class="product-info">
-                        {% if sp.SP_URLHinhAnh %}
-                            <img src="{{ sp.SP_URLHinhAnh }}" alt="product" class="product-img">
+                     {% if sp.SP_HinhAnh %}
+                        <img src="{{ sp.SP_HinhAnh.url }}" alt="{{ sp.SP_Ten }}" class="product-img">
                         {% else %}
                             <div class="product-img" style="display:flex; align-items:center; justify-content:center; background:#eee; color:#ccc;">
                                 <i class="fa fa-image"></i>
@@ -189,7 +189,7 @@
                         <a href="{% url 'view_quanLySP' sp.SP_Ma %}" class="btn-view" style="color: inherit;">
                             <i class="fa fa-eye"></i>
                         </a>
-                        <a href="{% url 'edit_quanLySP' %}" class="btn-edit" style="color: inherit;">
+                        <a href="{% url 'edit_quanLySP' sp.SP_Ma %}" class="btn-edit" style="color: inherit;">
                             <i class="fa fa-edit"></i>
                         </a>
                         <a href="{% url 'delete_quanLySP' %}" class="btn-delete" style="color: inherit;">

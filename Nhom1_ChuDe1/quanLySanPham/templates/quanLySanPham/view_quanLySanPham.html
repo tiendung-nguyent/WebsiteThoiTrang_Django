@@ -128,8 +128,8 @@
         </div>
 
         <div class="product-image-container">
-            {% if sp.SP_URLHinhAnh %}
-                <img src="{{ sp.SP_URLHinhAnh }}" alt="{{ sp.SP_Ten }}">
+            {% if sp.SP_HinhAnh %}
+                <img src="{{ sp.SP_HinhAnh.url }}" alt="{{ sp.SP_Ten }}">
             {% else %}
                 <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #eee; color: #ccc;">
                     <i class="fa fa-image fa-3x"></i>

@@ -111,13 +111,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label>URL / Tải ảnh lên</label>
+                    <label>Tải ảnh sản phẩm</label>
                     <div class="input-icon-wrapper">
-                        <input type="file" name="hinh_anh_upload" accept="image/*" id="fileUploadInput" style="display: none;">
-                        
-                        {{ form.SP_URLHinhAnh }}
-                        
-                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9;" title="Nhấn vào tải ảnh từ máy lên"></i>
+                        {{ form.SP_HinhAnh }}
+                        <i class="fa fa-image" id="uploadIcon" style="cursor: pointer; color: #3482b9; position: absolute; right: 10px; top: 10px;" title="Nhấn để chọn ảnh"></i>
                     </div>
                     <div style="font-size: 13px; color: #28a745; margin-top: 5px; display: none;" id="uploadText"></div>
                 </div>
@@ -302,34 +299,20 @@
 
         // Xử lý nút Upload ảnh thông qua Icon
         const uploadIcon = document.getElementById('uploadIcon');
-        const fileUploadInput = document.getElementById('fileUploadInput');
+        const fileInput = document.getElementById('id_SP_HinhAnh');
         const uploadText = document.getElementById('uploadText');
-        const urlInput = document.querySelector('input[name="SP_URLHinhAnh"]');
 
-        if(uploadIcon && fileUploadInput) {
+        if(uploadIcon && fileInput) {
             uploadIcon.addEventListener('click', () => {
-                fileUploadInput.click();
+                fileInput.click();
             });
 
-            fileUploadInput.addEventListener('change', function() {
+            fileInput.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
-                    // Cập nhật dòng text phụ và làm mờ ô input URL
                     uploadText.style.display = 'block';
-                    uploadText.innerHTML = `<i class="fa fa-check"></i> Sẽ tải lên file cục bộ: <b>${this.files[0].name}</b>`;
-                    
-                    if(urlInput) {
-                        urlInput.readOnly = true;
-                        urlInput.value = '';
-                        urlInput.placeholder = 'Đã chọn ảnh từ máy tính...';
-                        urlInput.style.backgroundColor = '#f0f0f0';
-                    }
+                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;
                 } else {
                     uploadText.style.display = 'none';
-                    if(urlInput) {
-                        urlInput.readOnly = false;
-                        urlInput.placeholder = 'https://...';
-                        urlInput.style.backgroundColor = '#fff';
-                    }
                 }
             });
         }
