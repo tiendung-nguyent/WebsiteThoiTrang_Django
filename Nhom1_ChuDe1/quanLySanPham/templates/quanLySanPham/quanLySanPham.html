@@ -158,75 +158,52 @@
             </tr>
         </thead>
         <tbody>
+            {% for sp in products %}
             <tr>
-                <td>SP0000001</td>
+                <td>{{ sp.SP_Ma }}</td>
                 <td>
                     <div class="product-info">
-                        {% load static %}
-                        <img src="{% static 'sanPham/BST-ao-7.jpg' %}" alt="product" class="product-img">
-                        <span>Áo Polo Nam Cộc Tay Cơ Bản</span>
+                        {% if sp.SP_URLHinhAnh %}
+                            <img src="{{ sp.SP_URLHinhAnh }}" alt="product" class="product-img">
+                        {% else %}
+                            <div class="product-img" style="display:flex; align-items:center; justify-content:center; background:#eee; color:#ccc;">
+                                <i class="fa fa-image"></i>
+                            </div>
+                        {% endif %}
+                        <span>{{ sp.SP_Ten }}</span>
                     </div>
                 </td>
-                <td>Áo thun nam</td>
-                <td class="price">350.000 đ</td>
-                <td><span class="badge badge-active">ĐANG BÁN</span></td>
+                <td>{{ sp.DM_Ma }}</td>
+                <td class="price">{{ sp.SP_GiaBan|floatformat:0 }} đ</td>
+                <td>
+                    {% if sp.SP_TrangThai == 0 %}
+                        <span class="badge badge-active">ĐANG BÁN</span>
+                    {% elif sp.SP_TrangThai == 1 %}
+                        <span class="badge badge-out">HẾT HÀNG</span>
+                    {% elif sp.SP_TrangThai == 2 %}
+                        <span class="badge badge-stopped">NGỪNG BÁN</span>
+                    {% endif %}
+                </td>
                 <td>
                     <div class="actions">
-                        <a href="{% url 'view_quanLySP' %}" class="btn-view">
+                        <a href="{% url 'view_quanLySP' %}" class="btn-view" style="color: inherit;">
                             <i class="fa fa-eye"></i>
                         </a>
-                        <a href="{% url 'edit_quanLySP' %}" class="btn-view">
-                            <i class="fa fa-edit btn-edit"></i>
+                        <a href="{% url 'edit_quanLySP' %}" class="btn-edit" style="color: inherit;">
+                            <i class="fa fa-edit"></i>
                         </a>
-                        <a href="{% url 'delete_quanLySP' %}" class="btn-delete">
+                        <a href="{% url 'delete_quanLySP' %}" class="btn-delete" style="color: inherit;">
                             <i class="fa fa-trash"></i>
                         </a>
                     </div>
                 </td>
             </tr>
-
+            {% empty %}
             <tr>
-                <td>SP0000002</td>
-                <td>
-                    <div class="product-info">
-                        {% load static %}
-                        <img src="{% static 'sanPham/boDoTheThaoNam.png' %}" alt="product" class="product-img">
-                        <span>Bộ Thể Thao Nam Vải Coolmax Cao Cấp</span>
-                    </div>
-                </td>
-                <td>Áo thun nam</td>
-                <td class="price">350.000 đ</td>
-                <td><span class="badge badge-stopped">NGỪNG BÁN</span></td>
-                <td>
-                    <div class="actions">
-                        <i class="fa fa-eye btn-view"></i>
-                        <i class="fa fa-edit btn-edit"></i>
-                        <i class="fa fa-trash btn-delete"></i>
-                    </div>
-                </td>
+                <td colspan="6" style="text-align:center; padding: 30px; color: #888;">Chưa có sản phẩm nào trong cửa hàng.</td>
             </tr>
-
-            <tr>
-                <td>SP0000003</td>
-                <td>
-                    <div class="product-info">
-                        {% load static %}
-                        <img src="{% static 'sanPham/Ao-Khoac-Golf-Nu-Storm.jpg' %}" alt="product" class="product-img"><img
-                        <span>Áo Khoác Golf Nữ Storm Fleece TaylorMade</span>
-                    </div>
-                </td>
-                <td>Áo khoác nữ</td>
-                <td class="price">800.000 đ</td>
-                <td><span class="badge badge-out">HẾT HÀNG</span></td>
-                <td>
-                    <div class="actions">
-                        <i class="fa fa-eye btn-view"></i>
-                        <i class="fa fa-edit btn-edit"></i>
-                        <i class="fa fa-trash btn-delete"></i>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 

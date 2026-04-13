@@ -89,16 +89,12 @@
 <div class="modal-overlay">
     <div class="modal-card">
         <div class="modal-header">
-            <h2>Thêm sản phẩm mới: <span>SP0000001</span></h2>
+            <h2>Thêm sản phẩm mới: <span>{{ next_ma }}</span></h2>
             <i class="fa fa-times close-btn" onclick="history.back()"></i>
         </div>
 
     <form id="addProductForm" action="{% url 'add_quanLySP' %}" method="POST" style="display: contents;">
             {% csrf_token %} <div class="modal-body">
-                <div class="form-group">
-                    <label>Mã sản phẩm</label>
-                    {{ form.SP_Ma }}
-                </div>
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
                     {{ form.SP_Ten }}
@@ -184,12 +180,14 @@
             });
         });
 
-        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG
+        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
         {% if messages %}
             {% for message in messages %}
                 alert("{{ message }}");
+                {% if message.tags == 'success' %}
+                    window.location.href = "{% url 'quanLySP' %}";
+                {% endif %}
             {% endfor %}
-            window.location.href = "{% url 'quanLySP' %}";
         {% endif %}
     });
 </script>
