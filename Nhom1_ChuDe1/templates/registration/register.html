@@ -48,7 +48,8 @@
         color: #333;
     }
 
-    .form-group input {
+    .form-group input,
+    .form-group textarea {
         width: 100%;
         padding: 12px 15px;
         border: 1px solid #e1e8ed;
@@ -56,17 +57,19 @@
         background-color: #f9fafb;
         font-size: 14px;
         outline: none;
-        transition: border-color 0.3s;
+        box-sizing: border-box;
     }
 
-    .form-group input:focus {
-        border-color: #004a99;
+    .form-group textarea {
+        resize: none;
+        min-height: 90px;
     }
 
     .gender-group {
         display: flex;
-        gap: 30px;
-        margin-bottom: 20px;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-top: 6px;
     }
 
     .gender-option {
@@ -79,13 +82,7 @@
 
     .gender-option input {
         width: auto;
-    }
-
-    .password-hint {
-        font-size: 12px;
-        color: #888;
-        margin-top: 5px;
-        line-height: 1.4;
+        margin: 0;
     }
 
     .btn-register {
@@ -98,44 +95,49 @@
         font-size: 16px;
         font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 10px;
     }
 
     .btn-register:hover {
         background-color: #0d3b6b;
     }
 
-    .login-link {
-        margin-top: 25px;
-        font-size: 14px;
-        color: #333;
-    }
-
-    .login-link a {
-        color: #004a99;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
     .error-msg {
         color: #d93025;
         font-size: 13px;
-        margin-top: 5px;
+        margin-top: 6px;
         display: block;
+        text-align: left;
+    }
+
+    .error-box {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        text-align: left;
+        font-size: 14px;
     }
 </style>
 
 <div class="register-container">
     <div class="register-card">
         <h2>Đăng ký tài khoản</h2>
-        <p class="subtitle">Tạo tài khoản mới để mua sắm tại Cen Sports</p>
+        <p class="subtitle">Tạo tài khoản mới để mua sắm</p>
 
         <form method="post">
             {% csrf_token %}
-            
+
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="form-group">
-                <label>Số điện thoại (Tên tài khoản)</label>
+                <label>Tên đăng nhập</label>
                 {{ form.username }}
                 {% if form.username.errors %}
                     {% for error in form.username.errors %}
@@ -155,25 +157,73 @@
             </div>
 
             <div class="form-group">
+                <label>Họ và tên</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}
+                    {% for error in form.full_name.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}
+                    {% for error in form.phone_number.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                {{ form.address }}
+                {% if form.address.errors %}
+                    {% for error in form.address.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
                 <label>Giới tính</label>
                 <div class="gender-group">
-                    {% for radio in form.gender %}
+                    {% for choice in form.gender.field.choices %}
                         <label class="gender-option">
-                            {{ radio.tag }} {{ radio.label }}
+                            <input type="radio"
+                                   name="{{ form.gender.name }}"
+                                   value="{{ choice.0 }}"
+                                   {% if form.gender.value == choice.0 %}checked{% endif %}>
+                            <span>{{ choice.1 }}</span>
                         </label>
                     {% endfor %}
                 </div>
+                {% if form.gender.errors %}
+                    {% for error in form.gender.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label>Ngày sinh</label>
                 {{ form.birth_date }}
+                {% if form.birth_date.errors %}
+                    {% for error in form.birth_date.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label>Mật khẩu</label>
                 {{ form.password }}
-                <p class="password-hint">Mật khẩu phải từ 8-12 ký tự, viết hoa chữ cái đầu và chứa ký tự đặc biệt</p>
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <div class="form-group">
@@ -186,10 +236,9 @@
                 {% endif %}
             </div>
 
-            <button type="submit" class="btn-register">Đăng ký tài khoản</button>
+            <button type="submit" class="btn-register">Đăng ký</button>
         </form>
-
-        <p class="login-link">Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
     </div>
 </div>
+
 {% endblock %}
