@@ -21,8 +21,16 @@ def tao_ma_gio_hang():
     return f"GH{so:07d}"
 
 
-def lay_hoac_tao_khach_hang_mac_dinh():
-    kh = KhachHang.objects.first()
+def lay_hoac_tao_khach_hang(request):
+    if request.user.is_authenticated:
+        kh_ma = f"KH{request.user.id:07d}"
+        kh, created = KhachHang.objects.get_or_create(
+            KH_Ma=kh_ma,
+            defaults={'KH_Ten': request.user.username}
+        )
+        return kh
+        
+    kh = KhachHang.objects.filter(KH_Ten='Khach le').first()
     if not kh:
         kh = KhachHang.objects.create(
             KH_Ma=tao_ma_khach_hang(),
@@ -33,8 +41,8 @@ def lay_hoac_tao_khach_hang_mac_dinh():
     return kh
 
 
-def lay_hoac_tao_gio_hang():
-    kh = lay_hoac_tao_khach_hang_mac_dinh()
+def lay_hoac_tao_gio_hang(request):
+    kh = lay_hoac_tao_khach_hang(request)
     # Tim gio hang chua thanh toan (chua co DonDat lien ket)
     gio_hang = GioHang.objects.filter(KH_Ma=kh, dondat__isnull=True).last()
 
@@ -57,7 +65,7 @@ def cap_nhat_tong_gio_hang(gio_hang):
 
 def trangChuUser(request):
     san_phams = SanPham.objects.filter(SP_TrangThai=0).select_related('DM_Ma').order_by('SP_Ten')
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     cap_nhat_tong_gio_hang(gio_hang)
 
     return render(request, 'gioHang/trangChuUser.html', {
@@ -160,9 +168,8 @@ def them_vao_gio_hang(request, sp_ma):
     return redirect('chiTietSanPham', sp_ma=sp_ma)
 
 
-@login_required
 def gio_hang(request):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related(
         'BTSP_Ma', 'BTSP_Ma__SP_Ma'
     )
@@ -175,9 +182,8 @@ def gio_hang(request):
     })
 
 
-@login_required
 def xoa_san_pham_khoi_gio(request, ctgh_id):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
     chi_tiet.delete()
     cap_nhat_tong_gio_hang(gio_hang)
@@ -185,7 +191,7 @@ def xoa_san_pham_khoi_gio(request, ctgh_id):
 
 
 def xoa_gio_hang(request):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete()
     cap_nhat_tong_gio_hang(gio_hang)
     return redirect('gioHang')
@@ -195,7 +201,7 @@ def cap_nhat_san_pham_gio(request, ctgh_id):
     if request.method != 'POST':
         return redirect('gioHang')
 
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
 
     mau_sac = request.POST.get('mau_sac')
@@ -241,7 +247,7 @@ def cap_nhat_san_pham_gio(request, ctgh_id):
     return redirect('gioHang')
 
 def xac_nhan_xoa_gio_hang(request):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
     cap_nhat_tong_gio_hang(gio_hang)
 
@@ -253,15 +259,16 @@ def xac_nhan_xoa_gio_hang(request):
 
 
 def xoa_gio_hang(request):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
 
     if request.method == 'POST':
         ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete()
         cap_nhat_tong_gio_hang(gio_hang)
 
     return redirect('gioHang')
+
 def tang_so_luong_gio(request, ctgh_id):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
 
     chi_tiet.GH_SL += 1
@@ -273,7 +280,7 @@ def tang_so_luong_gio(request, ctgh_id):
 
 
 def giam_so_luong_gio(request, ctgh_id):
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
 
     if chi_tiet.GH_SL > 1:
@@ -288,7 +295,8 @@ def giam_so_luong_gio(request, ctgh_id):
 
 
 def thanh_toan_view(request):
-    gio_hang = lay_hoac_tao_gio_hang()
+    kh = lay_hoac_tao_khach_hang(request)
+    gio_hang = lay_hoac_tao_gio_hang(request)
     cap_nhat_tong_gio_hang(gio_hang)
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related(
         'BTSP_Ma', 'BTSP_Ma__SP_Ma'
@@ -298,11 +306,15 @@ def thanh_toan_view(request):
         messages.error(request, 'Giỏ hàng của bạn đang trống!')
         return redirect('gioHang')
 
+    # Lấy danh sách địa chỉ đã lưu của khách hàng này
+    ds_ctkh = ChiTietKhachHang.objects.filter(KH_Ma=kh)
+
     ho_ten = request.POST.get('ho_ten', '').strip() if request.method == 'POST' else ''
     so_dien_thoai = request.POST.get('so_dien_thoai', '').strip() if request.method == 'POST' else ''
     dia_chi = request.POST.get('dia_chi', '').strip() if request.method == 'POST' else ''
     ma_khuyen_mai = request.POST.get('ma_khuyen_mai', '') if request.method == 'POST' else ''
     payment = request.POST.get('payment', 'COD') if request.method == 'POST' else 'COD'
+    ctkh_ma_selected = request.POST.get('ctkh_ma', '') if request.method == 'POST' else ''
 
     hom_nay = timezone.now().date()
     # Lấy các mã sản phẩm trong giỏ hàng
@@ -347,7 +359,6 @@ def thanh_toan_view(request):
         km.hien_thi_dropdown = f"Giảm {display_val} cho {km.sp_ap_dung_names}"
 
     giam_gia_json = json.dumps(giam_gia_dict)
-    # Remove the redundant overwrite that was showing all promotions regardless of cart validity
 
     phi_van_chuyen = Decimal('30000')
     tong_tien_hang = gio_hang.GH_TamTinh
@@ -362,7 +373,6 @@ def thanh_toan_view(request):
             giam_gia = khuyen_mai_obj.KM_GiaTri
             loai = khuyen_mai_obj.KM_Loai
 
-            # Tính tổng tiền của các sản phẩm TRONG GIỎ HÀNG được áp dụng mã này
             sp_ap_dung_ids = SanPham_KhuyenMai.objects.filter(KM_Ma=khuyen_mai_obj).values_list('SP_Ma_id', flat=True)
             tong_tien_sp_ap_dung = sum(ct.GH_TTien for ct in ds_chi_tiet if ct.BTSP_Ma.SP_Ma_id in sp_ap_dung_ids)
 
@@ -391,22 +401,36 @@ def thanh_toan_view(request):
         if loi:
             messages.error(request, loi)
         else:
-            so_ctkh = ChiTietKhachHang.objects.count() + 1
-            ctkh_ma = f"CTKH{so_ctkh:05d}"
-
-            kh = lay_hoac_tao_khach_hang_mac_dinh()
-
-            ctkh = ChiTietKhachHang.objects.create(
-                CTKH_Ma=ctkh_ma,
-                KH_Ma=kh,
-                CTKH_HoTenNguoiNhan=ho_ten,
-                CTKH_SDT=so_dien_thoai,
-                CTKH_DiaChi=dia_chi
-            )
+            if ctkh_ma_selected:
+                ctkh = ChiTietKhachHang.objects.filter(CTKH_Ma=ctkh_ma_selected, KH_Ma=kh).first()
+                if ctkh:
+                    ctkh.CTKH_HoTenNguoiNhan = ho_ten
+                    ctkh.CTKH_SDT = so_dien_thoai
+                    ctkh.CTKH_DiaChi = dia_chi
+                    ctkh.save()
+                else:
+                    so_ctkh = ChiTietKhachHang.objects.count() + 1
+                    ctkh_ma = f"CTKH{so_ctkh:05d}"
+                    ctkh = ChiTietKhachHang.objects.create(
+                        CTKH_Ma=ctkh_ma,
+                        KH_Ma=kh,
+                        CTKH_HoTenNguoiNhan=ho_ten,
+                        CTKH_SDT=so_dien_thoai,
+                        CTKH_DiaChi=dia_chi
+                    )
+            else:
+                so_ctkh = ChiTietKhachHang.objects.count() + 1
+                ctkh_ma = f"CTKH{so_ctkh:05d}"
+                ctkh = ChiTietKhachHang.objects.create(
+                    CTKH_Ma=ctkh_ma,
+                    KH_Ma=kh,
+                    CTKH_HoTenNguoiNhan=ho_ten,
+                    CTKH_SDT=so_dien_thoai,
+                    CTKH_DiaChi=dia_chi
+                )
 
             so_don = DonDat.objects.count() + 1
             tt_ma = f"DD{so_don:07d}"
-
             phuong_thuc = "Thanh toán khi nhận hàng (COD)" if payment == "COD" else "Chuyển khoản qua ngân hàng"
 
             DonDat.objects.create(
@@ -424,10 +448,7 @@ def thanh_toan_view(request):
             kh.KH_SoDonHang += 1
             kh.save()
 
-            # Giữ nguyên chi tiết giỏ hàng của đơn vừa thanh toán
             cap_nhat_tong_gio_hang(gio_hang)
-
-            # Tạo giỏ hàng mới cho lần mua tiếp theo
             GioHang.objects.create(
                 GH_Ma=tao_ma_gio_hang(),
                 KH_Ma=kh,
@@ -453,4 +474,5 @@ def thanh_toan_view(request):
         'hien_thi_giam_gia': hien_thi_giam_gia,
         'payment': payment,
         'giam_gia_json': giam_gia_json,
+        'ds_ctkh': ds_ctkh,
     })
