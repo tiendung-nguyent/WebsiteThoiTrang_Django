@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .forms import UserRegistrationForm
 from .models import Profile
 
@@ -11,19 +12,10 @@ def register(request):
         if form.is_valid():
             user = form.save()
 
-            # Lấy dữ liệu thêm từ form
-            phone_number = form.cleaned_data.get('phone_number', '')
-            full_name = form.cleaned_data.get('full_name', '')
-            address = form.cleaned_data.get('address', '')
+            login(request, user)
+            messages.success(request, "Đăng ký tài khoản thành công!")
 
-            # Tạo hoặc cập nhật profile
-            profile, created = Profile.objects.get_or_create(user=user)
-            profile.phone_number = phone_number
-            profile.full_name = full_name
-            profile.address = address
-            profile.save()
-
-            return redirect('register_success')
+            return redirect('profile')
     else:
         form = UserRegistrationForm()
 
@@ -37,7 +29,6 @@ def register_success(request):
 @login_required
 def profile(request):
     viewed_products = request.session.get('viewed_products', [])
-
     profile_obj, created = Profile.objects.get_or_create(user=request.user)
 
     return render(request, 'user/profile.html', {
