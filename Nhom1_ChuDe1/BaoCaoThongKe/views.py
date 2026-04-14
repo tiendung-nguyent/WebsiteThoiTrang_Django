@@ -39,7 +39,7 @@ def bao_cao_view(request):
 
         for item in chi_tiet_ban:
             ct_nhap = ChiTietNhapHang.objects.filter(
-                BTSP_Ma=item.SP_Ma).last()
+                BTSP_Ma=item.BTSP_Ma).last()
             don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
             gia_von_don += (item.GH_SL * don_gia_nhap)
 
