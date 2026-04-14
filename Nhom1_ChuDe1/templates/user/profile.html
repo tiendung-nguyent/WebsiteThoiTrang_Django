@@ -13,7 +13,7 @@
         flex-wrap: wrap;
     }
 
-    .flexrow > div {
+    .flexrow>div {
         flex: 1;
         min-width: 300px;
     }
@@ -24,7 +24,7 @@
         background-color: white;
         padding: 20px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
     .infocell h2 {
@@ -86,9 +86,9 @@
             <h2>Sản phẩm đã xem</h2>
             <div class="viewed-list">
                 {% for prod_id, prod_title in viewed_products %}
-                    <a href="{% url 'view_quanLySP' prod_id %}">{{ prod_title }}</a>
+                <a href="{% url 'chiTietSanPham' prod_id %}">{{ prod_title }}</a>
                 {% empty %}
-                    <p class="empty">Chưa có sản phẩm nào được xem gần đây.</p>
+                <p class="empty">Chưa có sản phẩm nào được xem gần đây.</p>
                 {% endfor %}
             </div>
         </div>

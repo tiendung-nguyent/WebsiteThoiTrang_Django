@@ -39,7 +39,6 @@ def view_quanLyDonHang(request, order_id):
             shipping_unit = request.POST.get('shipping_unit')
             shipping_fee = request.POST.get('shipping_fee')
             
-            # Create or update shipping info
             DonHangVanChuyen.objects.update_or_create(
                 TT_Ma=order,
                 defaults={
@@ -48,7 +47,6 @@ def view_quanLyDonHang(request, order_id):
                     'DH_PhiCuoc': shipping_fee
                 }
             )
-            # Update status to "Đang giao" (0)
             order.DH_TrangThai = 0
             order.save()
             return redirect('view_quanLyDonHang', order_id=order_id)

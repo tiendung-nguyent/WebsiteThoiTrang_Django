@@ -14,7 +14,6 @@ def quanLySP(request):
     products = SanPham.objects.all().order_by('-SP_Ma')
 
     if query:
-        # Mapping status strings to integers
         status_map = {
             'đang bán': 0,
             'hết hàng': 1,
@@ -23,7 +22,6 @@ def quanLySP(request):
         
         q_obj = Q(SP_Ma__icontains=query) | Q(SP_Ten__icontains=query)
         
-        # Check if query matches a status
         if query.lower() in status_map:
             q_obj |= Q(SP_TrangThai=status_map[query.lower()])
             
@@ -50,7 +48,6 @@ def get_next_sp_ma():
         return f"SP{new_number:07d}"
 
     except (ValueError, IndexError):
-        # Phòng trường hợp mã cũ bị lỗi định dạng
         return "SP0000001"
 
 
@@ -61,7 +58,6 @@ def add_quanLySP(request):
         if form.is_valid():
             new_sp = form.save()
 
-            # Lấy dữ liệu mảng các biến thể từ Form UI HTML
             sizes = request.POST.getlist('bienthe_size[]')
             colors = request.POST.getlist('bienthe_color[]')
             quantities = request.POST.getlist('bienthe_soluong[]')
@@ -95,7 +91,6 @@ def add_quanLySP(request):
 def view_quanLySP(request, ma_sp):
     sp = get_object_or_404(SanPham, SP_Ma=ma_sp)
 
-    # Query distinct sizes and colors from associated BienTheSanPham
     variants = BienTheSanPham.objects.filter(SP_Ma=sp)
     sizes = sorted(variants.values_list('SP_KichThuoc', flat=True).distinct())
     colors = sorted(variants.values_list('SP_MauSac', flat=True).distinct())
@@ -103,19 +98,15 @@ def view_quanLySP(request, ma_sp):
     sizes_str = ", ".join(sizes) if sizes else "Không có"
     colors_str = ", ".join(colors) if colors else "Không có"
 
-    # Store recently viewed products in session
     if request.user.is_authenticated:
         viewed_products = request.session.get('viewed_products', [])
         current_product = [sp.SP_Ma, sp.SP_Ten]
 
-        # Remove if already exists to move to top
         if current_product in viewed_products:
             viewed_products.remove(current_product)
 
-        # Insert at top
         viewed_products.insert(0, current_product)
 
-        # Limit to 10
         request.session['viewed_products'] = viewed_products[:10]
         request.session.modified = True
 
@@ -136,8 +127,6 @@ def edit_quanLySP(request, ma_sp):
         if form.is_valid():
             updated_sp = form.save()
 
-            # Xử lý biến thể: Xóa các biến thể cũ và tạo mới để đồng bộ
-            # (Hoặc có thể cập nhật, nhưng xóa/tạo mới đơn giản hơn cho logic này)
             BienTheSanPham.objects.filter(SP_Ma=updated_sp).delete()
 
             sizes = request.POST.getlist('bienthe_size[]')
@@ -163,11 +152,9 @@ def edit_quanLySP(request, ma_sp):
     else:
         form = SanPhamForm(instance=sp)
 
-    # Lấy danh sách kích thước và màu sắc hiện tại để pre-activate tags trong template
     existing_sizes = list(variants.values_list('SP_KichThuoc', flat=True).distinct())
     existing_colors = list(variants.values_list('SP_MauSac', flat=True).distinct())
 
-    # Tạo mapping để pre-fill số lượng trong bảng biến thể
     variant_data = []
     for v in variants:
         variant_data.append({
