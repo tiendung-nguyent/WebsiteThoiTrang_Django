@@ -63,6 +63,20 @@ class UserRegistrationForm(forms.ModelForm):
             ),
         }
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '').strip()
+        if not username:
+            raise forms.ValidationError("Tên đăng nhập không được để trống.")
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Tên đăng nhập đã tồn tại.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip()
+        if email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email đã được sử dụng.")
+        return email
+
     def clean_confirm_password(self):
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')
@@ -78,10 +92,15 @@ class UserRegistrationForm(forms.ModelForm):
         if not phone_number:
             raise forms.ValidationError("Số điện thoại không được để trống.")
 
+        if Profile.objects.filter(phone_number=phone_number).exists():
+            raise forms.ValidationError("Số điện thoại đã được sử dụng.")
+
         return phone_number
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.username = self.cleaned_data['username'].strip()
+        user.email = self.cleaned_data['email'].strip()
         user.set_password(self.cleaned_data['password'])
 
         if commit:

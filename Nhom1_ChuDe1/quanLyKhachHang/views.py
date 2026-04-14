@@ -11,7 +11,6 @@ def khach_hang_view(request):
     if request.method == "POST":
         action = request.POST.get("action")
 
-        # Xóa theo mã chi tiết khách hàng
         if action == "delete":
             ctkh_ma = request.POST.get("KH_Ma")
             chi_tiet = get_object_or_404(ChiTietKhachHang, CTKH_Ma=ctkh_ma)
@@ -21,7 +20,6 @@ def khach_hang_view(request):
 
     khach_hangs = []
 
-    # Lấy danh sách chi tiết khách hàng đang được dùng trong đơn đặt
     chi_tiet_ids = DonDat.objects.values_list("CTKH_Ma_id", flat=True).distinct()
 
     for ctkh_id in chi_tiet_ids:
@@ -29,7 +27,6 @@ def khach_hang_view(request):
         if not chi_tiet:
             continue
 
-        # Match qua số điện thoại
         profile = Profile.objects.select_related("user").filter(
             phone_number=chi_tiet.CTKH_SDT
         ).first()
@@ -41,9 +38,9 @@ def khach_hang_view(request):
             tong=Sum("TT_TongThanhToan")
         )["tong"] or 0
 
-        ho_ten = profile.user.username if profile else chi_tiet.CTKH_HoTenNguoiNhan
+        ho_ten = profile.full_name if profile and profile.full_name else chi_tiet.CTKH_HoTenNguoiNhan
         so_dien_thoai = profile.phone_number if profile else chi_tiet.CTKH_SDT
-        dia_chi = chi_tiet.CTKH_DiaChi
+        dia_chi = profile.address if profile and profile.address else chi_tiet.CTKH_DiaChi
 
         khach_hangs.append({
             "KH_Ma": chi_tiet.CTKH_Ma,
