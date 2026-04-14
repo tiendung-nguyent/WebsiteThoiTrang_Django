@@ -21,12 +21,10 @@ def bao_cao_view(request):
     today = timezone.localdate()
 
     # BƯỚC 1: Lọc đơn hàng "Đã giao" (giá trị là 1)
-    # Dùng select_related để lấy luôn thông tin phí cước vận chuyển (giảm query)
     orders_qs = DonDat.objects.filter(DH_TrangThai=1).prefetch_related('donhangvanchuyen_set')
     all_orders = list(orders_qs)
 
-    # BƯỚC 2: Tính toán doanh thu theo công thức của Thúy
-    # Doanh thu = Tiền hàng + (Phí thu khách - Phí trả đơn vị VC)
+    # BƯỚC 2: Tính doanh thu = Tiền hàng + (Phí thu khách - Phí trả đơn vị VC)
     order_data_map = {}
     for order in all_orders:
         # Lấy phí cước từ bảng DonHangVanChuyen liên kết qua TT_Ma
@@ -40,9 +38,8 @@ def bao_cao_view(request):
         chi_tiet_ban = ChiTietGioHang.objects.filter(GH_Ma=order.GH_Ma)
 
         for item in chi_tiet_ban:
-            # Lấy đơn giá nhập mới nhất của biến thể này
             ct_nhap = ChiTietNhapHang.objects.filter(
-                BTSP_Ma=item.SP_Ma).last()  # Ở đây item.SP_Ma thực chất là BTSP (theo logic giỏ hàng của bạn)
+                BTSP_Ma=item.SP_Ma).last()
             don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
             gia_von_don += (item.GH_SL * don_gia_nhap)
 
@@ -63,7 +60,7 @@ def bao_cao_view(request):
             today_profit += data['profit']
             today_count += 1
 
-    # BƯỚC 5: Xây dựng dữ liệu biểu đồ (Tuần, Tháng, Quý)
+    # BƯỚC 5: Xây dựng dữ liệu biểu đồ
     chart_data = _prepare_chart_data(order_data_map, today)
 
     context = {
