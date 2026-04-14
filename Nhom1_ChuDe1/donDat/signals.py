@@ -32,6 +32,14 @@ def quan_ly_kho(sender, instance, created, **kwargs):
                 bien_the.SP_SL -= chi_tiet.GH_SL
             bien_the.save()
 
+            # Tự động cập nhật trạng thái Sản phẩm thành 'Hết hàng' (1) nếu không còn biến thể nào còn hàng
+            sp = bien_the.SP_Ma
+            if sp.SP_TrangThai == 0:
+                from quanLySanPham.models import BienTheSanPham
+                if not BienTheSanPham.objects.filter(SP_Ma=sp, SP_SL__gt=0).exists():
+                    sp.SP_TrangThai = 1
+                    sp.save()
+
     if created:
         # Neu don hang moi tao co trang thai can giam kho thi tru kho ngay
         if trang_thai_hien_tai in TRANG_THAI_GIAM_KHO:

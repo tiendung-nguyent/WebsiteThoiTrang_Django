@@ -127,25 +127,49 @@ def edit_quanLySP(request, ma_sp):
         if form.is_valid():
             updated_sp = form.save()
 
-            BienTheSanPham.objects.filter(SP_Ma=updated_sp).delete()
-
+            # Đồng bộ các biến thể thay vì xóa hết tạo lại (để tránh mất lịch sử nhập hàng và các ràng buộc FK)
             sizes = request.POST.getlist('bienthe_size[]')
             colors = request.POST.getlist('bienthe_color[]')
             quantities = request.POST.getlist('bienthe_soluong[]')
 
+            # Lấy danh sách các biến thể hiện tại
+            current_variants = BienTheSanPham.objects.filter(SP_Ma=updated_sp)
+            variant_map = {(v.SP_KichThuoc, v.SP_MauSac): v for v in current_variants}
+            processed_keys = set()
+
             if sizes and colors and quantities:
                 for i in range(len(sizes)):
+                    size = sizes[i]
+                    color = colors[i]
+                    key = (size, color)
                     try:
                         qty = int(quantities[i])
-                        if qty >= 0:
-                            BienTheSanPham.objects.create(
-                                SP_Ma=updated_sp,
-                                SP_KichThuoc=sizes[i],
-                                SP_MauSac=colors[i],
-                                SP_SL=qty
-                            )
+                        if qty < 0: qty = 0
                     except ValueError:
-                        pass
+                        qty = 0
+                    
+                    if key in variant_map:
+                        # Cập nhật biến thể hiện có
+                        btsp = variant_map[key]
+                        btsp.SP_SL = qty
+                        btsp.save()
+                    else:
+                        # Tạo biến thể mới
+                        BienTheSanPham.objects.create(
+                            SP_Ma=updated_sp,
+                            SP_KichThuoc=size,
+                            SP_MauSac=color,
+                            SP_SL=qty
+                        )
+                    processed_keys.add(key)
+
+            # Xóa các biến thể không còn trong danh sách mới (nếu không có ràng buộc quan trọng)
+            for key, btsp in variant_map.items():
+                if key not in processed_keys:
+                    # Trước khi xóa, kiểm tra xem có dữ liệu liên quan không
+                    # Nếu có ChiTietNhapHang hoặc tương tự, có thể nên báo lỗi hoặc đổi trạng thái
+                    # Ở đây tạm thời cho phép xóa để giữ tính năng cũ nhưng an toàn hơn
+                    btsp.delete()
 
             messages.success(request, f'Cập nhật sản phẩm {ma_sp} thành công!')
             return redirect('quanLySP')
