@@ -1,5 +1,7 @@
 {% extends "staff/base_staff.html" %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block title %}Chi tiết sản phẩm - Cen Sports{% endblock %}
 
@@ -94,7 +96,7 @@
     .product-price {
         font-size: 18px;
         color: #3482b9;
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 15px;
         display: block;
     }
@@ -139,7 +141,7 @@
 
         <div class="product-details-body">
             <h1 class="product-title">{{ sp.SP_Ten }}</h1>
-            <span class="product-price">{{ sp.SP_GiaBan|floatformat:0 }} đ</span>
+            <span class="product-price">{{ sp.SP_GiaBan|vietnam_number }} đ</span>
 
             <ul class="details-list">
                 <li class="details-item">

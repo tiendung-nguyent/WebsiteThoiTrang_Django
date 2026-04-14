@@ -42,7 +42,7 @@ def bao_cao_view(request):
         for item in chi_tiet_ban:
             # Lấy đơn giá nhập mới nhất của biến thể này
             ct_nhap = ChiTietNhapHang.objects.filter(
-                BTSP_Ma=item.SP_Ma).last()  # Ở đây item.SP_Ma thực chất là BTSP (theo logic giỏ hàng của bạn)
+                BTSP_Ma=item.BTSP_Ma).last()  # Ở đây item.SP_Ma thực chất là BTSP (theo logic giỏ hàng của bạn)
             don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
             gia_von_don += (item.GH_SL * don_gia_nhap)
 

@@ -1,5 +1,7 @@
 {% extends "staff/base_staff.html" %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block title %}Chi tiết đơn hàng - Cen Sports{% endblock %}
 
@@ -124,34 +126,34 @@
                         <small style="color: #999;">Kích cỡ: {{ item.BTSP_Ma.SP_KichThuoc }} | Màu: {{ item.BTSP_Ma.SP_MauSac }} | Số lượng: {{ item.GH_SL }}</small>
                     </div>
                     <div style="text-align: right;">
-                        <b style="color: #004a99;">{{ item.GH_TTien|floatformat:0 }} đ</b>
+                        <b style="color: #004a99;">{{ item.GH_TTien|vietnam_number }} đ</b>
                     </div>
                 </div>
                 {% endfor %}
             </div>
 
             <div style="margin-top: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tạm tính:</span> <b>{{ order.TT_TongTienHang|floatformat:0 }}đ</b></div>
-                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+{{ order.TT_TongPhiVC|floatformat:0 }}đ</b></div>
+                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tạm tính:</span> <b>{{ order.TT_TongTienHang|vietnam_number }}đ</b></div>
+                <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+{{ order.TT_TongPhiVC|vietnam_number }}đ</b></div>
                 {% if discount_amount > 0 %}
                 <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;">
                     <span>Khuyến mãi:</span> 
-                    <b style="color: #ff5e5e;">-{{ discount_amount|floatformat:0 }}đ</b>
+                    <b style="color: #ff5e5e;">-{{ discount_amount|vietnam_number }}đ</b>
                 </div>
                 {% endif %}
                 <div style="display: flex; justify-content: space-between; width: 220px; border-top: 2px solid #eee; padding-top: 8px; margin-top: 5px;">
-                    <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">{{ order.TT_TongThanhToan|floatformat:0 }}đ</b>
+                    <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">{{ order.TT_TongThanhToan|vietnam_number }}đ</b>
                 </div>
                 {% if shipping_info %}
                 <div style="display: flex; justify-content: space-between; width: 220px; font-style: italic; color: #888; font-size: 13px;">
-                    <span>Tiền ship thực tế:</span> <b>{{ shipping_info.DH_PhiCuoc|floatformat:0 }}đ</b>
+                    <span>Tiền ship thực tế:</span> <b>{{ shipping_info.DH_PhiCuoc|vietnam_number }}đ</b>
                 </div>
                 {% endif %}
             </div>
 
             <div class="profit-box {% if order.DH_TrangThai == 3 or profit < 0 %}profit-red{% else %}profit-green{% endif %}">
                 <span style="font-weight: 500;">{% if order.DH_TrangThai == 3 or profit < 0 %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
-                <span style="font-size: 18px; font-weight: 800;">{% if profit < 0 %}- {% endif %}{{ profit|floatformat:0|cut:"-" }}đ</span>
+                <span style="font-size: 18px; font-weight: 800;">{% if profit < 0 %}- {% endif %}{{ profit|floatformat:0|cut:"-"|vietnam_number }}đ</span>
             </div>
         </div>
 

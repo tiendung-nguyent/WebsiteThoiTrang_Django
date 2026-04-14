@@ -1,4 +1,4 @@
-{% extends "staff/base_staff.html" %} {% block title %}Quản lý sản phẩm - Cen Sports{% endblock %}
+{% extends "staff/base_staff.html" %} {% load humanize %} {% load custom_filters %} {% block title %}Quản lý sản phẩm - Cen Sports{% endblock %}
 
 {% block content %}
 <style>
@@ -149,7 +149,8 @@
     }
 
     .price {
-        font-weight: bold;
+        font-weight: 800;
+        min-width: 120px;
     }
 </style>
 
@@ -197,7 +198,7 @@
                     </div>
                 </td>
                 <td>{{ sp.DM_Ma }}</td>
-                <td class="price">{{ sp.SP_GiaBan|floatformat:0 }} đ</td>
+                <td class="price">{{ sp.SP_GiaBan|vietnam_number }} đ</td>
                 <td>
                     {% if sp.SP_TrangThai == 0 %}
                     <span class="badge badge-active">ĐANG BÁN</span>

@@ -1,5 +1,7 @@
 {% extends 'user/base_user.html' %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -304,18 +306,18 @@
                     <h5>{{ chi_tiet.BTSP_Ma.SP_Ma.SP_Ten|truncatechars:40 }}</h5>
                     <p>Kích cỡ: {{ chi_tiet.BTSP_Ma.SP_KichThuoc }} | Màu: {{ chi_tiet.BTSP_Ma.SP_MauSac }} | Số lượng:
                         {{ chi_tiet.GH_SL }}</p>
-                    <b style="color: #004a99;">{{ chi_tiet.GH_TTien }} đ</b>
+                    <b style="color: #004a99;">{{ chi_tiet.GH_TTien|vietnam_number }} đ</b>
                 </div>
             </div>
             {% endfor %}
 
             <div class="summary-item">
                 <span>Tổng tiền hàng</span>
-                <span>{{ gio_hang_obj.GH_TamTinh }} đ</span>
+                <span>{{ gio_hang_obj.GH_TamTinh|vietnam_number }} đ</span>
             </div>
             <div class="summary-item">
                 <span>Phí vận chuyển</span>
-                <span>{{ phi_van_chuyen }} đ</span>
+                <span>{{ phi_van_chuyen|vietnam_number }} đ</span>
             </div>
 
             <div class="summary-item" id="khuyen_mai_row" style="display: {% if khuyen_mai_obj %}flex{% else %}none{% endif %};">
@@ -325,7 +327,7 @@
 
             <div class="summary-total">
                 <span>Tổng thanh toán</span>
-                <span style="color: #004a99;"><span id="tong_thanh_toan_value">{{ tong_thanh_toan }}</span> đ</span>
+                <span style="color: #004a99;"><span id="tong_thanh_toan_value">{{ tong_thanh_toan|vietnam_number }}</span> đ</span>
             </div>
 
             <button type="submit" class="btn-confirm-order">
