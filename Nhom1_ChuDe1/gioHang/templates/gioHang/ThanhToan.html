@@ -207,21 +207,55 @@
         <div class="checkout-left">
             <div class="checkout-section">
                 <h3 class="section-title">Thông tin người nhận</h3>
+                
+                <!-- Hidden field to store selected saved address ID -->
+                <input type="hidden" name="ctkh_ma" id="selected_ctkh_ma">
+
                 <div class="form-group">
                     <label>Họ và tên <span>*</span></label>
-                    <input type="text" name="ho_ten" class="form-control" placeholder="Nhập họ và tên"
-                        value="{{ ho_ten }}">
+                    <input type="text" name="ho_ten" id="ho_ten_input" list="customer-list" class="form-control" placeholder="Nhập họ và tên"
+                        value="{{ ho_ten }}" autocomplete="off">
+                    <datalist id="customer-list">
+                        {% for ctkh in ds_ctkh %}
+                        <option value="{{ ctkh.CTKH_HoTenNguoiNhan }}" 
+                                data-sdt="{{ ctkh.CTKH_SDT }}" 
+                                data-address="{{ ctkh.CTKH_DiaChi }}" 
+                                data-id="{{ ctkh.CTKH_Ma }}">
+                        {% endfor %}
+                    </datalist>
                 </div>
                 <div class="form-group">
                     <label>Số điện thoại <span>*</span></label>
-                    <input type="text" name="so_dien_thoai" class="form-control" placeholder="0123456789"
+                    <input type="text" name="so_dien_thoai" id="sdt_input" class="form-control" placeholder="0123456789"
                         value="{{ so_dien_thoai }}">
                 </div>
                 <div class="form-group">
                     <label>Địa chỉ giao hàng <span>*</span></label>
-                    <input type="text" name="dia_chi" class="form-control" placeholder="Nhập địa chỉ đầy đủ"
+                    <input type="text" name="dia_chi" id="address_input" class="form-control" placeholder="Nhập địa chỉ đầy đủ"
                         value="{{ dia_chi }}">
                 </div>
+
+                <script>
+                    document.getElementById('ho_ten_input').addEventListener('input', function() {
+                        const val = this.value;
+                        const options = document.querySelectorAll('#customer-list option');
+                        let found = false;
+
+                        options.forEach(option => {
+                            if (option.value === val) {
+                                document.getElementById('sdt_input').value = option.getAttribute('data-sdt');
+                                document.getElementById('address_input').value = option.getAttribute('data-address');
+                                document.getElementById('selected_ctkh_ma').value = option.getAttribute('data-id');
+                                found = true;
+                            }
+                        });
+
+                        if (!found) {
+                            // If user types something not in list, clear the hidden ID so a new record is created
+                            document.getElementById('selected_ctkh_ma').value = '';
+                        }
+                    });
+                </script>
                 <div class="form-group">
                     <label>Mã khuyến mãi (tùy chọn)</label>
                     <div class="promo-group">
