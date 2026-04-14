@@ -43,6 +43,7 @@ def bao_cao_view(request):
             don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
             gia_von_don += (item.GH_SL * don_gia_nhap)
 
+
         order_data_map[order.TT_Ma] = {
             'revenue': doanh_thu_don,
             'profit': doanh_thu_don - gia_von_don,
