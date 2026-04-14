@@ -37,6 +37,12 @@ def update_stock_on_save(sender, instance, created, **kwargs):
     
     btsp.save()
 
+    # Tự động cập nhật trạng thái Sản phẩm nếu đang là 'Hết hàng' (1) mà có hàng về
+    sp = btsp.SP_Ma
+    if sp.SP_TrangThai == 1 and btsp.SP_SL > 0:
+        sp.SP_TrangThai = 0
+        sp.save()
+
 @receiver(post_delete, sender=ChiTietNhapHang)
 def update_stock_on_delete(sender, instance, **kwargs):
     """

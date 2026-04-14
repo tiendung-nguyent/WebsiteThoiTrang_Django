@@ -77,18 +77,14 @@ def trangChuUser(request):
 def chiTietSanPham(request, sp_ma):
     san_pham = get_object_or_404(SanPham, SP_Ma=sp_ma, SP_TrangThai=0)
 
-    # Lưu sản phẩm vào session để hiện ở Profile
     viewed_products = request.session.get('viewed_products', [])
     current_product = [san_pham.SP_Ma, san_pham.SP_Ten]
 
-    # Kiểm tra nếu sản phẩm đã có trong danh sách thì xóa đi để đưa lên đầu
     if current_product in viewed_products:
         viewed_products.remove(current_product)
 
-    # Thêm sản phẩm vào đầu danh sách
     viewed_products.insert(0, current_product)
 
-    # Chỉ giữ lại 5 sản phẩm gần nhất
     request.session['viewed_products'] = viewed_products[:5]
     request.session.modified = True
 
@@ -101,7 +97,7 @@ def chiTietSanPham(request, sp_ma):
         key = f"{bt.SP_MauSac}-{bt.SP_KichThuoc}"
         ton_kho_map[key] = bt.SP_SL
 
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
     cap_nhat_tong_gio_hang(gio_hang)
 
     return render(request, 'gioHang/chiTietSanPham.html', {
@@ -119,7 +115,7 @@ def them_vao_gio_hang(request, sp_ma):
         return redirect('chiTietSanPham', sp_ma=sp_ma)
 
     san_pham = get_object_or_404(SanPham, SP_Ma=sp_ma, SP_TrangThai=0)
-    gio_hang = lay_hoac_tao_gio_hang()
+    gio_hang = lay_hoac_tao_gio_hang(request)
 
     mau_sac = request.POST.get('mau_sac')
     kich_thuoc = request.POST.get('kich_thuoc')

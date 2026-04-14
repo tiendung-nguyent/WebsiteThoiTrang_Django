@@ -6,4 +6,4 @@ class DanhMuc(models.Model):
     DM_Thuoc = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.DM_Ten
+        return f"{self.DM_Ten} - {self.DM_Thuoc}"
