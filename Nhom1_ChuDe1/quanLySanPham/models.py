@@ -28,7 +28,7 @@ class SanPham(models.Model):
     SP_HinhAnh = models.ImageField(upload_to="sanpham/", null=True, blank=True)
     SP_TrangThai = models.IntegerField(
         choices=TRANG_THAI_CHOICES,
-        default=0
+        default=1
     )
 
     def __str__(self):
