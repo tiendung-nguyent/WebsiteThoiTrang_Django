@@ -1,5 +1,7 @@
 {% extends 'user/base_user.html' %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -350,7 +352,7 @@
                             <a href="{% url 'tangSoLuongGio' item.id %}" class="qty-btn-link">+</a>
                         </div>
 
-                        <div class="item-price">{{ item.GH_TTien }} đ</div>
+                        <div class="item-price">{{ item.GH_TTien|vietnam_number }} đ</div>
                     </div>
 
                     <button type="button" class="btn-edit-link" onclick="openModal({{ item.id }})">
@@ -378,7 +380,7 @@
 
         <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
             <span style="font-weight: bold;">Tạm tính</span>
-            <span style="font-weight: bold; color: #004a99; font-size: 18px;">{{ gio_hang_obj.GH_TamTinh }} đ</span>
+            <span style="font-weight: bold; color: #004a99; font-size: 18px;">{{ gio_hang_obj.GH_TamTinh|vietnam_number }} đ</span>
         </div>
 
         <a href="{% url 'ThanhToan' %}" class="btn-pay">Thanh toán</a>

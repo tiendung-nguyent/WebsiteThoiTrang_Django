@@ -1,5 +1,7 @@
 {% extends 'user/base_user.html' %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -142,7 +144,7 @@
             <p class="product-name">{{ sp.SP_Ten }}</p>
 
             <div class="product-bottom">
-                <span class="price">{{ sp.SP_GiaBan }} đ</span>
+                <span class="price">{{ sp.SP_GiaBan|vietnam_number }} đ</span>
                 <span class="cart-btn">
                     <i class="fa fa-shopping-cart"></i>
                 </span>

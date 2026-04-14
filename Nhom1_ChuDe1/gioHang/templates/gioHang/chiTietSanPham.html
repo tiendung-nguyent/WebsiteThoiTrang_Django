@@ -1,5 +1,7 @@
 {% extends "user/base_user.html" %}
 {% load static %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block content %}
 <style>
@@ -284,7 +286,7 @@
 
             <h1 class="product-title">{{ san_pham.SP_Ten }}</h1>
 
-            <div class="product-price">{{ san_pham.SP_GiaBan }} đ</div>
+            <div class="product-price">{{ san_pham.SP_GiaBan|vietnam_number }} đ</div>
 
             <form method="post" action="{% url 'themVaoGioHang' san_pham.SP_Ma %}">
                 {% csrf_token %}
