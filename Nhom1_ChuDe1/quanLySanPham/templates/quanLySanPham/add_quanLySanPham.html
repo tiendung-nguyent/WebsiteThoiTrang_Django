@@ -23,11 +23,8 @@
         background: white;
         width: 100%;
         max-width: 850px;
-        /* Tăng từ 600px lên 850px */
         max-height: 92vh;
-        /* Tăng nhẹ chiều cao để tận dụng không gian */
         border-radius: 16px;
-        /* Bo góc mượt hơn cho form rộng */
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
@@ -295,7 +292,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Active menu sidebar
         const menuLinks = document.querySelectorAll('.sidebar-menu a');
         menuLinks.forEach(link => {
             if (link.innerText.includes("Quản lý sản phẩm")) {
@@ -315,7 +311,6 @@
                 selectedSizes.push(val);
             } else {
                 selectedSizes = selectedSizes.filter(s => s !== val);
-                // Reset removed state if tag toggled off
                 for (let color of selectedColors) removedVariants.delete(`${val}|${color}`);
             }
             generateVariantsTable();
@@ -329,7 +324,6 @@
                 selectedColors.push(val);
             } else {
                 selectedColors = selectedColors.filter(c => c !== val);
-                // Reset removed state if tag toggled off
                 for (let size of selectedSizes) removedVariants.delete(`${size}|${val}`);
             }
             generateVariantsTable();
@@ -354,7 +348,7 @@
 
         function confirmAddSize(e) {
             if (e && e.type === 'keydown' && e.key !== 'Enter') return;
-            if (e) e.preventDefault(); // Ngăn submit form nếu ấn enter
+            if (e) e.preventDefault();
 
             const val = sizeInput.value.trim();
             if (val !== '') {
@@ -363,7 +357,6 @@
                 newSpan.setAttribute('data-val', val);
                 newSpan.innerText = val;
 
-                // Gắn sự kiện click để kết hợp biến thể
                 newSpan.addEventListener('click', handleSizeTagClick);
 
                 // Chèn vào phía trước input
@@ -425,7 +418,6 @@
             fileInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     uploadText.style.display = 'block';
-                    <!--                    uploadText.innerHTML = `<i class="fa fa-check"></i> Đã chọn file: <b>${this.files[0].name}</b>`;-->
                 } else {
                     uploadText.style.display = 'none';
                 }
@@ -436,14 +428,11 @@
             const tbody = document.getElementById('variants-table-body');
             const container = document.getElementById('variants-container');
 
-            // Xóa nội dung bảng cũ
             tbody.innerHTML = '';
 
-            // Nếu có chọn ít nhất 1 size và 1 color thì mới hiện bảng
             if (selectedSizes.length > 0 && selectedColors.length > 0) {
                 container.style.display = 'block';
 
-                // Lồng 2 vòng lặp để tạo các cặp (Ví dụ: L-Đỏ, XL-Đỏ)
                 selectedSizes.forEach(size => {
                     selectedColors.forEach(color => {
                         const key = `${size}|${color}`;
@@ -479,7 +468,6 @@
             generateVariantsTable();
         };
 
-        // XỬ LÝ SỰ KIỆN LƯU THÀNH CÔNG VÀ LỖI
         {% if messages %}
         {% for message in messages %}
         alert("{{ message }}");

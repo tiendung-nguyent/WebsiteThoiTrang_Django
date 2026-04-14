@@ -141,7 +141,6 @@
                         <span class="tag-item size-tag {% if size in existing_sizes %}active{% endif %}" data-val="{{ size }}">{{ size }}</span>
                         {% endfor %}
                         
-                        {# Thêm các size khác không nằm trong danh sách mặc định nếu có #}
                         {% for size in existing_sizes %}
                             {% if size not in "S,M,L,XL,XXL" %}
                                 <span class="tag-item size-tag active" data-val="{{ size }}">{{ size }}</span>
@@ -160,7 +159,6 @@
                         <span class="tag-item color-tag {% if color in existing_colors %}active{% endif %}" data-val="{{ color }}">{{ color }}</span>
                         {% endfor %}
 
-                        {# Thêm các màu khác không nằm trong danh sách mặc định nếu có #}
                         {% for color in existing_colors %}
                             {% if color not in "Đen,Trắng,Xanh,Đỏ,Xám,Vàng" %}
                                 <span class="tag-item color-tag active" data-val="{{ color }}">{{ color }}</span>
@@ -185,7 +183,6 @@
                                 </tr>
                             </thead>
                             <tbody id="variants-table-body">
-                                <!-- JavaScript sẽ render các HTML tr vào đây -->
                             </tbody>
                         </table>
                     </div>
@@ -212,7 +209,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Dữ liệu ban đầu
         const initialVariants = {{ variant_data|safe }};
         let selectedSizes = {{ existing_sizes|safe }};
         let selectedColors = {{ existing_colors|safe }};
@@ -226,7 +222,6 @@
                 if (!selectedSizes.includes(val)) selectedSizes.push(val);
             } else {
                 selectedSizes = selectedSizes.filter(s => s !== val);
-                // Xóa các variant bị "removed" liên quan đến size này để reset nếu sau này chọn lại
                 for (let color of selectedColors) removedVariants.delete(`${val}|${color}`);
             }
             generateVariantsTable();
@@ -240,7 +235,6 @@
                 if (!selectedColors.includes(val)) selectedColors.push(val);
             } else {
                 selectedColors = selectedColors.filter(c => c !== val);
-                // Xóa các variant bị "removed" liên quan đến màu này để reset nếu sau này chọn lại
                 for (let size of selectedSizes) removedVariants.delete(`${size}|${val}`);
             }
             generateVariantsTable();
@@ -318,7 +312,6 @@
         colorInput.addEventListener('blur', confirmAddColor);
         colorInput.addEventListener('keydown', confirmAddColor);
 
-        // Upload ảnh
         const uploadIcon = document.getElementById('uploadIcon');
         const fileInput = document.getElementById('id_SP_HinhAnh');
         const uploadText = document.getElementById('uploadText');
@@ -345,7 +338,6 @@
                         const key = `${size}|${color}`;
                         if (removedVariants.has(key)) return;
 
-                        // Tìm số lượng cũ nếu có
                         const existing = initialVariants.find(v => v.size === size && v.color === color);
                         const qty = existing ? existing.qty : 0;
 
@@ -379,7 +371,6 @@
             generateVariantsTable();
         };
 
-        // Khởi tạo bảng ban đầu
         generateVariantsTable();
     });
 </script>

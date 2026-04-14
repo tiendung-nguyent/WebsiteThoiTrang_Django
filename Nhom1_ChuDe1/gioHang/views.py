@@ -69,6 +69,21 @@ def trangChuUser(request):
 def chiTietSanPham(request, sp_ma):
     san_pham = get_object_or_404(SanPham, SP_Ma=sp_ma, SP_TrangThai=0)
 
+    # Lưu sản phẩm vào session để hiện ở Profile
+    viewed_products = request.session.get('viewed_products', [])
+    current_product = [san_pham.SP_Ma, san_pham.SP_Ten]
+
+    # Kiểm tra nếu sản phẩm đã có trong danh sách thì xóa đi để đưa lên đầu
+    if current_product in viewed_products:
+        viewed_products.remove(current_product)
+
+    # Thêm sản phẩm vào đầu danh sách
+    viewed_products.insert(0, current_product)
+
+    # Chỉ giữ lại 5 sản phẩm gần nhất
+    request.session['viewed_products'] = viewed_products[:5]
+    request.session.modified = True
+
     bien_thes = BienTheSanPham.objects.filter(SP_Ma=san_pham)
     mau_sacs = bien_thes.values_list('SP_MauSac', flat=True).distinct()
     kich_thuocs = bien_thes.values_list('SP_KichThuoc', flat=True).distinct()

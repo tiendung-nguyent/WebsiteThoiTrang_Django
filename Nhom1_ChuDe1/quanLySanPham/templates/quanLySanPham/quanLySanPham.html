@@ -114,7 +114,6 @@
         color: #28a745;
     }
 
-    /* Đang bán */
     .badge-stopped {
         background: #fff1f0;
         color: #f5222d;
@@ -125,8 +124,6 @@
         background: #fffbe6;
         color: #faad14;
     }
-
-    /* Hết hàng */
 
     .actions {
         display: flex;
@@ -235,7 +232,6 @@
 </div>
 
 <script>
-    // Cập nhật menu active trong sidebar khi ở trang này
     document.querySelectorAll('.sidebar-menu li a').forEach(link => {
         if (link.innerText.includes('Quản lý sản phẩm')) {
             link.classList.add('active');
@@ -244,7 +240,6 @@
         }
     });
 
-    // Hiện thông báo (VD: Lưu thành công) nếu có
     {% if messages %}
     {% for message in messages %}
     alert("{{ message }}");
