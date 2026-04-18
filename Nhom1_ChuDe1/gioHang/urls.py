@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.trangChuUser, name='trangChuUser'),
+    # ===== DANH SÁCH SẢN PHẨM =====
+    path('san-pham/', views.danhSachSanPham, name='danhSachSanPham'),
     path('san-pham/<str:sp_ma>/', views.chiTietSanPham, name='chiTietSanPham'),
     path('gio-hang/them/<str:sp_ma>/', views.them_vao_gio_hang, name='themVaoGioHang'),
     path('gio-hang/', views.gio_hang, name='gioHang'),
