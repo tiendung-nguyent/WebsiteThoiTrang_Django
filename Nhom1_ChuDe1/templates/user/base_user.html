@@ -284,28 +284,30 @@
 
             <ul class="nav-links">
                 <li>
-                    <a href="#">Nam</a>
+                    <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM">Nam</a>
                     <ul class="dropdown-content">
-                        <li><a href="#">Gym</a></li>
-                        <li><a href="#">Pickleball</a></li>
-                        <li><a href="#">Running</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Gym">Gym</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Pickleball">Pickleball</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Running">Running</a></li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#">Nữ</a>
+                    <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ">Nữ</a>
                     <ul class="dropdown-content">
-                        <li><a href="#">Gym</a></li>
-                        <li><a href="#">Pickleball</a></li>
-                        <li><a href="#">Yoga</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Gym">Gym</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Pickleball">Pickleball</a></li>
+                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Yoga">Yoga</a></li>
                     </ul>
                 </li>
                 <li><a href="{% url 'quanLyDonDat' %}">Quản lý đơn đặt</a></li>
             </ul>
 
-            <div class="search-container">
-                <input type="text" placeholder="Tìm sản phẩm...">
-                <i class="fa fa-search"></i>
-            </div>
+            <form class="search-container" method="get" action="{% url 'danhSachSanPham' %}">
+                <input type="text" name="q" placeholder="Tìm sản phẩm..." value="{{ request.GET.q|default:'' }}">
+                <button type="submit" style="border: none; background: none; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
 
             <div class="user-icons">
                 {% if user.is_authenticated %}
