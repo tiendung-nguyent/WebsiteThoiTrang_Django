@@ -24,6 +24,7 @@
         border: 1px solid #eee;
     }
 
+    /* HÀNG 1: Grid cho 3 thẻ */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -45,7 +46,8 @@
     .stat-card:hover { transform: translateY(-5px); }
 
     .stat-info span { color: #888; font-size: 13px; font-weight: 500; }
-    .stat-info h2 { font-size: 24px; margin-top: 5px; color: #333; font-weight: 700; }
+    .stat-info h2 { font-size: 24px; margin-top: 5px; margin-bottom: 2px; color: #333; font-weight: 700; }
+    .stat-info small { font-size: 12px; color: #aaa; display: block; }
 
     .stat-icon {
         width: 48px;
@@ -59,8 +61,9 @@
 
     .icon-green { background: #e8f5e9; color: #4caf50; }
     .icon-blue { background: #e3f2fd; color: #2196f3; }
-    .icon-purple { background: #f3e5f5; color: #9c27b0; }
+    .icon-orange { background: #fff3e0; color: #ff9800; }
 
+    /* Container cho Biểu đồ */
     .chart-container {
         background: white;
         padding: 25px;
@@ -75,7 +78,7 @@
         margin-bottom: 25px;
     }
 
-    .chart-header h3 { font-size: 18px; color: #333; }
+    .chart-header h3 { font-size: 18px; color: #333; margin: 0; }
 
     .filter-dropdown {
         padding: 8px 12px;
@@ -87,6 +90,57 @@
         cursor: pointer;
         background-color: #fff;
     }
+
+    /* HÀNG 3: Grid cho Biểu đồ Tròn & Top 5 */
+    .bottom-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    /* CSS cho danh sách Top 5 */
+    .top-products-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .top-product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .top-product-item:last-child { border-bottom: none; }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .product-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .rank-1 { background: #fff8e1; color: #ffb300; } /* Vàng */
+    .rank-2 { background: #f5f5f5; color: #9e9e9e; } /* Bạc */
+    .rank-3 { background: #efebe9; color: #8d6e63; } /* Đồng */
+
+    .product-name { font-weight: 500; color: #333; font-size: 14px; }
+    .product-qty { font-weight: 700; color: #1a5c8b; font-size: 14px; }
 </style>
 
 <div class="report-header">
@@ -100,26 +154,29 @@
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-info">
-            <span>Doanh thu ngày:</span>
+            <span>Doanh thu thực thu</span>
             <h2>{{ daily_revenue }}</h2>
+            <small>(Đơn đã giao hôm nay)</small>
         </div>
         <div class="stat-icon icon-green"><i class="fa fa-dollar-sign"></i></div>
     </div>
 
     <div class="stat-card">
         <div class="stat-info">
-            <span>Đơn hàng mới:</span>
+            <span>Tổng đơn hàng</span>
             <h2>{{ new_orders_count }}</h2>
+            <small>(Phát sinh hôm nay)</small>
         </div>
         <div class="stat-icon icon-blue"><i class="fa fa-box-open"></i></div>
     </div>
 
     <div class="stat-card">
         <div class="stat-info">
-            <span>Lợi nhuận:</span>
-            <h2>{{ daily_profit }}</h2>
+            <span>Tiền đang luân chuyển</span>
+            <h2>{{ tien_luan_chuyen }}</h2>
+            <small>(Đang giao / Chờ thu tiền)</small>
         </div>
-        <div class="stat-icon icon-purple"><i class="fa fa-chart-line"></i></div>
+        <div class="stat-icon icon-orange"><i class="fa fa-sync-alt"></i></div>
     </div>
 </div>
 
@@ -138,19 +195,58 @@
     </div>
 </div>
 
+<div class="bottom-grid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Tình trạng đơn hàng (Tháng này)</h3>
+        </div>
+        <div style="position: relative; height:300px; width:100%">
+            <canvas id="orderStatusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Top 5 sản phẩm bán chạy (Tháng này)</h3>
+        </div>
+        <ul class="top-products-list">
+            {% for product in top_products %}
+            <li class="top-product-item">
+                <div class="product-info">
+                    <div class="product-rank {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
+                        {{ forloop.counter }}
+                    </div>
+                    <span class="product-name">{{ product.BTSP_Ma__SP_Ma__SP_Ten }}</span>
+                </div>
+                <span class="product-qty">{{ product.total_qty }} đã bán</span>
+            </li>
+            {% empty %}
+            <li class="top-product-item" style="justify-content: center; color: #888;">
+                Chưa có dữ liệu sản phẩm bán ra trong tháng này.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
 {{ chart_data|json_script:"chart-data" }}
+{{ status_counts|json_script:"status-data" }}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const chartSource = JSON.parse(document.getElementById("chart-data").textContent);
-        const periodSelect = document.getElementById("chartPeriod");
-        const ctx = document.getElementById("doanhThuChart").getContext("2d");
+        // ĐĂNG KÝ PLUGIN VỪA THÊM (Thêm dòng này ở đầu)
+        Chart.register(ChartDataLabels);
 
         function formatCurrency(value) {
             return value.toLocaleString("vi-VN") + " đ";
         }
 
-        const chart = new Chart(ctx, {
+        // 1. BIỂU ĐỒ DOANH THU & LỢI NHUẬN (HÀNG 2)
+        const chartSource = JSON.parse(document.getElementById("chart-data").textContent);
+        const periodSelect = document.getElementById("chartPeriod");
+        const ctxBar = document.getElementById("doanhThuChart").getContext("2d");
+
+        const barChart = new Chart(ctxBar, {
             type: "bar",
             data: {
                 labels: chartSource.week.labels,
@@ -179,20 +275,15 @@
                         beginAtZero: true,
                         grid: { color: "#f0f0f0" },
                         ticks: {
-                            callback: function(value) {
-                                return formatCurrency(value);
-                            }
+                            callback: function(value) { return formatCurrency(value); }
                         }
                     },
-                    x: {
-                        grid: { display: false }
-                    }
+                    x: { grid: { display: false } }
                 },
                 plugins: {
-                    legend: {
-                        position: "bottom",
-                        labels: { padding: 20, usePointStyle: true }
-                    },
+                    // Tắt hiển thị datalabels cho biểu đồ cột (chỉ muốn hiện ở biểu đồ tròn)
+                    datalabels: { display: false },
+                    legend: { position: "bottom", labels: { padding: 20, usePointStyle: true } },
                     tooltip: {
                         padding: 10,
                         backgroundColor: "rgba(0,0,0,0.8)",
@@ -206,12 +297,75 @@
             }
         });
 
+        // Sự kiện thay đổi bộ lọc cho Biểu đồ Cột
         periodSelect.addEventListener("change", function() {
             const selectedPeriod = chartSource[this.value];
-            chart.data.labels = selectedPeriod.labels;
-            chart.data.datasets[0].data = selectedPeriod.revenue;
-            chart.data.datasets[1].data = selectedPeriod.profit;
-            chart.update();
+            barChart.data.labels = selectedPeriod.labels;
+            barChart.data.datasets[0].data = selectedPeriod.revenue;
+            barChart.data.datasets[1].data = selectedPeriod.profit;
+            barChart.update();
+        });
+
+        // =======================================================
+        // 2. BIỂU ĐỒ TRÒN - TÌNH TRẠNG ĐƠN HÀNG (HÀNG 3)
+        // =======================================================
+        const statusData = JSON.parse(document.getElementById("status-data").textContent);
+        const ctxDoughnut = document.getElementById("orderStatusChart").getContext("2d");
+
+        // Tính tổng đơn hàng để chia %
+        const totalOrders = statusData.reduce((acc, curr) => acc + curr, 0);
+
+        new Chart(ctxDoughnut, {
+            type: "doughnut",
+            data: {
+                labels: ["Đang giao", "Đã giao", "Chờ xử lý", "Đã hủy"],
+                datasets: [{
+                    data: statusData,
+                    backgroundColor: [
+                        "#ffb300", // Cam vàng - Đang giao
+                        "#4caf50", // Xanh lá - Đã giao
+                        "#2196f3", // Xanh dương - Chờ xử lý
+                        "#f44336"  // Đỏ - Thất bại/Đã hủy
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: "right",
+                        labels: { padding: 20, usePointStyle: true }
+                    },
+                    // CẤU HÌNH HIỂN THỊ PHẦN TRĂM Ở ĐÂY
+                    datalabels: {
+                        color: '#fff', // Màu chữ trắng
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        formatter: (value, context) => {
+                            // Không hiện % nếu giá trị bằng 0
+                            if (value === 0 || totalOrders === 0) return null;
+                            let percentage = ((value / totalOrders) * 100).toFixed(1) + "%";
+                            return percentage;
+                        }
+                    },
+                    tooltip: {
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                return " " + label + ": " + value + " đơn";
+                            }
+                        }
+                    }
+                }
+            }
         });
     });
 </script>

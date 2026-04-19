@@ -20,55 +20,95 @@ def _currency(value):
 def bao_cao_view(request):
     today = timezone.localdate()
 
-    # BƯỚC 1: Lọc đơn hàng "Đã giao" (giá trị là 1)
-    orders_qs = DonDat.objects.filter(DH_TrangThai=1).prefetch_related('donhangvanchuyen_set')
+    # BƯỚC 1: Lấy TOÀN BỘ đơn hàng để xử lý cả tiền treo và trạng thái
+    orders_qs = DonDat.objects.all().prefetch_related('donhangvanchuyen_set')
     all_orders = list(orders_qs)
 
-    # BƯỚC 2: Tính doanh thu = Tiền hàng + (Phí thu khách - Phí trả đơn vị VC)
-    order_data_map = {}
-    for order in all_orders:
-        # Lấy phí cước từ bảng DonHangVanChuyen liên kết qua TT_Ma
-        vanchuyen = order.donhangvanchuyen_set.first()
-        phi_cuoc = vanchuyen.DH_PhiCuoc if vanchuyen else Decimal("0")
-
-        doanh_thu_don = _decimal(order.TT_TongTienHang) + (_decimal(order.TT_TongPhiVC) - _decimal(phi_cuoc))
-
-        # BƯỚC 3: Tính giá vốn theo Chi tiết nhập hàng
-        gia_von_don = Decimal("0")
-        chi_tiet_ban = ChiTietGioHang.objects.filter(GH_Ma=order.GH_Ma)
-
-        for item in chi_tiet_ban:
-            ct_nhap = ChiTietNhapHang.objects.filter(
-                BTSP_Ma=item.BTSP_Ma).last()
-            don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
-            gia_von_don += (item.GH_SL * don_gia_nhap)
-
-        order_data_map[order.TT_Ma] = {
-            'revenue': doanh_thu_don,
-            'profit': doanh_thu_don - gia_von_don,
-            'date': order.TT_NgayDatHang
-        }
-
-    # BƯỚC 4: Tổng hợp dữ liệu cho Ngày hôm nay
+    # Khởi tạo các biến chứa dữ liệu cho Thẻ (Cards)
     today_revenue = Decimal("0")
-    today_profit = Decimal("0")
     today_count = 0
+    tien_luan_chuyen = Decimal("0")
 
-    for m_id, data in order_data_map.items():
-        if data['date'] == today:
-            today_revenue += data['revenue']
-            today_profit += data['profit']
+    # Khởi tạo biến đếm trạng thái đơn hàng trong Tháng này
+    # Index tương ứng: 0 (Đang giao), 1 (Đã giao), 2 (Chờ xử lý), 3 (Thất bại)
+    status_counts_dict = {0: 0, 1: 0, 2: 0, 3: 0}
+
+    # BƯỚC 2: Phân loại và tính toán
+    order_data_map = {}
+
+    for order in all_orders:
+        # --- 1. Thống kê trạng thái đơn hàng (Chỉ tính trong Tháng hiện tại) ---
+        if order.TT_NgayDatHang.month == today.month and order.TT_NgayDatHang.year == today.year:
+            if order.DH_TrangThai in status_counts_dict:
+                status_counts_dict[order.DH_TrangThai] += 1
+
+        # --- 2. Xử lý Thẻ: Tổng đơn hàng hôm nay ---
+        if order.TT_NgayDatHang == today:
             today_count += 1
 
-    # BƯỚC 5: Xây dựng dữ liệu biểu đồ
+        # --- 3. Xử lý Thẻ: Tiền đang luân chuyển (Đơn Đang giao - Trạng thái 0) ---
+        if order.DH_TrangThai == 0:
+            tien_luan_chuyen += _decimal(order.TT_TongThanhToan)
+
+        # --- 4. Xử lý Doanh thu & Lợi nhuận (CHỈ TÍNH ĐƠN ĐÃ GIAO - Trạng thái 1) ---
+        if order.DH_TrangThai == 1:
+            # Tính doanh thu đơn
+            vanchuyen = order.donhangvanchuyen_set.first()
+            phi_cuoc = vanchuyen.DH_PhiCuoc if vanchuyen else Decimal("0")
+            doanh_thu_don = _decimal(order.TT_TongTienHang) + (_decimal(order.TT_TongPhiVC) - _decimal(phi_cuoc))
+
+            # Tính giá vốn theo Chi tiết nhập hàng
+            gia_von_don = Decimal("0")
+            chi_tiet_ban = ChiTietGioHang.objects.filter(GH_Ma=order.GH_Ma)
+
+            for item in chi_tiet_ban:
+                ct_nhap = ChiTietNhapHang.objects.filter(BTSP_Ma=item.BTSP_Ma).last()
+                don_gia_nhap = ct_nhap.NH_DonGia if ct_nhap else Decimal("0")
+                gia_von_don += (item.GH_SL * don_gia_nhap)
+
+            # Lưu vào map để vẽ biểu đồ Cột
+            order_data_map[order.TT_Ma] = {
+                'revenue': doanh_thu_don,
+                'profit': doanh_thu_don - gia_von_don,
+                'date': order.TT_NgayDatHang
+            }
+
+            # Cộng vào thẻ Doanh thu ngày nếu đơn được giao hôm nay
+            if order.TT_NgayDatHang == today:
+                today_revenue += doanh_thu_don
+
+    # Chuyển đổi Dict trạng thái thành List theo đúng thứ tự mảng màu trên giao diện JS
+    # [Cam (Đang giao), Xanh lá (Đã giao), Xanh dương (Chờ), Đỏ (Hủy)]
+    status_counts = [
+        status_counts_dict[0],
+        status_counts_dict[1],
+        status_counts_dict[2],
+        status_counts_dict[3]
+    ]
+
+    # BƯỚC 3: Xử lý danh sách Top 5 Sản phẩm bán chạy (Tháng hiện tại)
+    # Truy vấn đi từ: ChiTietGioHang -> GioHang -> DonDat để lọc trạng thái và ngày
+    top_products = ChiTietGioHang.objects.filter(
+        GH_Ma__dondat__DH_TrangThai=1,  # Chỉ tính sản phẩm của đơn đã giao thành công
+        GH_Ma__dondat__TT_NgayDatHang__month=today.month,
+        GH_Ma__dondat__TT_NgayDatHang__year=today.year
+    ).values(
+        'BTSP_Ma__SP_Ma__SP_Ten'  # Group by theo tên sản phẩm
+    ).annotate(
+        total_qty=Sum('GH_SL')  # Tính tổng số lượng
+    ).order_by('-total_qty')[:5]  # Sắp xếp giảm dần và lấy 5
+
+    # BƯỚC 4: Xây dựng dữ liệu biểu đồ Doanh thu (Hàm phụ trợ giữ nguyên)
     chart_data = _prepare_chart_data(order_data_map, today)
 
     context = {
         "current_date": today.strftime("%d/%m/%Y"),
         "daily_revenue": _currency(today_revenue),
         "new_orders_count": today_count,
-        "daily_profit": _currency(today_profit),
+        "tien_luan_chuyen": _currency(tien_luan_chuyen),
         "chart_data": chart_data,
+        "status_counts": status_counts,
+        "top_products": top_products,
     }
     return render(request, "BaoCaoThongKe/BaoCaoThongKe.html", context)
 
