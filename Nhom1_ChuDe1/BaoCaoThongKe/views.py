@@ -113,6 +113,7 @@ def bao_cao_view(request):
     return render(request, "BaoCaoThongKe/BaoCaoThongKe.html", context)
 
 
+
 def _prepare_chart_data(order_data_map, today):
     # --- 1. XỬ LÝ TUẦN ---
     start_of_week = today - timedelta(days=today.weekday())
