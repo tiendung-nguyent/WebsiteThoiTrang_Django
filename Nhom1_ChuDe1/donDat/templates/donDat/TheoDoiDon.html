@@ -162,26 +162,47 @@
 
             <div class="detail-section">
                 <h3>Thông tin người nhận</h3>
+
                 <div class="detail-row">
                     <span class="detail-label">Họ tên:</span>
                     <span class="detail-value">{{ don.CTKH_Ma.CTKH_HoTenNguoiNhan }}</span>
                 </div>
+
                 <div class="detail-row">
                     <span class="detail-label">Số điện thoại:</span>
                     <span class="detail-value">{{ don.CTKH_Ma.CTKH_SDT }}</span>
                 </div>
+
                 <div class="detail-row">
                     <span class="detail-label">Địa chỉ nhận hàng:</span>
                     <span class="detail-value">{{ don.CTKH_Ma.CTKH_DiaChi }}</span>
                 </div>
+
                 <div class="detail-row">
                     <span class="detail-label">Phương thức thanh toán:</span>
                     <span class="detail-value">{{ don.TT_PhuongThuc }}</span>
                 </div>
             </div>
 
+            {% if don.DH_TrangThai != 2 and don.shipping_info %}
+            <div class="detail-section">
+                <h3>Thông tin vận chuyển</h3>
+
+                <div class="detail-row">
+                    <span class="detail-label">Mã vận chuyển:</span>
+                    <span class="detail-value">{{ don.shipping_info.DH_MaVanChuyen }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Đơn vị vận chuyển:</span>
+                    <span class="detail-value">{{ don.shipping_info.DH_DViVanChuyen }}</span>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="detail-section">
                 <h3>Sản phẩm</h3>
+
                 {% for item in don.ds_san_pham %}
                 <div class="detail-product">
                     {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
@@ -194,9 +215,11 @@
                         <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 6px;">
                             {{ item.BTSP_Ma.SP_Ma.SP_Ten }}
                         </div>
+
                         <div style="font-size: 14px; color: #8a8a8a; margin-bottom: 6px;">
                             {{ item.BTSP_Ma.SP_KichThuoc }} | {{ item.BTSP_Ma.SP_MauSac }} x {{ item.GH_SL }}
                         </div>
+
                         <div style="font-size: 16px; font-weight: 800; color: #0056b3;">
                             {{ item.GH_TTien|floatformat:0 }} đ
                         </div>
@@ -210,10 +233,12 @@
                     <span style="color:#7d7d7d;">Tổng tiền hàng</span>
                     <span style="font-weight:600;">{{ don.TT_TongTienHang|floatformat:0 }} đ</span>
                 </div>
+
                 <div class="detail-total-row">
                     <span style="color:#7d7d7d;">Phí vận chuyển</span>
                     <span style="font-weight:600;">{{ don.TT_TongPhiVC|floatformat:0 }} đ</span>
                 </div>
+
                 <div class="detail-total-final">
                     <span>Tổng thanh toán</span>
                     <span class="price">{{ don.TT_TongThanhToan|floatformat:0 }} đ</span>
@@ -221,13 +246,14 @@
             </div>
 
             <div class="tracking-title">Theo dõi đơn hàng</div>
+
             <div class="tracking-steps">
-                <div class="step {% if don.DH_TrangThai == 2 or don.DH_TrangThai == 0 or don.DH_TrangThai == 1 %}active{% endif %}">
+                <div class="step {% if don.DH_TrangThai == 2 or don.DH_TrangThai == 0 or don.DH_TrangThai == 1 or don.DH_TrangThai == 3 %}active{% endif %}">
                     <div class="step-icon">1</div>
                     <div class="step-name">Chờ xử lý</div>
                 </div>
 
-                <div class="step {% if don.DH_TrangThai == 0 or don.DH_TrangThai == 1 %}active{% endif %}">
+                <div class="step {% if don.DH_TrangThai == 0 or don.DH_TrangThai == 1 or don.DH_TrangThai == 3 %}active{% endif %}">
                     <div class="step-icon">2</div>
                     <div class="step-name">Đang giao</div>
                 </div>
@@ -239,7 +265,7 @@
 
                 <div class="step {% if don.DH_TrangThai == 3 %}active{% endif %}">
                     <div class="step-icon">4</div>
-                    <div class="step-name">Đã hủy</div>
+                    <div class="step-name">Thất bại</div>
                 </div>
             </div>
         </div>

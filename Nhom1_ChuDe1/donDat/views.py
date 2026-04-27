@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import DonDat
 from gioHang.models import ChiTietGioHang
+from quanLyDonHang.models import DonHangVanChuyen
 
 
 def quanLyDonDat(request):
@@ -9,7 +10,16 @@ def quanLyDonDat(request):
 
     for don in ds_don:
         don.ds_san_pham = ChiTietGioHang.objects.filter(GH_Ma=don.GH_Ma)
-        print("DON:", don.TT_Ma, "GH:", don.GH_Ma, "SO SP:", don.ds_san_pham.count())
+
+        # Lấy thông tin vận chuyển của đơn hàng
+        don.shipping_info = DonHangVanChuyen.objects.filter(TT_Ma=don).first()
+
+        print(
+            "DON:", don.TT_Ma,
+            "GH:", don.GH_Ma,
+            "SO SP:", don.ds_san_pham.count(),
+            "VC:", don.shipping_info
+        )
 
     return render(request, 'donDat/quanLyDonDat.html', {
         'ds_don': ds_don
