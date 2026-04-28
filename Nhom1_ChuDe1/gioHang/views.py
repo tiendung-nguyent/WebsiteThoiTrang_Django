@@ -15,8 +15,8 @@ from .models import GioHang, ChiTietGioHang
 from donDat.models import DonDat
 
 def tao_ma_khach_hang():
-    so = KhachHang.objects.count() + 1
-    return f"KH{so:07d}"
+    # Không còn dùng để tự tạo tự động do gây đụng độ với user.id
+    pass
 
 
 def tao_ma_gio_hang():
@@ -29,18 +29,22 @@ def lay_hoac_tao_khach_hang(request):
         kh_ma = f"KH{request.user.id:07d}"
         kh, created = KhachHang.objects.get_or_create(
             KH_Ma=kh_ma,
-            defaults={'KH_Ten': request.user.username}
+            defaults={'KH_Ten': request.user.first_name + " " + request.user.last_name if (request.user.first_name or request.user.last_name) else request.user.username}
         )
+        # Sửa lỗi: nếu trước đó bị đè Khach le, cập nhật lại tên
+        if kh.KH_Ten == 'Khach le':
+            kh.KH_Ten = request.user.first_name + " " + request.user.last_name if (request.user.first_name or request.user.last_name) else request.user.username
+            kh.save()
         return kh
         
-    kh = KhachHang.objects.filter(KH_Ten='Khach le').first()
-    if not kh:
-        kh = KhachHang.objects.create(
-            KH_Ma=tao_ma_khach_hang(),
-            KH_Ten='Khach le',
-            KH_TongChiTieu=0,
-            KH_SoDonHang=0
-        )
+    kh, created = KhachHang.objects.get_or_create(
+        KH_Ma='KH0000000',
+        defaults={
+            'KH_Ten': 'Khach le',
+            'KH_TongChiTieu': 0,
+            'KH_SoDonHang': 0
+        }
+    )
     return kh
 
 
