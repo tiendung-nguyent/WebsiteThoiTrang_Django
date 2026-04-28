@@ -286,19 +286,33 @@
                 <li>
                     <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM">Nam</a>
                     <ul class="dropdown-content">
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Gym">Gym</a></li>
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Pickleball">Pickleball</a></li>
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc=Running">Running</a></li>
+                        {% for dm in danh_muc_nam %}
+                            <li>
+                                <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NAM&danh_muc={{ dm.DM_Ten }}">
+                                    {{ dm.DM_Ten }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li><a href="#">Chưa có danh mục</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
+
                 <li>
                     <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ">Nữ</a>
                     <ul class="dropdown-content">
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Gym">Gym</a></li>
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Pickleball">Pickleball</a></li>
-                        <li><a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc=Yoga">Yoga</a></li>
+                        {% for dm in danh_muc_nu %}
+                            <li>
+                                <a href="{% url 'danhSachSanPham' %}?gioi_tinh=NỮ&danh_muc={{ dm.DM_Ten }}">
+                                    {{ dm.DM_Ten }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li><a href="#">Chưa có danh mục</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
+
                 <li><a href="{% url 'quanLyDonDat' %}">Quản lý đơn đặt</a></li>
             </ul>
 

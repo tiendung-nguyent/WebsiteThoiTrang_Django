@@ -7,7 +7,7 @@ import json
 from django.db.models import Q
 from django.db.models.functions import Lower
 import unicodedata
-
+from quanLySanPham.models import DanhMuc
 from quanLySanPham.models import SanPham, BienTheSanPham
 from quanLyKhachHang.models import KhachHang, ChiTietKhachHang
 from QuanLyKhuyenMai.models import KhuyenMai, SanPham_KhuyenMai
@@ -503,7 +503,6 @@ def danhSachSanPham(request):
             mo_ta_sp = normalize_text(sp.SP_MoTa)
             noi_dung_tim = f"{ten_sp} {mo_ta_sp}"
 
-            # tất cả từ trong ô search đều phải xuất hiện
             if all(tu in noi_dung_tim for tu in tu_khoa_list):
                 ket_qua.append(sp)
 
@@ -516,9 +515,14 @@ def danhSachSanPham(request):
         if danh_muc:
             ds_san_pham = ds_san_pham.filter(DM_Ma__DM_Ten__iexact=danh_muc)
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'sanpham/danh_sach_san_pham.html', {
         'ds_san_pham': ds_san_pham,
         'gioi_tinh_da_chon': gioi_tinh,
         'danh_muc_da_chon': danh_muc,
         'tu_khoa': q,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
