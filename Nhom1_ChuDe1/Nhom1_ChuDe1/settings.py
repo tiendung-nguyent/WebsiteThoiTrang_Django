@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.StaffAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'Nhom1_ChuDe1.urls'
@@ -78,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 "django.template.context_processors.media",
                 'django.contrib.messages.context_processors.messages',
+                'gioHang.context_processors.cart_count_processor',
             ],
         },
     },

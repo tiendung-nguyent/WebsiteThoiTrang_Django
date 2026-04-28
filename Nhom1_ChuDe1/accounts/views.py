@@ -3,7 +3,7 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserRegistrationForm
-from .models import Profile
+from quanLyKhachHang.models import KhachHang
 
 
 def register(request):
@@ -29,11 +29,12 @@ def register_success(request):
 @login_required
 def profile(request):
     viewed_products = request.session.get('viewed_products', [])
-    profile_obj, created = Profile.objects.get_or_create(user=request.user)
+    kh_ma = f"KH{request.user.id:07d}"
+    khach_hang = KhachHang.objects.filter(KH_Ma=kh_ma).first()
 
     return render(request, 'user/profile.html', {
         'user': request.user,
-        'profile': profile_obj,
+        'khach_hang': khach_hang,
         'viewed_products': viewed_products
     })
 
