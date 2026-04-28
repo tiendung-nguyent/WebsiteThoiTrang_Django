@@ -1,0 +1,252 @@
+{% extends 'user/base_user.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    .page-header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        color: #222;
+    }
+
+    .section-subtitle {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 0;
+    }
+
+    .filter-info {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0 30px;
+    }
+
+    .filter-tag {
+        background: #eef5fb;
+        color: #2f6fa8;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid #d7e7f5;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding-bottom: 60px;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.35s ease;
+        border-bottom: 4px solid #2f6fa8;
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.14);
+    }
+
+    .product-img-wrap {
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .product-img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+        display: block;
+    }
+
+    .product-card:hover .product-img {
+        transform: scale(1.08);
+    }
+
+    .product-info {
+        padding: 14px 14px 18px;
+    }
+
+    .product-category {
+        font-size: 10px;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .product-name {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 14px 0;
+        min-height: 42px;
+        line-height: 1.4;
+        color: #222;
+    }
+
+    .product-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .price {
+        color: #0a4f9c;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .cart-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #2f6fa8;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .product-card:hover .cart-btn {
+        background: #0b5ed7;
+        transform: scale(1.08);
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        background: #fff;
+        border-radius: 14px;
+        padding: 50px 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .empty-state h3 {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #777;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    @media (max-width: 1100px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 24px;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .price {
+            font-size: 18px;
+        }
+    }
+</style>
+
+<div class="page-header">
+    {% if tu_khoa %}
+        <h2 class="section-title">Kết quả tìm kiếm</h2>
+        <p class="section-subtitle">Từ khóa: "{{ tu_khoa }}"</p>
+    {% elif gioi_tinh_da_chon and danh_muc_da_chon %}
+        <h2 class="section-title">{{ gioi_tinh_da_chon }} - {{ danh_muc_da_chon }}</h2>
+        <p class="section-subtitle">Danh sách sản phẩm theo danh mục đã chọn</p>
+    {% elif gioi_tinh_da_chon %}
+        <h2 class="section-title">Sản phẩm {{ gioi_tinh_da_chon }}</h2>
+        <p class="section-subtitle">Khám phá các sản phẩm dành cho {{ gioi_tinh_da_chon|lower }}</p>
+    {% else %}
+        <h2 class="section-title">Danh sách sản phẩm</h2>
+        <p class="section-subtitle">Khám phá toàn bộ sản phẩm tại cửa hàng</p>
+    {% endif %}
+</div>
+
+{% if gioi_tinh_da_chon or danh_muc_da_chon or tu_khoa %}
+<div class="filter-info">
+    {% if gioi_tinh_da_chon %}
+        <span class="filter-tag">Giới tính: {{ gioi_tinh_da_chon }}</span>
+    {% endif %}
+    {% if danh_muc_da_chon %}
+        <span class="filter-tag">Danh mục: {{ danh_muc_da_chon }}</span>
+    {% endif %}
+    {% if tu_khoa %}
+        <span class="filter-tag">Tìm kiếm: {{ tu_khoa }}</span>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="product-grid">
+    {% for sp in ds_san_pham %}
+    <a href="{% url 'chiTietSanPham' sp.SP_Ma %}" class="product-card">
+        <div class="product-img-wrap">
+            {% if sp.SP_HinhAnh %}
+                <img src="{{ sp.SP_HinhAnh.url }}" class="product-img" alt="{{ sp.SP_Ten }}">
+            {% else %}
+                <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img" alt="{{ sp.SP_Ten }}">
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <p class="product-category">
+                {{ sp.DM_Ma.DM_Thuoc }} - {{ sp.DM_Ma.DM_Ten }}
+            </p>
+
+            <p class="product-name">{{ sp.SP_Ten }}</p>
+
+            <div class="product-bottom">
+                <span class="price">{{ sp.SP_GiaBan|vietnam_number }} đ</span>
+                <span class="cart-btn">
+                    <i class="fa fa-shopping-cart"></i>
+                </span>
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <div class="empty-state">
+        <h3>Không tìm thấy sản phẩm phù hợp</h3>
+        <p>Vui lòng thử lại với từ khóa khác hoặc chọn danh mục khác.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

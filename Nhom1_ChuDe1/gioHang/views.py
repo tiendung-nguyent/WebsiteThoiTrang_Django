@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 import json
+from django.db.models import Q
+from django.db.models.functions import Lower
+import unicodedata
 
 from quanLySanPham.models import SanPham, BienTheSanPham
 from quanLyKhachHang.models import KhachHang, ChiTietKhachHang
@@ -471,4 +474,51 @@ def thanh_toan_view(request):
         'payment': payment,
         'giam_gia_json': giam_gia_json,
         'ds_ctkh': ds_ctkh,
+    })
+
+
+def normalize_text(text):
+    if not text:
+        return ''
+    text = str(text).strip().lower()
+    text = unicodedata.normalize('NFC', text)
+    return ' '.join(text.split())
+
+
+def danhSachSanPham(request):
+    ds_san_pham = SanPham.objects.select_related('DM_Ma').all()
+
+    gioi_tinh = request.GET.get('gioi_tinh', '').strip()
+    danh_muc = request.GET.get('danh_muc', '').strip()
+    q = request.GET.get('q', '').strip()
+
+    if q:
+        q_normalized = normalize_text(q)
+        tu_khoa_list = q_normalized.split()
+
+        ket_qua = []
+
+        for sp in ds_san_pham:
+            ten_sp = normalize_text(sp.SP_Ten)
+            mo_ta_sp = normalize_text(sp.SP_MoTa)
+            noi_dung_tim = f"{ten_sp} {mo_ta_sp}"
+
+            # tất cả từ trong ô search đều phải xuất hiện
+            if all(tu in noi_dung_tim for tu in tu_khoa_list):
+                ket_qua.append(sp)
+
+        ds_san_pham = ket_qua
+
+    else:
+        if gioi_tinh:
+            ds_san_pham = ds_san_pham.filter(DM_Ma__DM_Thuoc__iexact=gioi_tinh)
+
+        if danh_muc:
+            ds_san_pham = ds_san_pham.filter(DM_Ma__DM_Ten__iexact=danh_muc)
+
+    return render(request, 'sanpham/danh_sach_san_pham.html', {
+        'ds_san_pham': ds_san_pham,
+        'gioi_tinh_da_chon': gioi_tinh,
+        'danh_muc_da_chon': danh_muc,
+        'tu_khoa': q,
     })
