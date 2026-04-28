@@ -304,13 +304,7 @@
     <div class="breadcrumb" onclick="window.history.back()">← Quay lại</div>
     <div class="page-title">Theo dõi đơn đặt</div>
 
-    {% if messages %}
-    {% for message in messages %}
-    <div class="flash-message {% if message.tags == 'success' %}flash-success{% else %}flash-error{% endif %}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
+
 
     {% for don in ds_don %}
     <div class="order-card">
