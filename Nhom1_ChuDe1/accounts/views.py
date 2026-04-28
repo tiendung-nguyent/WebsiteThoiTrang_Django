@@ -41,4 +41,11 @@ def profile(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('trangChuUser')
+    return redirect('login')
+
+
+@login_required
+def login_redirect(request):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('bao_cao_staff')
+    return redirect('profile')

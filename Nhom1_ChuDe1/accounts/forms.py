@@ -51,6 +51,15 @@ class UserRegistrationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        # Cố gắng tách full_name ra first_name và last_name để lưu dự phòng trong User
+        full_name = self.cleaned_data['full_name'].strip()
+        parts = full_name.split()
+        if len(parts) > 1:
+            user.last_name = parts[-1]
+            user.first_name = " ".join(parts[:-1])
+        else:
+            user.first_name = full_name
+            
         user.username = self.cleaned_data['username'].strip()
         user.set_password(self.cleaned_data['password'])
 
@@ -59,13 +68,18 @@ class UserRegistrationForm(forms.ModelForm):
             
             # Tạo KhachHang liên kết với User mới tạo
             kh_ma = f"KH{user.id:07d}"
-            KhachHang.objects.get_or_create(
+            kh, created = KhachHang.objects.get_or_create(
                 KH_Ma=kh_ma,
                 defaults={
-                    'KH_Ten': self.cleaned_data['full_name'],
+                    'KH_Ten': full_name,
                     'KH_TongChiTieu': 0,
                     'KH_SoDonHang': 0
                 }
             )
+            
+            # Nếu bản ghi đã tồn tại (do bị đụng độ với ID Khach le trước đó), ép cập nhật lại tên đúng
+            if not created and kh.KH_Ten == 'Khach le':
+                kh.KH_Ten = full_name
+                kh.save()
 
         return user

@@ -210,7 +210,7 @@
         </ul>
 
         <div class="sidebar-footer">
-            <a href="#" class="logout-btn">
+            <a href="{% url 'logout' %}" class="logout-btn">
                 <i class="fa fa-sign-out-alt" style="margin-right: 10px;"></i> Đăng xuất
             </a>
         </div>
@@ -225,10 +225,10 @@
 
             <div class="user-info">
                 <div class="user-name">
-                    <b>Admin User</b>
-                    <small>admin@censports.com</small>
+                    <b>{{ user.username }}</b>
+                    <small>{{ user.email|default:"Chưa cập nhật email" }}</small>
                 </div>
-                <div class="user-avatar">A</div>
+                <div class="user-avatar">{{ user.username|make_list|first|upper }}</div>
             </div>
         </header>
 
