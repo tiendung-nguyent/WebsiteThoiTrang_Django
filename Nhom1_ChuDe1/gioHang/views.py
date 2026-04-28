@@ -465,7 +465,10 @@ def thanh_toan_view(request):
                 GH_TamTinh=0
             )
 
-            messages.success(request, 'Thanh toán thành công')
+            if payment == 'COD':
+                messages.success(request, 'Đặt hàng thành công! Vui lòng thanh toán khi nhận hàng.')
+            else:
+                messages.success(request, 'Thanh toán thành công!')
             return redirect('quanLyDonDat')
 
     return render(request, 'gioHang/ThanhToan.html', {
