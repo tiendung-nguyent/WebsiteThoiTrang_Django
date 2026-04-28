@@ -73,7 +73,6 @@ def trangChuUser(request):
 
     return render(request, 'gioHang/trangChuUser.html', {
         'san_phams': san_phams,
-        'cart_count': gio_hang.GH_TongSL,
     })
 
 
@@ -109,10 +108,10 @@ def chiTietSanPham(request, sp_ma):
         'mau_sacs': mau_sacs,
         'kich_thuocs': kich_thuocs,
         'ton_kho_map': ton_kho_map,
-        'cart_count': gio_hang.GH_TongSL,
     })
 
 
+@login_required
 def them_vao_gio_hang(request, sp_ma):
     if request.method != 'POST':
         return redirect('chiTietSanPham', sp_ma=sp_ma)
@@ -167,6 +166,7 @@ def them_vao_gio_hang(request, sp_ma):
     return redirect('chiTietSanPham', sp_ma=sp_ma)
 
 
+@login_required
 def gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang(request)
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related(
@@ -177,10 +177,10 @@ def gio_hang(request):
     return render(request, 'gioHang/gio_hang.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
-        'cart_count': gio_hang.GH_TongSL,
     })
 
 
+@login_required
 def xoa_san_pham_khoi_gio(request, ctgh_id):
     gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
@@ -189,6 +189,7 @@ def xoa_san_pham_khoi_gio(request, ctgh_id):
     return redirect('gioHang')
 
 
+@login_required
 def xoa_gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang(request)
     ChiTietGioHang.objects.filter(GH_Ma=gio_hang).delete()
@@ -196,6 +197,7 @@ def xoa_gio_hang(request):
     return redirect('gioHang')
 
 
+@login_required
 def cap_nhat_san_pham_gio(request, ctgh_id):
     if request.method != 'POST':
         return redirect('gioHang')
@@ -245,6 +247,7 @@ def cap_nhat_san_pham_gio(request, ctgh_id):
     cap_nhat_tong_gio_hang(gio_hang)
     return redirect('gioHang')
 
+@login_required
 def xac_nhan_xoa_gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang(request)
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
@@ -253,10 +256,10 @@ def xac_nhan_xoa_gio_hang(request):
     return render(request, 'gioHang/XoaGioHang.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
-        'cart_count': gio_hang.GH_TongSL,
     })
 
 
+@login_required
 def xoa_gio_hang(request):
     gio_hang = lay_hoac_tao_gio_hang(request)
 
@@ -266,6 +269,7 @@ def xoa_gio_hang(request):
 
     return redirect('gioHang')
 
+@login_required
 def tang_so_luong_gio(request, ctgh_id):
     gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
@@ -278,6 +282,7 @@ def tang_so_luong_gio(request, ctgh_id):
     return redirect('gioHang')
 
 
+@login_required
 def giam_so_luong_gio(request, ctgh_id):
     gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
@@ -293,6 +298,7 @@ def giam_so_luong_gio(request, ctgh_id):
     return redirect('gioHang')
 
 
+@login_required
 def thanh_toan_view(request):
     kh = lay_hoac_tao_khach_hang(request)
     gio_hang = lay_hoac_tao_gio_hang(request)
@@ -461,7 +467,6 @@ def thanh_toan_view(request):
     return render(request, 'gioHang/ThanhToan.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
-        'cart_count': gio_hang.GH_TongSL,
         'khuyen_mais': khuyen_mais,
         'phi_van_chuyen': phi_van_chuyen,
         'tong_thanh_toan': tong_thanh_toan,

@@ -3,8 +3,10 @@ from django.contrib import messages
 from .models import DonDat
 from gioHang.models import ChiTietGioHang
 from quanLyDonHang.models import DonHangVanChuyen
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def quanLyDonDat(request):
     ds_don = DonDat.objects.all().order_by('-TT_NgayDatHang', '-TT_Ma')
 
@@ -26,6 +28,7 @@ def quanLyDonDat(request):
     })
 
 
+@login_required
 def huyDonDat(request, tt_ma):
     don = get_object_or_404(DonDat, TT_Ma=tt_ma)
 
