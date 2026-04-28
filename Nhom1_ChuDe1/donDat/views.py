@@ -4,11 +4,13 @@ from .models import DonDat
 from gioHang.models import ChiTietGioHang
 from quanLyDonHang.models import DonHangVanChuyen
 from django.contrib.auth.decorators import login_required
+from gioHang.views import lay_hoac_tao_khach_hang
 
 
 @login_required
 def quanLyDonDat(request):
-    ds_don = DonDat.objects.all().order_by('-TT_NgayDatHang', '-TT_Ma')
+    kh = lay_hoac_tao_khach_hang(request)
+    ds_don = DonDat.objects.filter(GH_Ma__KH_Ma=kh).order_by('-TT_NgayDatHang', '-TT_Ma')
 
     for don in ds_don:
         don.ds_san_pham = ChiTietGioHang.objects.filter(GH_Ma=don.GH_Ma)
@@ -30,7 +32,8 @@ def quanLyDonDat(request):
 
 @login_required
 def huyDonDat(request, tt_ma):
-    don = get_object_or_404(DonDat, TT_Ma=tt_ma)
+    kh = lay_hoac_tao_khach_hang(request)
+    don = get_object_or_404(DonDat, TT_Ma=tt_ma, GH_Ma__KH_Ma=kh)
 
     if request.method == 'POST':
         if don.DH_TrangThai != 2:
