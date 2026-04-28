@@ -1,54 +1,56 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Sum
-
-from accounts.models import Profile
+from .models import KhachHang, ChiTietKhachHang
 from donDat.models import DonDat
-from .models import ChiTietKhachHang
-
 
 def khach_hang_view(request):
     if request.method == "POST":
         action = request.POST.get("action")
 
         if action == "delete":
-            ctkh_ma = request.POST.get("KH_Ma")
-            chi_tiet = get_object_or_404(ChiTietKhachHang, CTKH_Ma=ctkh_ma)
-            chi_tiet.delete()
+            kh_ma = request.POST.get("KH_Ma")
+            khach_hang = get_object_or_404(KhachHang, KH_Ma=kh_ma)
+            khach_hang.delete()
             messages.success(request, "Xóa khách hàng thành công.")
             return redirect("quanLyKH")
 
     khach_hangs = []
-
-    chi_tiet_ids = DonDat.objects.values_list("CTKH_Ma_id", flat=True).distinct()
-
-    for ctkh_id in chi_tiet_ids:
-        chi_tiet = ChiTietKhachHang.objects.filter(CTKH_Ma=ctkh_id).first()
-        if not chi_tiet:
-            continue
-
-        profile = Profile.objects.select_related("user").filter(
-            phone_number=chi_tiet.CTKH_SDT
-        ).first()
-
-        don_hangs = DonDat.objects.filter(CTKH_Ma=chi_tiet)
-
-        so_don_hang = don_hangs.count()
-        tong_chi_tieu = don_hangs.aggregate(
-            tong=Sum("TT_TongThanhToan")
-        )["tong"] or 0
-
-        ho_ten = profile.full_name if profile and profile.full_name else chi_tiet.CTKH_HoTenNguoiNhan
-        so_dien_thoai = profile.phone_number if profile else chi_tiet.CTKH_SDT
-        dia_chi = profile.address if profile and profile.address else chi_tiet.CTKH_DiaChi
-
+    
+    khach_hang_list = KhachHang.objects.all()
+    for kh in khach_hang_list:
+        don_hangs = DonDat.objects.filter(CTKH_Ma__KH_Ma=kh)
+        
+        # Ưu tiên lấy chi tiết khách hàng từ đơn đặt hàng gần nhất (thông tin giỏ hàng/thanh toán)
+        latest_don_dat = don_hangs.order_by('-TT_NgayDatHang').first()
+        if latest_don_dat:
+            chi_tiet = latest_don_dat.CTKH_Ma
+        else:
+            chi_tiet = ChiTietKhachHang.objects.filter(KH_Ma=kh).first()
+            
+        ho_ten_nguoi_nhan = chi_tiet.CTKH_HoTenNguoiNhan if chi_tiet else "Chưa có thông tin"
+        sdt = chi_tiet.CTKH_SDT if chi_tiet else "Chưa có thông tin"
+        dia_chi = chi_tiet.CTKH_DiaChi if chi_tiet else "Chưa có thông tin"
+        
+        # Nếu DB chưa cập nhật tự động KH_TongChiTieu, tính toán động từ DonDat
+        calculated_so_don_hang = don_hangs.count()
+        calculated_tong_chi_tieu = don_hangs.aggregate(tong=Sum("TT_TongThanhToan"))["tong"] or 0
+        
+        # Dùng dữ liệu của KhachHang nếu > 0, ngược lại dùng dữ liệu tính toán (để đảm bảo luôn có số liệu đúng)
+        final_so_don_hang = kh.KH_SoDonHang if kh.KH_SoDonHang > 0 else calculated_so_don_hang
+        final_tong_chi_tieu = kh.KH_TongChiTieu if kh.KH_TongChiTieu > 0 else calculated_tong_chi_tieu
+        
+        tong_chi_tieu_format = "{:,.0f}".format(final_tong_chi_tieu).replace(",", ".")
+        
         khach_hangs.append({
-            "KH_Ma": chi_tiet.CTKH_Ma,
-            "ho_ten": ho_ten,
-            "so_dien_thoai": so_dien_thoai,
-            "dia_chi": dia_chi,
-            "so_don_hang": so_don_hang,
-            "tong_chi_tieu": tong_chi_tieu,
+            "KH_Ma": kh.KH_Ma,
+            "KH_Ten": kh.KH_Ten,
+            "CTKH_Ma": chi_tiet.CTKH_Ma if chi_tiet else "Chưa có thông tin",
+            "CTKH_HoTenNguoiNhan": ho_ten_nguoi_nhan,
+            "CTKH_SDT": sdt,
+            "CTKH_DiaChi": dia_chi,
+            "KH_SoDonHang": final_so_don_hang,
+            "KH_TongChiTieu": tong_chi_tieu_format,
         })
 
     return render(request, "QuanLyKhachHang/QuanLyKhachHang.html", {

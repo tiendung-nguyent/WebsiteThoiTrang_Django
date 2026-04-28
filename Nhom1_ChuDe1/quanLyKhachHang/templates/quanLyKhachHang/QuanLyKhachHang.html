@@ -55,8 +55,9 @@
         <thead>
             <tr>
                 <th>MÃ KHÁCH HÀNG</th>
-                <th>HỌ VÀ TÊN</th>
-                <th>SỐ ĐIỆN THOẠI</th>
+                <th>TÊN KHÁCH HÀNG</th>
+                <th>TỔNG CHI TIÊU</th>
+                <th>SỐ ĐƠN HÀNG</th>
                 <th>THAO TÁC</th>
             </tr>
         </thead>
@@ -64,20 +65,20 @@
             {% for kh in khach_hangs %}
             <tr class="customer-row"
                 data-ma="{{ kh.KH_Ma|lower }}"
-                data-ten="{{ kh.ho_ten|default:''|lower }}"
-                data-sdt="{{ kh.so_dien_thoai|default:''|lower }}">
+                data-ten="{{ kh.KH_Ten|default:''|lower }}"
+                data-sdt="{{ kh.CTKH_SDT|default:''|lower }}">
                 <td class="customer-id">{{ kh.KH_Ma }}</td>
-                <td>{{ kh.ho_ten }}</td>
-                <td>{{ kh.so_dien_thoai }}</td>
+                <td>{{ kh.KH_Ten }}</td>
+                <td>{{ kh.KH_TongChiTieu }} đ</td>
+                <td>{{ kh.KH_SoDonHang }}</td>
                 <td>
                     <button class="action-btn" style="color:#94a3b8"
                         onclick="openDetailModal(
+                            '{{ kh.CTKH_Ma|escapejs }}',
                             '{{ kh.KH_Ma|escapejs }}',
-                            '{{ kh.ho_ten|escapejs }}',
-                            '{{ kh.so_dien_thoai|escapejs }}',
-                            '{{ kh.so_don_hang|escapejs }}',
-                            '{{ kh.tong_chi_tieu|escapejs }}',
-                            '{{ kh.dia_chi|escapejs }}'
+                            '{{ kh.CTKH_HoTenNguoiNhan|escapejs }}',
+                            '{{ kh.CTKH_SDT|escapejs }}',
+                            '{{ kh.CTKH_DiaChi|escapejs }}'
                         )">
                         <i class="fa fa-eye"></i>
                     </button>
@@ -90,11 +91,11 @@
             </tr>
             {% empty %}
             <tr id="emptyRow">
-                <td colspan="4" style="text-align:center;">Chưa có khách hàng</td>
+                <td colspan="5" style="text-align:center;">Chưa có khách hàng</td>
             </tr>
             {% endfor %}
             <tr id="noSearchResultRow" style="display:none;">
-                <td colspan="4" style="text-align:center;">Không tìm thấy khách hàng phù hợp</td>
+                <td colspan="5" style="text-align:center;">Không tìm thấy khách hàng phù hợp</td>
             </tr>
         </tbody>
     </table>
@@ -104,13 +105,14 @@
 {% include "QuanLyKhachHang/Xoa_KhachHang.html" %}
 
 <script>
-    function openDetailModal(id, name, phone, orders, spend, address) {
-        document.getElementById('detName').innerText = name || "Khách hàng";
-        document.getElementById('detPhoneHeader').innerText = phone || "";
-        document.getElementById('detId').innerText = ": " + (id || "");
-        document.getElementById('detOrders').innerText = ": " + (orders || "0");
-        document.getElementById('detSpend').innerText = ": " + (spend || "0") + " đ";
-        document.getElementById('detAddress').innerText = ": " + (address || "");
+    function openDetailModal(ctkh_ma, kh_ma, hoten, sdt, diachi) {
+        document.getElementById('detName').innerText = hoten || "Chi tiết khách hàng";
+        document.getElementById('detPhoneHeader').innerText = sdt || "";
+        document.getElementById('detCtkhId').innerText = ": " + (ctkh_ma || "");
+        document.getElementById('detKhId').innerText = ": " + (kh_ma || "");
+        document.getElementById('detNameReceiver').innerText = ": " + (hoten || "");
+        document.getElementById('detPhone').innerText = ": " + (sdt || "");
+        document.getElementById('detAddress').innerText = ": " + (diachi || "");
         document.getElementById('modalDetail').style.display = 'block';
     }
 
