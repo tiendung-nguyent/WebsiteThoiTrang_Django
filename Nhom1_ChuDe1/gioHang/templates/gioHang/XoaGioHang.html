@@ -120,20 +120,21 @@
 </style>
 
 <div class="delete-cart-box">
-    <div class="delete-cart-title">Xóa toàn bộ giỏ hàng</div>
-    <p class="delete-cart-desc">
-        Bạn có chắc chắn muốn xóa toàn bộ sản phẩm trong giỏ hàng không?
-    </p>
 
     {% if ds_chi_tiet %}
+        <div class="delete-cart-title">Xóa toàn bộ giỏ hàng</div>
+        <p class="delete-cart-desc">
+            Bạn có chắc chắn muốn xóa toàn bộ sản phẩm trong giỏ hàng không?
+        </p>
+
         <div class="cart-preview">
             {% for item in ds_chi_tiet %}
                 <div class="cart-item-preview">
                     <div class="cart-left">
                         {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
-                            <img src="{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh.url }}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                            <img src="{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh.url }}">
                         {% else %}
-                            <img src="{% static 'gioHangUser/aothun.jpg' %}" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                            <img src="{% static 'gioHangUser/aothun.jpg' %}">
                         {% endif %}
 
                         <div>
@@ -141,7 +142,7 @@
                             <div class="cart-meta">
                                 Màu: {{ item.BTSP_Ma.SP_MauSac }} |
                                 Size: {{ item.BTSP_Ma.SP_KichThuoc }} |
-                                Số lượng: {{ item.GH_SL }}
+                                SL: {{ item.GH_SL }}
                             </div>
                         </div>
                     </div>
@@ -171,11 +172,15 @@
                 </button>
             </form>
         </div>
+
     {% else %}
         <div class="empty-cart-box">
-            Giỏ hàng hiện đang trống.
+            <h3>Giỏ hàng hiện đang trống</h3>
+
             <div style="margin-top:20px;">
-                <a href="{% url 'trangChuUser' %}" class="btn-back">Tiếp tục mua sắm</a>
+                <a href="{% url 'trangChuUser' %}" class="btn-back">
+                    Tiếp tục mua sắm
+                </a>
             </div>
         </div>
     {% endif %}
