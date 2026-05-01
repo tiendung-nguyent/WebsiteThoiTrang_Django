@@ -77,8 +77,13 @@ def trangChuUser(request):
     gio_hang = lay_hoac_tao_gio_hang(request)
     cap_nhat_tong_gio_hang(gio_hang)
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'gioHang/trangChuUser.html', {
         'san_phams': san_phams,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 
