@@ -66,20 +66,17 @@
             <tr class="customer-row"
                 data-ma="{{ kh.KH_Ma|lower }}"
                 data-ten="{{ kh.KH_Ten|default:''|lower }}"
-                data-sdt="{{ kh.CTKH_SDT|default:''|lower }}">
+                data-sdt="{{ kh.CTKH_SDT_DaiDien|default:''|lower }}">
                 <td class="customer-id">{{ kh.KH_Ma }}</td>
                 <td>{{ kh.KH_Ten }}</td>
                 <td>{{ kh.KH_TongChiTieu }} đ</td>
                 <td>{{ kh.KH_SoDonHang }}</td>
                 <td>
                     <button class="action-btn" style="color:#94a3b8"
-                        onclick="openDetailModal(
-                            '{{ kh.CTKH_Ma|escapejs }}',
-                            '{{ kh.KH_Ma|escapejs }}',
-                            '{{ kh.CTKH_HoTenNguoiNhan|escapejs }}',
-                            '{{ kh.CTKH_SDT|escapejs }}',
-                            '{{ kh.CTKH_DiaChi|escapejs }}'
-                        )">
+                        data-ctkh="{{ kh.CTKH_List_JSON }}"
+                        data-kh="{{ kh.KH_Ma }}"
+                        data-ten="{{ kh.KH_Ten }}"
+                        onclick="openDetailModal(this)">
                         <i class="fa fa-eye"></i>
                     </button>
 
@@ -105,14 +102,34 @@
 {% include "QuanLyKhachHang/Xoa_KhachHang.html" %}
 
 <script>
-    function openDetailModal(ctkh_ma, kh_ma, hoten, sdt, diachi) {
-        document.getElementById('detName').innerText = hoten || "Chi tiết khách hàng";
-        document.getElementById('detPhoneHeader').innerText = sdt || "";
-        document.getElementById('detCtkhId').innerText = ": " + (ctkh_ma || "");
-        document.getElementById('detKhId').innerText = ": " + (kh_ma || "");
-        document.getElementById('detNameReceiver').innerText = ": " + (hoten || "");
-        document.getElementById('detPhone').innerText = ": " + (sdt || "");
-        document.getElementById('detAddress').innerText = ": " + (diachi || "");
+    function openDetailModal(btn) {
+        const kh_ma = btn.dataset.kh;
+        const kh_ten = btn.dataset.ten;
+        const ctkh_list = JSON.parse(btn.dataset.ctkh || "[]");
+
+        document.getElementById('detName').innerText = kh_ten || "Khách hàng";
+        document.getElementById('detKhId').innerText = kh_ma || "";
+        
+        const tbody = document.getElementById('detCtkhList');
+        tbody.innerHTML = ''; // clear old rows
+        
+        if (ctkh_list && ctkh_list.length > 0) {
+            ctkh_list.forEach(ct => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-family: monospace;">${ct.CTKH_Ma}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9;">${ct.CTKH_HoTenNguoiNhan}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9;">${ct.CTKH_SDT}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9;">${ct.CTKH_DiaChi}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="4" style="padding: 15px; text-align: center; color: #94a3b8; font-style: italic;">Khách hàng này chưa có thông tin nhận hàng/giỏ hàng.</td>`;
+            tbody.appendChild(row);
+        }
+        
         document.getElementById('modalDetail').style.display = 'block';
     }
 
