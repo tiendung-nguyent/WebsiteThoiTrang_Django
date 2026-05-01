@@ -1,31 +1,32 @@
 <div id="modalDetail" class="modal">
-    <div class="modal-content" style="padding: 40px; text-align: left;">
+    <div class="modal-content" style="padding: 30px; text-align: left; max-width: 650px;">
         <button onclick="closeModal('modalDetail')"
                 style="position: absolute; right: 20px; top: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 20px;">&times;</button>
 
-        <div style="text-align: center; margin-bottom: 30px;">
-            <div style="width: 140px; height: 140px; background: #00aeef; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                <i class="fa fa-user" style="font-size: 70px; color: white;"></i>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 100px; height: 100px; background: #00aeef; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa fa-user" style="font-size: 50px; color: white;"></i>
             </div>
-            <h2 id="detName" style="font-size: 26px; color: #002347; margin: 0; font-weight: 800;">Khách hàng</h2>
-            <p id="detPhoneHeader" style="font-size: 18px; color: #64748b; margin-top: 5px; font-weight: 600;"></p>
+            <h2 id="detName" style="font-size: 22px; color: #002347; margin: 0; font-weight: 800;">Khách hàng</h2>
+            <p style="font-size: 15px; color: #64748b; margin-top: 5px;">Mã KH: <span id="detKhId" style="font-weight: bold; color: #1e2937;"></span></p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 160px 1fr; gap: 12px; font-size: 15px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
-            <div style="font-weight: 700; color: #1e2937;">Chi Tiết KH Mã</div>
-            <div style="color: #64748b;" id="detCtkhId">: ...</div>
-
-            <div style="font-weight: 700; color: #1e2937;">Mã Khách Hàng</div>
-            <div style="color: #64748b;" id="detKhId">: ...</div>
-
-            <div style="font-weight: 700; color: #1e2937;">Họ Tên Người Nhận</div>
-            <div style="color: #64748b;" id="detNameReceiver">: ...</div>
-
-            <div style="font-weight: 700; color: #1e2937;">Số Điện Thoại</div>
-            <div style="color: #64748b;" id="detPhone">: ...</div>
-
-            <div style="font-weight: 700; color: #1e2937;">Địa Chỉ</div>
-            <div style="color: #64748b;" id="detAddress">: ...</div>
+        <h3 style="font-size: 16px; color: #1e2937; margin-top: 20px; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 20px;">Danh sách Chi tiết khách hàng (Địa chỉ / Người nhận)</h3>
+        
+        <div style="max-height: 250px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <thead style="background: #f8fafc; position: sticky; top: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <tr>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #475569;">Mã CTKH</th>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #475569;">Người nhận</th>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #475569;">SĐT</th>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #475569;">Địa chỉ</th>
+                    </tr>
+                </thead>
+                <tbody id="detCtkhList">
+                    <!-- Data injected via JS -->
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

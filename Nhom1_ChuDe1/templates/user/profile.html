@@ -73,7 +73,7 @@
         <div class="infocell">
             <h2>Hồ sơ cá nhân</h2>
             <div class="info-list">
-                <p><strong>Tên đăng nhập:</strong> {{ user.username }}</p>
+                <p><strong>Tên đăng nhập:</strong> {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}</p>
                 <p><strong>Họ và tên:</strong> {% if khach_hang %}{{ khach_hang.KH_Ten }}{% else %}{{ user.first_name }} {{ user.last_name }}{% endif %}</p>
                 <p><strong>Ngày tham gia:</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
                 <p><strong>Lần đăng nhập cuối:</strong> {{ user.last_login|date:"d/m/Y H:i" }}</p>

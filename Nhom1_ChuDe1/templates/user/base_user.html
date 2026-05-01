@@ -326,7 +326,7 @@
             <div class="user-icons">
                 {% if user.is_authenticated %}
                     <a href="{% url 'profile' %}" title="Profile" style="color: #333; font-size: 14px; text-decoration: none; font-weight: 600;">
-                        Hi, {{ user.username }}
+                        Hi, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
                     </a>
                     <a href="{% url 'logout' %}" title="Logout" style="color: #333;"><i class="fa fa-sign-out-alt"></i></a>
                 {% else %}

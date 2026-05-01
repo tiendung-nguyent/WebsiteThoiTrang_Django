@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'QuanLyNhapHang',
     'quanLySanPham',
     'accounts',
+    'quenmk',
 ]
 
 LOGIN_REDIRECT_URL = 'login_redirect'
@@ -142,3 +143,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+
+# Twilio SMS API Configuration
+TWILIO_ACCOUNT_SID = 'YOUR_TWILIO_ACCOUNT_SID'
+TWILIO_AUTH_TOKEN = 'YOUR_TWILIO_AUTH_TOKEN'
+TWILIO_PHONE_NUMBER = 'YOUR_TWILIO_PHONE_NUMBER'
