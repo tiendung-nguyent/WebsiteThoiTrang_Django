@@ -209,21 +209,19 @@
         <div class="checkout-left">
             <div class="checkout-section">
                 <h3 class="section-title">Thông tin người nhận</h3>
-                
+
                 <!-- Hidden field to store selected saved address ID -->
                 <input type="hidden" name="ctkh_ma" id="selected_ctkh_ma">
 
                 <div class="form-group">
                     <label>Họ và tên <span>*</span></label>
-                    <input type="text" name="ho_ten" id="ho_ten_input" list="customer-list" class="form-control" placeholder="Nhập họ và tên"
-                        value="{{ ho_ten }}" autocomplete="off">
+                    <input type="text" name="ho_ten" id="ho_ten_input" list="customer-list" class="form-control"
+                        placeholder="Nhập họ và tên" value="{{ ho_ten }}" autocomplete="off">
                     <datalist id="customer-list">
                         {% for ctkh in ds_ctkh %}
-                        <option value="{{ ctkh.CTKH_HoTenNguoiNhan }}" 
-                                data-sdt="{{ ctkh.CTKH_SDT }}" 
-                                data-address="{{ ctkh.CTKH_DiaChi }}" 
-                                data-id="{{ ctkh.CTKH_Ma }}">
-                        {% endfor %}
+                        <option value="{{ ctkh.CTKH_HoTenNguoiNhan }}" data-sdt="{{ ctkh.CTKH_SDT }}"
+                            data-address="{{ ctkh.CTKH_DiaChi }}" data-id="{{ ctkh.CTKH_Ma }}">
+                            {% endfor %}
                     </datalist>
                 </div>
                 <div class="form-group">
@@ -231,14 +229,21 @@
                     <input type="text" name="so_dien_thoai" id="sdt_input" class="form-control" placeholder="0123456789"
                         value="{{ so_dien_thoai }}">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label>Địa chỉ giao hàng <span>*</span></label>
-                    <input type="text" name="dia_chi" id="address_input" class="form-control" placeholder="Nhập địa chỉ đầy đủ"
-                        value="{{ dia_chi }}">
+                    <input type="text" name="dia_chi" id="address_input" class="form-control"
+                        placeholder="Ví dụ: 92 Quang Trung, Hải Châu, Đà Nẵng" autocomplete="off" value="{{ dia_chi }}">
+                    <!-- Danh sách gợi ý -->
+                    <div id="results" class="list-group"
+                        style="position: absolute; width: 100%; z-index: 1000; display: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #ddd; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                    </div>
                 </div>
 
+                <!-- Nơi hiển thị kết quả thời gian -->
+                <div id="delivery-info"></div>
+
                 <script>
-                    document.getElementById('ho_ten_input').addEventListener('input', function() {
+                    document.getElementById('ho_ten_input').addEventListener('input', function () {
                         const val = this.value;
                         const options = document.querySelectorAll('#customer-list option');
                         let found = false;
@@ -246,9 +251,14 @@
                         options.forEach(option => {
                             if (option.value === val) {
                                 document.getElementById('sdt_input').value = option.getAttribute('data-sdt');
-                                document.getElementById('address_input').value = option.getAttribute('data-address');
+                                const address = option.getAttribute('data-address');
+                                document.getElementById('address_input').value = address;
                                 document.getElementById('selected_ctkh_ma').value = option.getAttribute('data-id');
                                 found = true;
+
+                                if (typeof window.calculateLeadtime === 'function') {
+                                    window.calculateLeadtime(address);
+                                }
                             }
                         });
 
@@ -320,7 +330,8 @@
                 <span>{{ phi_van_chuyen|vietnam_number }} đ</span>
             </div>
 
-            <div class="summary-item" id="khuyen_mai_row" style="display: {% if khuyen_mai_obj %}flex{% else %}none{% endif %};">
+            <div class="summary-item" id="khuyen_mai_row"
+                style="display: {% if khuyen_mai_obj %}flex{% else %}none{% endif %};">
                 <span>Khuyến mãi (<span id="khuyen_mai_name">{% if khuyen_mai_obj %}{{ khuyen_mai_obj.KM_Ten }}{% endif %}</span>)</span>
                 <span style="color: #ff5e5e;">- <span id="khuyen_mai_value">{% if khuyen_mai_obj %}{{ hien_thi_giam_gia }}{% endif %}</span></span>
             </div>
@@ -354,7 +365,7 @@
             if (maKm && giamGiaDict.hasOwnProperty(maKm)) {
                 const kmData = giamGiaDict[maKm];
                 giamGiaAmount = kmData.amount;
-                
+
                 kmNameSpan.innerText = kmData.name;
                 kmValueSpan.innerText = kmData.display;
                 kmRow.style.display = 'flex';
@@ -367,6 +378,89 @@
 
             totalSpan.innerText = new Intl.NumberFormat('vi-VN').format(finalTotal);
         });
+
+        // 1. Xử lý Autocomplete Địa chỉ & Gọi API GHN tính thời gian giao hàng
+        const inputAddress = document.getElementById('address_input');
+        const results = document.getElementById('results');
+        const infoDiv = document.getElementById('delivery-info');
+        let timeoutId;
+
+        inputAddress.addEventListener('input', function () {
+            clearTimeout(timeoutId);
+            let query = this.value;
+            if (query.length < 3) { results.style.display = 'none'; return; }
+
+            timeoutId = setTimeout(() => {
+                // Gọi Nominatim API (OpenStreetMap)
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=vn&limit=5`)
+                    .then(res => res.json())
+                    .then(data => {
+                        results.innerHTML = '';
+                        if (data && data.length > 0) {
+                            results.style.display = 'block';
+                            data.forEach(item => {
+                                const fullAddr = item.display_name;
+
+                                const div = document.createElement('div');
+                                div.className = 'list-group-item list-group-item-action';
+                                div.textContent = fullAddr;
+                                div.style.padding = '10px';
+                                div.style.cursor = 'pointer';
+                                div.style.borderBottom = '1px solid #eee';
+
+                                div.onmouseenter = () => { div.style.background = '#f9f9f9'; };
+                                div.onmouseleave = () => { div.style.background = 'white'; };
+
+                                div.onclick = () => {
+                                    inputAddress.value = fullAddr;
+                                    results.style.display = 'none';
+                                    // Gọi hàm tính thời gian giao hàng
+                                    calculateLeadtime(fullAddr);
+                                };
+                                results.appendChild(div);
+                            });
+                        } else {
+                            results.style.display = 'none';
+                        }
+                    });
+            }, 300);
+        });
+
+        // Hàm gọi Django để tính thời gian
+        window.calculateLeadtime = function (address) {
+            infoDiv.innerHTML = "<div class='text-muted' style='margin-top: 10px; font-size: 13px;'>⌛ Đang tính toán lịch trình...</div>";
+
+            fetch(`/get-shipping-info/?address=${encodeURIComponent(address)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const date = new Date(data.expected_timestamp * 1000);
+                        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                        infoDiv.innerHTML = `
+                            <div class="alert alert-success mt-2" style="background: #ebfbee; color: #40c057; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 13px;">
+                                <strong>Dự kiến nhận hàng:</strong> ${date.toLocaleDateString('vi-VN', options)}
+                            </div>`;
+                    } else {
+                        infoDiv.innerHTML = `<div class='text-danger mt-2' style="color: #fa5252; margin-top: 10px; font-size: 13px;">⚠️ ${data.error}</div>`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Lỗi khi gọi API tính thời gian:", err);
+                    infoDiv.innerHTML = `<div class='text-danger mt-2' style="color: #fa5252; margin-top: 10px; font-size: 13px;">⚠️ Lỗi lấy thông tin giao hàng, vui lòng thử lại sau.</div>`;
+                });
+        }
+
+        // Ẩn dropdown khi click ra ngoài
+        document.addEventListener('click', function (e) {
+            if (e.target !== inputAddress && e.target !== results) {
+                results.style.display = 'none';
+            }
+        });
+
+        // Gọi leadtime lần đầu nếu có sẵn địa chỉ
+        if (inputAddress.value && inputAddress.value.length > 5) {
+            calculateLeadtime(inputAddress.value);
+        }
     });
 </script>
 {% endblock %}

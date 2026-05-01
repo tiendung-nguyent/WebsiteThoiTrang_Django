@@ -13,6 +13,8 @@ from quanLyKhachHang.models import KhachHang, ChiTietKhachHang
 from QuanLyKhuyenMai.models import KhuyenMai, SanPham_KhuyenMai
 from .models import GioHang, ChiTietGioHang
 from donDat.models import DonDat
+import requests
+from django.http import JsonResponse
 
 def tao_ma_khach_hang():
     # Không còn dùng để tự tạo tự động do gây đụng độ với user.id
@@ -441,6 +443,8 @@ def thanh_toan_view(request):
             so_don = DonDat.objects.count() + 1
             tt_ma = f"DD{so_don:07d}"
             phuong_thuc = "Thanh toán khi nhận hàng (COD)" if payment == "COD" else "Chuyển khoản qua ngân hàng"
+            
+            expected_delivery_date = request.POST.get('expected_delivery_date')
 
             DonDat.objects.create(
                 TT_Ma=tt_ma,
@@ -450,7 +454,8 @@ def thanh_toan_view(request):
                 TT_TongThanhToan=tong_thanh_toan,
                 TT_PhuongThuc=phuong_thuc,
                 TT_TongTienHang=tong_tien_hang,
-                TT_NgayThanhToan=None
+                TT_NgayThanhToan=None,
+                TT_NgayGiaoDuKien=expected_delivery_date if expected_delivery_date else None
             )
 
             kh.KH_TongChiTieu += tong_thanh_toan
@@ -538,3 +543,95 @@ def danhSachSanPham(request):
         'danh_muc_nam': danh_muc_nam,
         'danh_muc_nu': danh_muc_nu,
     })
+
+def get_shipping_info(request):
+    address_str = request.GET.get('address', '')
+    
+    # Thông tin shop
+    GHN_TOKEN = "dc8f38d8-4509-11f1-bc69-ee9455d43f1a"
+    SHOP_ID = "6412169"
+    
+    # Kho hàng tại Đà Nẵng
+    FROM_DISTRICT_ID = 1454 
+    FROM_WARD_CODE = "21211"
+
+    headers = {
+        "Token": GHN_TOKEN,
+        "ShopId": SHOP_ID,
+        "Content-Type": "application/json"
+    }
+
+    try:
+        # TÌM DISTRICT_ID TỪ ĐỊA CHỈ PHONTON
+        district_url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district"
+        res_district = requests.get(district_url, headers=headers).json()
+        
+        if res_district.get('code') != 200:
+            error_msg = res_district.get('message', 'Không thể kết nối GHN')
+            return JsonResponse({'error': f'Lỗi GHN: {error_msg}'}, status=400)
+
+        districts = res_district.get('data') or []
+        
+        import re
+        target_district_id = None
+        addr_lower = address_str.lower()
+        for d in districts:
+            d_name = d.get('DistrictName', '')
+            if not d_name:
+                continue
+            # Xóa các tiền tố phổ biến của GHN để so khớp tốt hơn với Photon API (vd: "Huyện Hải Lăng" -> "Hải Lăng")
+            clean_name = re.sub(r'^(Huyện|Quận|Thành phố|Thị xã|Tỉnh)\s+', '', d_name, flags=re.IGNORECASE)
+            
+            if clean_name.lower() in addr_lower:
+                target_district_id = d.get('DistrictID')
+                break
+        
+        if not target_district_id:
+            return JsonResponse({'error': 'Không tìm thấy Quận/Huyện hợp lệ trong địa chỉ này.'}, status=400)
+
+        # TÌM WARD_CODE
+        ward_url = f"https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id={target_district_id}"
+        res_ward = requests.get(ward_url, headers=headers).json()
+        wards = res_ward.get('data') or []
+        
+        target_ward_code = None
+        for w in wards:
+            w_name = w.get('WardName', '')
+            if not w_name: continue
+            clean_w_name = re.sub(r'^(Phường|Xã|Thị trấn)\s+', '', w_name, flags=re.IGNORECASE)
+            if clean_w_name.lower() in addr_lower:
+                target_ward_code = w.get('WardCode')
+                break
+                
+        # Nếu không tìm thấy chính xác, lấy phường/xã đầu tiên làm ước lượng thời gian
+        if not target_ward_code and len(wards) > 0:
+            target_ward_code = wards[0].get('WardCode')
+            
+        if not target_ward_code:
+            return JsonResponse({'error': 'Không tìm thấy dữ liệu Phường/Xã cho Quận/Huyện này.'}, status=400)
+
+        # TÍNH THỜI GIAN GIAO HÀNG (LEADTIME)
+        leadtime_url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime"
+        payload = {
+            "from_district_id": FROM_DISTRICT_ID,
+            "from_ward_code": FROM_WARD_CODE,
+            "to_district_id": target_district_id,
+            "to_ward_code": target_ward_code,
+            "service_id": 53320  # Dịch vụ Chuyển phát chuẩn
+        }
+        
+        response = requests.post(leadtime_url, json=payload, headers=headers).json()
+
+        
+        if response.get('code') == 200:
+            return JsonResponse({
+                'status': 'success',
+                'expected_timestamp': response['data']['leadtime']
+            })
+        else:
+            err_msg = response.get('message', 'Lỗi không xác định từ GHN.')
+            return JsonResponse({'error': f'GHN: {err_msg}'}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'error': 'Lỗi kết nối máy chủ vận chuyển.'}, status=500)
+
