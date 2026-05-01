@@ -417,26 +417,24 @@ def thanh_toan_view(request):
         if loi:
             messages.error(request, loi)
         else:
-            if ctkh_ma_selected:
-                ctkh = ChiTietKhachHang.objects.filter(CTKH_Ma=ctkh_ma_selected, KH_Ma=kh).first()
-                if ctkh:
-                    ctkh.CTKH_HoTenNguoiNhan = ho_ten
-                    ctkh.CTKH_SDT = so_dien_thoai
-                    ctkh.CTKH_DiaChi = dia_chi
-                    ctkh.save()
-                else:
-                    so_ctkh = ChiTietKhachHang.objects.count() + 1
-                    ctkh_ma = f"CTKH{so_ctkh:05d}"
-                    ctkh = ChiTietKhachHang.objects.create(
-                        CTKH_Ma=ctkh_ma,
-                        KH_Ma=kh,
-                        CTKH_HoTenNguoiNhan=ho_ten,
-                        CTKH_SDT=so_dien_thoai,
-                        CTKH_DiaChi=dia_chi
-                    )
-            else:
+            # Luôn tìm kiếm xem đã có địa chỉ/thông tin nào giống y hệt chưa
+            ctkh = ChiTietKhachHang.objects.filter(
+                KH_Ma=kh,
+                CTKH_HoTenNguoiNhan=ho_ten,
+                CTKH_SDT=so_dien_thoai,
+                CTKH_DiaChi=dia_chi
+            ).first()
+
+            if not ctkh:
+                # Nếu chưa có, tạo mới 1 CTKH để lưu lịch sử (không ghi đè để tránh hỏng đơn hàng cũ)
                 so_ctkh = ChiTietKhachHang.objects.count() + 1
                 ctkh_ma = f"CTKH{so_ctkh:05d}"
+                
+                # Đảm bảo mã không bị trùng
+                while ChiTietKhachHang.objects.filter(CTKH_Ma=ctkh_ma).exists():
+                    so_ctkh += 1
+                    ctkh_ma = f"CTKH{so_ctkh:05d}"
+                    
                 ctkh = ChiTietKhachHang.objects.create(
                     CTKH_Ma=ctkh_ma,
                     KH_Ma=kh,
