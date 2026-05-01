@@ -203,7 +203,7 @@
 
 
 
-<form method="POST" action="{% url 'ThanhToan' %}">
+<form method="POST" action="{% url 'ThanhToan' %}" id="checkoutForm">
     {% csrf_token %}
     <div class="checkout-container">
         <div class="checkout-left">
@@ -212,6 +212,8 @@
 
                 <!-- Hidden field to store selected saved address ID -->
                 <input type="hidden" name="ctkh_ma" id="selected_ctkh_ma">
+                <!-- Hidden field to store expected delivery date -->
+                <input type="hidden" name="expected_delivery_date" id="expected_delivery_date">
 
                 <div class="form-group">
                     <label>Họ và tên <span>*</span></label>
@@ -386,6 +388,9 @@
         let timeoutId;
 
         inputAddress.addEventListener('input', function () {
+            document.getElementById('expected_delivery_date').value = '';
+            infoDiv.innerHTML = '';
+            
             clearTimeout(timeoutId);
             let query = this.value;
             if (query.length < 3) { results.style.display = 'none'; return; }
@@ -428,6 +433,7 @@
 
         // Hàm gọi Django để tính thời gian
         window.calculateLeadtime = function (address) {
+            document.getElementById('expected_delivery_date').value = '';
             infoDiv.innerHTML = "<div class='text-muted' style='margin-top: 10px; font-size: 13px;'>⌛ Đang tính toán lịch trình...</div>";
 
             fetch(`/get-shipping-info/?address=${encodeURIComponent(address)}`)
@@ -436,6 +442,13 @@
                     if (data.status === 'success') {
                         const date = new Date(data.expected_timestamp * 1000);
                         const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                        
+                        // Cập nhật giá trị vào hidden input để gửi lên server
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        document.getElementById('expected_delivery_date').value = `${year}-${month}-${day}`;
+                        
                         infoDiv.innerHTML = `
                             <div class="alert alert-success mt-2" style="background: #ebfbee; color: #40c057; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 13px;">
                                 <strong>Dự kiến nhận hàng:</strong> ${date.toLocaleDateString('vi-VN', options)}
@@ -461,6 +474,16 @@
         if (inputAddress.value && inputAddress.value.length > 5) {
             calculateLeadtime(inputAddress.value);
         }
+
+        // Chặn submit nếu chưa tính được ngày giao hàng
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            const expectedDate = document.getElementById('expected_delivery_date').value;
+            if (!expectedDate) {
+                e.preventDefault();
+                alert("Vui lòng chọn địa chỉ cụ thể hợp lệ và chờ hệ thống tính toán thời gian giao hàng thành công trước khi Đặt hàng.");
+                inputAddress.focus();
+            }
+        });
     });
 </script>
 {% endblock %}
