@@ -26,6 +26,10 @@ def quanLyDonHang(request):
         'status': status
     })
 
+import requests
+import re
+from datetime import datetime
+
 def view_quanLyDonHang(request, order_id):
     order = get_object_or_404(DonDat, TT_Ma=order_id)
     order_items = ChiTietGioHang.objects.filter(GH_Ma=order.GH_Ma)
@@ -48,6 +52,66 @@ def view_quanLyDonHang(request, order_id):
                 }
             )
             order.DH_TrangThai = 0
+            
+            # --- Tính lại Ngày giao hàng dự kiến qua GHN ---
+            try:
+                GHN_TOKEN = "dc8f38d8-4509-11f1-bc69-ee9455d43f1a"
+                SHOP_ID = "6412169"
+                FROM_DISTRICT_ID = 1454
+                FROM_WARD_CODE = "21211"
+                headers = {
+                    'Token': GHN_TOKEN,
+                    'ShopId': SHOP_ID,
+                    'Content-Type': 'application/json'
+                }
+                address_str = order.CTKH_Ma.CTKH_DiaChi if order.CTKH_Ma else ""
+                if address_str:
+                    addr_lower = address_str.lower()
+                    
+                    # 1. TÌM QUẬN/HUYỆN
+                    res_district = requests.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/district", headers=headers).json()
+                    districts = res_district.get('data') or []
+                    target_district_id = None
+                    for d in districts:
+                        d_name = d.get('DistrictName', '')
+                        if not d_name: continue
+                        clean_name = re.sub(r'^(Huyện|Quận|Thành phố|Thị xã|Tỉnh)\s+', '', d_name, flags=re.IGNORECASE)
+                        if clean_name.lower() in addr_lower:
+                            target_district_id = d.get('DistrictID')
+                            break
+                    
+                    if target_district_id:
+                        # 2. TÌM PHƯỜNG/XÃ
+                        res_ward = requests.get(f"https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id={target_district_id}", headers=headers).json()
+                        wards = res_ward.get('data') or []
+                        target_ward_code = None
+                        for w in wards:
+                            w_name = w.get('WardName', '')
+                            if not w_name: continue
+                            clean_w_name = re.sub(r'^(Phường|Xã|Thị trấn)\s+', '', w_name, flags=re.IGNORECASE)
+                            if clean_w_name.lower() in addr_lower:
+                                target_ward_code = w.get('WardCode')
+                                break
+                        if not target_ward_code and len(wards) > 0:
+                            target_ward_code = wards[0].get('WardCode')
+                        
+                        if target_ward_code:
+                            # 3. TÍNH LEADTIME TỪ HÔM NAY
+                            payload = {
+                                "from_district_id": FROM_DISTRICT_ID,
+                                "from_ward_code": FROM_WARD_CODE,
+                                "to_district_id": target_district_id,
+                                "to_ward_code": target_ward_code,
+                                "service_id": 53320
+                            }
+                            res_leadtime = requests.post("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime", json=payload, headers=headers).json()
+                            if res_leadtime.get('code') == 200:
+                                expected_ts = res_leadtime['data']['leadtime']
+                                order.TT_NgayGiaoDuKien = datetime.fromtimestamp(expected_ts).date()
+            except Exception as e:
+                pass # Bỏ qua nếu có lỗi kết nối GHN
+            # -----------------------------------------------
+
             order.save()
             return redirect('view_quanLyDonHang', order_id=order_id)
             

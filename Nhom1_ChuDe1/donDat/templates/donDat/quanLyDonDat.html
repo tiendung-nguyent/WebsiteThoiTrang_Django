@@ -349,6 +349,12 @@
                 <span class="summary-label">Phí vận chuyển:</span>
                 <span class="summary-value">{{ don.TT_TongPhiVC|floatformat:0 }} đ</span>
             </div>
+            {% if don.TT_NgayGiaoDuKien %}
+            <div class="summary-line">
+                <span class="summary-label">Dự kiến giao hàng:</span>
+                <span class="summary-value" style="color: #15A34A;">{{ don.TT_NgayGiaoDuKien|date:"d/m/Y" }}</span>
+            </div>
+            {% endif %}
             <div class="total-line">
                 <span class="total-label">Thành tiền:</span>
                 <span class="total-value">{{ don.TT_TongThanhToan|floatformat:0 }} đ</span>

@@ -18,4 +18,5 @@ urlpatterns = [
     path('thanh-toan/', views.thanh_toan_view, name='ThanhToan'),
     path('gio-hang/tang/<int:ctgh_id>/', views.tang_so_luong_gio, name='tangSoLuongGio'),
     path('gio-hang/giam/<int:ctgh_id>/', views.giam_so_luong_gio, name='giamSoLuongGio'),
+    path('get-shipping-info/', views.get_shipping_info, name='get_shipping_info'),
 ]

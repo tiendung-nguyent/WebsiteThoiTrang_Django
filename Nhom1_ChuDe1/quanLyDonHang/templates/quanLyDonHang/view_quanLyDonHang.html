@@ -7,41 +7,196 @@
 
 {% block content %}
 <style>
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; }
-    .modal-card { background: white; width: 100%; max-width: 650px; max-height: 95vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; position: relative;}
-    .modal-body { padding: 25px; overflow-y: auto; flex: 1; }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 20px;
+    }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 25px; }
-    .info-section h3 { font-size: 12px; text-transform: uppercase; color: #888; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px; }
-    .info-row { display: flex; margin-bottom: 8px; font-size: 14px; }
-    .info-label { width: 110px; color: #999; flex-shrink: 0; }
-    .info-value { color: #333; font-weight: 500; }
+    .modal-card {
+        background: white;
+        width: 100%;
+        max-width: 650px;
+        max-height: 95vh;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
 
-    .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; }
-    .bg-pending { background: #fff9db; color: #f08c00; }
-    .bg-shipping { background: #e7f5ff; color: #228be6; }
-    .bg-canceled { background: #fff5f5; color: #fa5252; opacity: 0.8; }
-    .bg-success { background: #ebfbee; color: #40c057; }
+    .modal-body {
+        padding: 25px;
+        overflow-y: auto;
+        flex: 1;
+    }
 
-    .profit-box { width: 100%; border-radius: 8px; padding: 15px 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-    .profit-green { background: #0ca678; color: white; }
-    .profit-red { background: #e03131; color: white; }
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 25px;
+    }
 
-    .modal-footer { padding: 20px 25px; background: #fdfdfd; border-top: 1px solid #eee; }
-    .btn-group { display: flex; gap: 15px; }
-    .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; color: white; text-align: center; text-decoration: none; }
-    .btn-blue { background: #3482b9; }
-    .btn-red { background: #fa5252; }
-    .btn-green { background: #40c057; }
+    .info-section h3 {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #888;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+    }
 
-    .product-img-item { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid #eee; }
+    .info-row {
+        display: flex;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .info-label {
+        width: 110px;
+        color: #999;
+        flex-shrink: 0;
+    }
+
+    .info-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .bg-pending {
+        background: #fff9db;
+        color: #f08c00;
+    }
+
+    .bg-shipping {
+        background: #e7f5ff;
+        color: #228be6;
+    }
+
+    .bg-canceled {
+        background: #fff5f5;
+        color: #fa5252;
+        opacity: 0.8;
+    }
+
+    .bg-success {
+        background: #ebfbee;
+        color: #40c057;
+    }
+
+    .profit-box {
+        width: 100%;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+    .profit-green {
+        background: #0ca678;
+        color: white;
+    }
+
+    .profit-red {
+        background: #e03131;
+        color: white;
+    }
+
+    .modal-footer {
+        padding: 20px 25px;
+        background: #fdfdfd;
+        border-top: 1px solid #eee;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-blue {
+        background: #3482b9;
+    }
+
+    .btn-red {
+        background: #fa5252;
+    }
+
+    .btn-green {
+        background: #40c057;
+    }
+
+    .product-img-item {
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #eee;
+    }
 
     #shippingSubModal {
-        display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255,255,255,0.9); z-index: 10001; justify-content: center; align-items: center;
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 10001;
+        justify-content: center;
+        align-items: center;
     }
-    .sub-modal-card { background: white; width: 350px; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid #eee; }
-    .sub-input { width: 100%; padding: 10px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+
+    .sub-modal-card {
+        background: white;
+        width: 350px;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid #eee;
+    }
+
+    .sub-input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        outline: none;
+    }
 </style>
 
 <div class="modal-overlay">
@@ -52,35 +207,44 @@
                     {% csrf_token %}
                     <input type="hidden" name="action" value="ship">
                     <h3 style="margin-bottom: 5px; font-size: 18px; font-weight: 700;">Cập nhật vận chuyển</h3>
-                    <p style="font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase;">ĐƠN HÀNG: {{ order_id }}</p>
+                    <p style="font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase;">ĐƠN HÀNG:
+                        {{ order_id }}</p>
 
                     <label style="font-size: 13px; font-weight: 600; color: #333;">Mã vận chuyển</label>
-                    <input type="text" name="tracking_code" id="trackingCodeInput" class="sub-input" placeholder="Nhập mã vận đơn..." required>
+                    <input type="text" name="tracking_code" id="trackingCodeInput" class="sub-input"
+                        placeholder="Nhập mã vận đơn..." required>
 
                     <label style="font-size: 13px; font-weight: 600; color: #333;">Đơn vị vận chuyển</label>
-                    <input type="text" class="sub-input" name="shipping_unit" id="shippingUnitInput" list="shippingUnits" placeholder="Chọn hoặc nhập đơn vị...">
+                    <input type="text" class="sub-input" name="shipping_unit" id="shippingUnitInput"
+                        list="shippingUnits" placeholder="Chọn hoặc nhập đơn vị...">
                     <datalist id="shippingUnits">
                         <option value="Viettel Post">
                         <option value="GHTK">
                         <option value="GHN">
                     </datalist>
 
-                    <label style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí cước</label>
-                    <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
+                    <label
+                        style="font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 5px;">Phí
+                        cước</label>
+                    <div
+                        style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding-right: 15px; margin-bottom: 20px;">
                         <input type="number" name="shipping_fee" id="shippingFeeInput" placeholder="0"
-                               style="flex: 1; border: none; padding: 12px; outline: none; border-radius: 8px; font-size: 14px;" required>
+                            style="flex: 1; border: none; padding: 12px; outline: none; border-radius: 8px; font-size: 14px;"
+                            required>
                         <span style="color: #999; font-size: 13px; font-weight: 500;">VNĐ</span>
                     </div>
 
                     <div style="display: flex; gap: 15px; margin-top: 10px;">
-                        <button type="button" class="btn" style="background: #e9ecef; color: #495057;" onclick="closeShippingSub()">Hủy</button>
+                        <button type="button" class="btn" style="background: #e9ecef; color: #495057;"
+                            onclick="closeShippingSub()">Hủy</button>
                         <button type="submit" class="btn" style="background: #3b71ca; color: white;">Giao hàng</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="modal-header" style="padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+        <div class="modal-header"
+            style="padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
             <h2 style="font-size: 18px;">Chi tiết đơn hàng <span style="color: #1a5c8b;">{{ order_id }}</span></h2>
             <a href="{% url 'quanLyDonHang' %}" style="text-decoration: none; color: #ccc;">
                 <i class="fa fa-times" style="cursor: pointer;"></i>
@@ -101,7 +265,8 @@
                     <div class="info-row"><span class="info-label">Thanh toán:</span> <span class="info-value">{{ order.TT_PhuongThuc }}</span></div>
                     <div class="info-row">
                         <span class="info-label">Trạng thái:</span>
-                        <span class="status-badge
+                        <span
+                            class="status-badge
                             {% if status == 'cho_xu_ly' %}bg-pending{% elif status == 'dang_giao' %}bg-shipping{% elif status == 'da_huy' %}bg-canceled{% else %}bg-success{% endif %}">
                             {{ order.get_DH_TrangThai_display|upper }}
                         </span>
@@ -109,6 +274,11 @@
                     {% if status == 'dang_giao' or status == 'da_giao' %}
                     <div class="info-row"><span class="info-label">Mã vận chuyển:</span> <span class="info-value">{{ shipping_info.DH_MaVanChuyen }}</span></div>
                     <div class="info-row"><span class="info-label">Đơn vị vận chuyển:</span> <span class="info-value">{{ shipping_info.DH_DViVanChuyen }}</span></div>
+                    {% if order.TT_NgayGiaoDuKien %}
+                    <div class="info-row"><span class="info-label">Ngày giao dự kiến:</span> <span class="info-value"
+                            style="color: #15A34A; font-weight: bold;">{{ order.TT_NgayGiaoDuKien|date:"Y-m-d" }}</span>
+                    </div>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -117,7 +287,8 @@
                 {% for item in order_items %}
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                     {% if item.BTSP_Ma.SP_Ma.SP_HinhAnh %}
-                    <img src="/media/{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh }}" class="product-img-item" alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
+                    <img src="/media/{{ item.BTSP_Ma.SP_Ma.SP_HinhAnh }}" class="product-img-item"
+                        alt="{{ item.BTSP_Ma.SP_Ma.SP_Ten }}">
                     {% else %}
                     <img src="{% static 'gioHangUser/aothun.jpg' %}" class="product-img-item" alt="Sản phẩm">
                     {% endif %}
@@ -137,7 +308,7 @@
                 <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;"><span>Tiền ship:</span> <b>+{{ order.TT_TongPhiVC|vietnam_number }}đ</b></div>
                 {% if discount_amount > 0 %}
                 <div style="display: flex; justify-content: space-between; width: 220px; font-size: 14px;">
-                    <span>Khuyến mãi:</span> 
+                    <span>Khuyến mãi:</span>
                     <b style="color: #ff5e5e;">-{{ discount_amount|vietnam_number }}đ</b>
                 </div>
                 {% endif %}
@@ -145,47 +316,47 @@
                     <b style="font-size: 15px;">TỔNG THU:</b> <b style="color: #1a5c8b; font-size: 18px;">{{ order.TT_TongThanhToan|vietnam_number }}đ</b>
                 </div>
                 {% if shipping_info %}
-                <div style="display: flex; justify-content: space-between; width: 220px; font-style: italic; color: #888; font-size: 13px;">
+                <div
+                    style="display: flex; justify-content: space-between; width: 220px; font-style: italic; color: #888; font-size: 13px;">
                     <span>Tiền ship thực tế:</span> <b>{{ shipping_info.DH_PhiCuoc|vietnam_number }}đ</b>
                 </div>
                 {% endif %}
             </div>
 
-            <div class="profit-box {% if order.DH_TrangThai == 3 or profit < 0 %}profit-red{% else %}profit-green{% endif %}">
-                <span style="font-weight: 500;">{% if order.DH_TrangThai == 3 or profit < 0 %}LỢI NHUẬN RÒNG GIẢM{% else %}LỢI NHUẬN RÒNG{% endif %}</span>
-                <span style="font-size: 18px; font-weight: 800;">{% if profit < 0 %}- {% endif %}{{ profit|floatformat:0|cut:"-"|vietnam_number }}đ</span>
-            </div>
+
         </div>
 
         <div class="modal-footer">
             {% if status == 'cho_xu_ly' %}
-                <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Cập nhật trạng thái</p>
-                <div class="btn-group">
-                    <button class="btn btn-blue" onclick="openShippingSub()">Giao cho vận chuyển</button>
-                    <form method="POST" style="flex: 1;">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="cancel">
-                        <button type="submit" class="btn btn-red" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">Hủy đơn hàng</button>
-                    </form>
-                </div>
+            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Cập nhật trạng thái</p>
+            <div class="btn-group">
+                <button class="btn btn-blue" onclick="openShippingSub()">Giao cho vận chuyển</button>
+                <form method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" class="btn btn-red" style="width: 100%;"
+                        onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">Hủy đơn hàng</button>
+                </form>
+            </div>
             {% elif status == 'dang_giao' %}
-                <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Xác nhận kết quả giao hàng</p>
-                <div class="btn-group">
-                    <form method="POST" style="flex: 1;">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="fail">
-                        <button type="submit" class="btn btn-red" style="width: 100%;">Giao hàng thất bại</button>
-                    </form>
-                    <form method="POST" style="flex: 1;">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="complete">
-                        <button type="submit" class="btn btn-green" style="width: 100%;">Giao hàng thành công</button>
-                    </form>
-                </div>
+            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Xác nhận kết quả giao hàng</p>
+            <div class="btn-group">
+                <form method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="fail">
+                    <button type="submit" class="btn btn-red" style="width: 100%;">Giao hàng thất bại</button>
+                </form>
+                <form method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn btn-green" style="width: 100%;">Giao hàng thành công</button>
+                </form>
+            </div>
             {% else %}
-                <a href="{% url 'quanLyDonHang' %}" class="btn btn-blue" style="width: 100%; text-decoration: none; display: block;">
-                    Đóng cửa sổ
-                </a>
+            <a href="{% url 'quanLyDonHang' %}" class="btn btn-blue"
+                style="width: 100%; text-decoration: none; display: block;">
+                Đóng cửa sổ
+            </a>
             {% endif %}
         </div>
     </div>
@@ -200,7 +371,7 @@
         document.getElementById('shippingSubModal').style.display = 'none';
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const menuLinks = document.querySelectorAll('.sidebar-menu a');
         menuLinks.forEach(link => {
             if (link.innerText.includes("Quản lý đơn hàng")) {

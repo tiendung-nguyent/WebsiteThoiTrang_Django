@@ -9,3 +9,5 @@ class DonHangVanChuyen(models.Model):
 
     def __str__(self):
         return self.DH_MaVanChuyen
+
+
