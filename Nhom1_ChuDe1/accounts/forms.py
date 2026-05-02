@@ -36,21 +36,15 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
-        widgets = {
-            'username': forms.TextInput(
-                attrs={'placeholder': 'Nhập số điện thoại'}
-            ),
-        }
+        fields = ['email', 'password']
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username', '').strip()
-        if not username:
-            raise forms.ValidationError("Số điện thoại không được để trống.")
-        # Dùng iexact để kiểm tra trùng lặp không phân biệt hoa thường, tránh lỗi IntegrityError
-        if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError("Số điện thoại đã tồn tại.")
-        return username
+    def clean_custom_username(self):
+        custom_username = self.cleaned_data.get('custom_username', '').strip()
+        if not custom_username:
+            raise forms.ValidationError("Tên đăng nhập không được để trống.")
+        if User.objects.filter(username__iexact=custom_username).exists():
+            raise forms.ValidationError("Tên đăng nhập đã tồn tại.")
+        return custom_username
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip()
@@ -71,13 +65,24 @@ class UserRegistrationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        username = self.cleaned_data['username'].strip()
-        user.username = username
-        user.first_name = self.cleaned_data.get('custom_username', '').strip()
+        email = self.cleaned_data['email'].strip()
+        user.email = email
+        user.username = self.cleaned_data['custom_username'].strip()
+        user.first_name = self.cleaned_data.get('full_name', '').strip()
         user.set_password(self.cleaned_data['password'])
 
         if commit:
             user.save()
+            
+            # Ánh xạ vào Profile theo yêu cầu
+            from accounts.models import Profile
+            Profile.objects.update_or_create(
+                user=user,
+                defaults={
+                    'full_name': self.cleaned_data.get('full_name', '').strip(),
+                    'address': email
+                }
+            )
             
             # Tạo KhachHang liên kết với User mới tạo
             kh_ma = f"KH{user.id:07d}"

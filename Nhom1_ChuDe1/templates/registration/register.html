@@ -137,10 +137,10 @@
             {% endif %}
 
             <div class="form-group">
-                <label>Số điện thoại (Tên tài khoản)</label>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    {% for error in form.username.errors %}
+                <label>Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
                         <span class="error-msg">{{ error }}</span>
                     {% endfor %}
                 {% endif %}
@@ -166,15 +166,6 @@
                 {% endif %}
             </div>
 
-            <div class="form-group">
-                <label>Email</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    {% for error in form.email.errors %}
-                        <span class="error-msg">{{ error }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
 
             <div class="form-group">
                 <label>Mật khẩu</label>
