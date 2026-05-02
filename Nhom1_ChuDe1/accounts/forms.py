@@ -16,6 +16,12 @@ class UserRegistrationForm(forms.ModelForm):
         )
     )
 
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={'placeholder': 'Nhập địa chỉ email'}
+        )
+    )
+
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={'placeholder': 'Nhập mật khẩu (8-12 ký tự)'}
@@ -30,7 +36,7 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'email', 'password']
         widgets = {
             'username': forms.TextInput(
                 attrs={'placeholder': 'Nhập số điện thoại'}
@@ -45,6 +51,14 @@ class UserRegistrationForm(forms.ModelForm):
         if User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError("Số điện thoại đã tồn tại.")
         return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip()
+        if not email:
+            raise forms.ValidationError("Email không được để trống.")
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("Email đã được sử dụng.")
+        return email
 
     def clean_confirm_password(self):
         password = self.cleaned_data.get('password')

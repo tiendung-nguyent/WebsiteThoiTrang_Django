@@ -98,7 +98,7 @@
         </div>
         
         <h2>Quên mật khẩu</h2>
-        <p class="subtitle">Hãy nhập số điện thoại của bạn để cấp lại mật khẩu</p>
+        <p class="subtitle">Hãy nhập địa chỉ Email của bạn để cấp lại mật khẩu</p>
 
         {% if messages %}
             <div class="errorlist">
@@ -111,8 +111,8 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label>Số điện thoại</label>
-                <input type="text" name="phone" placeholder="Nhập số điện thoại" required>
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Nhập địa chỉ Email" required>
             </div>
 
             <button type="submit" class="btn-primary">Khôi phục mật khẩu</button>
