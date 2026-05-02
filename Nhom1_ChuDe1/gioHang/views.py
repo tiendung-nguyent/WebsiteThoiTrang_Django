@@ -23,7 +23,11 @@ def tao_ma_khach_hang():
 
 def tao_ma_gio_hang():
     so = GioHang.objects.count() + 1
-    return f"GH{so:07d}"
+    ma = f"GH{so:07d}"
+    while GioHang.objects.filter(GH_Ma=ma).exists():
+        so += 1
+        ma = f"GH{so:07d}"
+    return ma
 
 
 def lay_hoac_tao_khach_hang(request):
@@ -445,6 +449,10 @@ def thanh_toan_view(request):
 
             so_don = DonDat.objects.count() + 1
             tt_ma = f"DD{so_don:07d}"
+            while DonDat.objects.filter(TT_Ma=tt_ma).exists():
+                so_don += 1
+                tt_ma = f"DD{so_don:07d}"
+
             phuong_thuc = "Thanh toán khi nhận hàng (COD)" if payment == "COD" else "Chuyển khoản qua ngân hàng"
             
             expected_delivery_date = request.POST.get('expected_delivery_date')
