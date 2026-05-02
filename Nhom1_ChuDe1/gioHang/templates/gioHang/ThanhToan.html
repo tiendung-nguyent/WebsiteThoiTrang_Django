@@ -388,14 +388,22 @@
         let timeoutId;
 
         inputAddress.addEventListener('input', function () {
-            document.getElementById('expected_delivery_date').value = '';
-            infoDiv.innerHTML = '';
+            // KHÔNG xóa expected_delivery_date ngay lập tức để người dùng có thể nhập thêm số nhà
+            // infoDiv.innerHTML = '';
             
             clearTimeout(timeoutId);
             let query = this.value;
-            if (query.length < 3) { results.style.display = 'none'; return; }
+            if (query.length < 3) { 
+                results.style.display = 'none'; 
+                document.getElementById('expected_delivery_date').value = '';
+                infoDiv.innerHTML = '';
+                return; 
+            }
 
             timeoutId = setTimeout(() => {
+                // Tự động tính toán lại thời gian giao hàng sau khi người dùng dừng gõ 500ms
+                calculateLeadtime(query);
+
                 // Gọi Nominatim API (OpenStreetMap)
                 fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=vn&limit=5`)
                     .then(res => res.json())
@@ -428,7 +436,7 @@
                             results.style.display = 'none';
                         }
                     });
-            }, 300);
+            }, 500); // Tăng delay lên 500ms để người dùng gõ xong
         });
 
         // Hàm gọi Django để tính thời gian
