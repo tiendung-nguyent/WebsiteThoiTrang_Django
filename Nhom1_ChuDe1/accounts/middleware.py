@@ -11,7 +11,9 @@ class StaffAccessMiddleware:
             if not request.user.is_authenticated:
                 return redirect(f"{reverse('login')}?next={request.path}")
             if not request.user.is_staff and not request.user.is_superuser:
-                raise PermissionDenied("Chỉ quản trị viên mới được phép truy cập trang này.")
+                from django.contrib import messages
+                messages.error(request, "Chỉ quản trị viên mới được phép truy cập trang này.")
+                return redirect('trangChuUser')
                 
         response = self.get_response(request)
         return response
