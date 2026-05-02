@@ -4,56 +4,44 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.conf import settings
-try:
-    from twilio.rest import Client
-except ImportError:
-    Client = None
+from django.core.mail import send_mail
 
-def send_otp_sms(phone, otp):
-    print(f"--- MOCK SMS: Mã OTP của số {phone} là {otp} ---")
-    if Client and getattr(settings, 'TWILIO_ACCOUNT_SID', None) and settings.TWILIO_ACCOUNT_SID != 'YOUR_TWILIO_ACCOUNT_SID':
-        try:
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-            # Twilio needs +84 format for Vietnam. Assuming phone is like 09xxxx
-            if phone.startswith('0'):
-                formatted_phone = '+84' + phone[1:]
-            else:
-                formatted_phone = phone
-            
-            message = client.messages.create(
-                body=f"Mã xác nhận quên mật khẩu của bạn là: {otp}. Mã có hiệu lực trong 60 giây.",
-                from_=settings.TWILIO_PHONE_NUMBER,
-                to=formatted_phone
-            )
-            print(f"SMS sent successfully: {message.sid}")
-        except Exception as e:
-            print(f"Error sending SMS via Twilio: {e}")
+def send_otp_email(email, otp):
+    print(f"--- MOCK EMAIL: Mã OTP của {email} là {otp} ---")
+    try:
+        subject = 'Mã xác thực lấy lại mật khẩu'
+        message = f'Mã xác nhận quên mật khẩu của bạn là: {otp}. Mã có hiệu lực trong 60 giây.'
+        email_from = getattr(settings, 'EMAIL_HOST_USER', 'noreply@example.com')
+        send_mail(subject, message, email_from, [email])
+        print("Email sent successfully")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 def nhap_sdt(request):
     if request.method == 'POST':
-        phone = request.POST.get('phone')
-        if not phone:
-            messages.error(request, 'Số điện thoại không được để trống.')
+        email = request.POST.get('email')
+        if not email:
+            messages.error(request, 'Email không được để trống.')
             return render(request, 'quenmk/nhap_sdt.html')
         
-        # Check if user exists. System uses username as phone in accounts
-        if not User.objects.filter(username=phone).exists():
-            messages.error(request, 'Số điện thoại chưa được đăng ký.')
+        # Check if user exists
+        if not User.objects.filter(email=email).exists():
+            messages.error(request, 'Email chưa được đăng ký.')
             return render(request, 'quenmk/nhap_sdt.html')
         
-        otp = str(random.randint(10000, 99999)) # 5 digits as per screenshot
+        otp = str(random.randint(10000, 99999)) # 5 digits
         
         # Save to session
         request.session['reset_otp_data'] = {
-            'phone': phone,
+            'email': email,
             'otp': otp,
             'timestamp': time.time()
         }
         
-        send_otp_sms(phone, otp)
+        send_otp_email(email, otp)
         
         # Hiển thị mã OTP lên màn hình để test
-        messages.success(request, f"Mã OTP xác thực để cấp lại mật khẩu của bạn là {otp}, có hiệu lực trong 1 phút.")
+        messages.success(request, f"Mã OTP xác thực để cấp lại mật khẩu đã được gửi về email {email}, có hiệu lực trong 1 phút.")
         
         return redirect('nhap_otp')
         
@@ -64,19 +52,19 @@ def nhap_otp(request):
         return redirect('nhap_sdt')
         
     otp_data = request.session['reset_otp_data']
-    phone = otp_data['phone']
+    email = otp_data['email']
     
     if request.method == 'POST':
         # Check if resend requested
         if 'resend' in request.POST:
             otp = str(random.randint(10000, 99999))
             request.session['reset_otp_data'] = {
-                'phone': phone,
+                'email': email,
                 'otp': otp,
                 'timestamp': time.time()
             }
-            send_otp_sms(phone, otp)
-            messages.success(request, f"Mã OTP xác thực để cấp lại mật khẩu của bạn là {otp}, có hiệu lực trong 1 phút.")
+            send_otp_email(email, otp)
+            messages.success(request, f"Mã OTP xác thực để cấp lại mật khẩu đã được gửi về email {email}, có hiệu lực trong 1 phút.")
             return redirect('nhap_otp')
 
         entered_otp = "".join([
@@ -91,22 +79,22 @@ def nhap_otp(request):
         
         if elapsed_time > 60:
             messages.error(request, 'Mã OTP đã hết hiệu lực. Vui lòng gửi lại.')
-            return render(request, 'quenmk/nhap_otp.html', {'phone': phone})
+            return render(request, 'quenmk/nhap_otp.html', {'email': email})
             
         if entered_otp == otp_data['otp']:
-            request.session['otp_verified'] = phone
+            request.session['otp_verified'] = email
             del request.session['reset_otp_data']
             return redirect('tao_mk_moi')
         else:
             messages.error(request, 'Mã OTP không đúng.')
             
-    return render(request, 'quenmk/nhap_otp.html', {'phone': phone})
+    return render(request, 'quenmk/nhap_otp.html', {'email': email})
 
 def tao_mk_moi(request):
     if 'otp_verified' not in request.session:
         return redirect('nhap_sdt')
         
-    phone = request.session['otp_verified']
+    email = request.session['otp_verified']
     
     if request.method == 'POST':
         password = request.POST.get('password')
@@ -125,7 +113,7 @@ def tao_mk_moi(request):
             return render(request, 'quenmk/tao_mk_moi.html')
             
         try:
-            user = User.objects.get(username=phone)
+            user = User.objects.get(email=email)
             user.set_password(password)
             user.save()
             del request.session['otp_verified']

@@ -167,6 +167,16 @@
             </div>
 
             <div class="form-group">
+                <label>Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
                 <label>Mật khẩu</label>
                 {{ form.password }}
                 {% if form.password.errors %}
