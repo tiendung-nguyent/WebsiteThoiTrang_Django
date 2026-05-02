@@ -5,6 +5,7 @@ from gioHang.models import ChiTietGioHang
 from quanLyDonHang.models import DonHangVanChuyen
 from django.contrib.auth.decorators import login_required
 from gioHang.views import lay_hoac_tao_khach_hang
+from quanLySanPham.models import DanhMuc
 
 
 @login_required
@@ -25,8 +26,13 @@ def quanLyDonDat(request):
             "VC:", don.shipping_info
         )
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'donDat/quanLyDonDat.html', {
-        'ds_don': ds_don
+        'ds_don': ds_don,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 

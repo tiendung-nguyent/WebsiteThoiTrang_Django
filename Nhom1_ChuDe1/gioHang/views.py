@@ -113,12 +113,17 @@ def chiTietSanPham(request, sp_ma):
     gio_hang = lay_hoac_tao_gio_hang(request)
     cap_nhat_tong_gio_hang(gio_hang)
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'gioHang/chiTietSanPham.html', {
         'san_pham': san_pham,
         'bien_thes': bien_thes,
         'mau_sacs': mau_sacs,
         'kich_thuocs': kich_thuocs,
         'ton_kho_map': ton_kho_map,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 
@@ -185,9 +190,14 @@ def gio_hang(request):
     )
     cap_nhat_tong_gio_hang(gio_hang)
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'gioHang/gio_hang.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 
@@ -264,9 +274,14 @@ def xac_nhan_xoa_gio_hang(request):
     ds_chi_tiet = ChiTietGioHang.objects.filter(GH_Ma=gio_hang).select_related('BTSP_Ma', 'BTSP_Ma__SP_Ma')
     cap_nhat_tong_gio_hang(gio_hang)
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'gioHang/XoaGioHang.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 
@@ -479,6 +494,9 @@ def thanh_toan_view(request):
                 messages.success(request, 'Thanh toán thành công!')
             return redirect('quanLyDonDat')
 
+    danh_muc_nam = DanhMuc.objects.filter(DM_Thuoc='NAM').order_by('DM_Ten')
+    danh_muc_nu = DanhMuc.objects.filter(DM_Thuoc='NỮ').order_by('DM_Ten')
+
     return render(request, 'gioHang/ThanhToan.html', {
         'gio_hang_obj': gio_hang,
         'ds_chi_tiet': ds_chi_tiet,
@@ -494,6 +512,8 @@ def thanh_toan_view(request):
         'payment': payment,
         'giam_gia_json': giam_gia_json,
         'ds_ctkh': ds_ctkh,
+        'danh_muc_nam': danh_muc_nam,
+        'danh_muc_nu': danh_muc_nu,
     })
 
 
