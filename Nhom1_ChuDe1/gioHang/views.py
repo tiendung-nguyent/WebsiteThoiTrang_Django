@@ -514,7 +514,7 @@ def normalize_text(text):
 
 
 def danhSachSanPham(request):
-    ds_san_pham = SanPham.objects.select_related('DM_Ma').all()
+    ds_san_pham = SanPham.objects.filter(SP_TrangThai=0).select_related('DM_Ma').order_by('SP_Ten')
 
     gioi_tinh = request.GET.get('gioi_tinh', '').strip()
     danh_muc = request.GET.get('danh_muc', '').strip()
