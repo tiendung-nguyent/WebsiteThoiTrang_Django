@@ -361,6 +361,9 @@
         let value = parseInt(input.value) || 1;
         value += step;
         if (value < 1) value = 1;
+        if (input.max && parseInt(input.max) > 0 && value > parseInt(input.max)) {
+            value = parseInt(input.max);
+        }
         input.value = value;
     }
 
@@ -371,6 +374,7 @@
         const size = document.querySelector('input[name="kich_thuoc"]:checked');
         const stockText = document.getElementById('stockText');
         const qtyInput = document.getElementById('qtyInput');
+        const submitBtn = document.querySelector('.add-cart-btn');
 
         if (mau && size) {
             const key = `${mau.value}-${size.value}`;
@@ -387,10 +391,26 @@
                 if (soLuong === 0) {
                     stockText.innerHTML = `<span style="color:red">Hết hàng</span>`;
                     qtyInput.value = 1;
+                    if(submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.style.background = '#ccc';
+                        submitBtn.style.cursor = 'not-allowed';
+                    }
+                } else {
+                    if(submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.style.background = '';
+                        submitBtn.style.cursor = 'pointer';
+                    }
                 }
             } else {
                 stockText.innerHTML = `<span style="color:red">Không có biến thể này</span>`;
                 qtyInput.value = 1;
+                if(submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.background = '#ccc';
+                    submitBtn.style.cursor = 'not-allowed';
+                }
             }
         }
     }

@@ -164,16 +164,26 @@ def them_vao_gio_hang(request, sp_ma):
         messages.error(request, 'Không tìm thấy biến thể sản phẩm.')
         return redirect('chiTietSanPham', sp_ma=sp_ma)
 
+    if bien_the.SP_SL <= 0:
+        messages.error(request, 'Sản phẩm này đã hết hàng.')
+        return redirect('chiTietSanPham', sp_ma=sp_ma)
+
     chi_tiet = ChiTietGioHang.objects.filter(
         GH_Ma=gio_hang,
         BTSP_Ma=bien_the
     ).first()
 
     if chi_tiet:
+        if chi_tiet.GH_SL + so_luong > bien_the.SP_SL:
+            messages.error(request, f'Số lượng vượt quá tồn kho (chỉ còn {bien_the.SP_SL}).')
+            return redirect('chiTietSanPham', sp_ma=sp_ma)
         chi_tiet.GH_SL += so_luong
         chi_tiet.GH_TTien = Decimal(chi_tiet.GH_SL) * san_pham.SP_GiaBan
         chi_tiet.save()
     else:
+        if so_luong > bien_the.SP_SL:
+            messages.error(request, f'Số lượng vượt quá tồn kho (chỉ còn {bien_the.SP_SL}).')
+            return redirect('chiTietSanPham', sp_ma=sp_ma)
         ChiTietGioHang.objects.create(
             GH_Ma=gio_hang,
             BTSP_Ma=bien_the,
@@ -253,17 +263,27 @@ def cap_nhat_san_pham_gio(request, ctgh_id):
         messages.error(request, 'Biến thể không hợp lệ.')
         return redirect('gioHang')
 
+    if bien_the_moi.SP_SL <= 0:
+        messages.error(request, 'Sản phẩm này đã hết hàng.')
+        return redirect('gioHang')
+
     dong_da_co = ChiTietGioHang.objects.filter(
         GH_Ma=gio_hang,
         BTSP_Ma=bien_the_moi
     ).exclude(id=chi_tiet.id).first()
 
     if dong_da_co:
+        if dong_da_co.GH_SL + so_luong > bien_the_moi.SP_SL:
+            messages.error(request, f'Số lượng vượt quá tồn kho (chỉ còn {bien_the_moi.SP_SL}).')
+            return redirect('gioHang')
         dong_da_co.GH_SL += so_luong
         dong_da_co.GH_TTien = Decimal(dong_da_co.GH_SL) * sp.SP_GiaBan
         dong_da_co.save()
         chi_tiet.delete()
     else:
+        if so_luong > bien_the_moi.SP_SL:
+            messages.error(request, f'Số lượng vượt quá tồn kho (chỉ còn {bien_the_moi.SP_SL}).')
+            return redirect('gioHang')
         chi_tiet.BTSP_Ma = bien_the_moi
         chi_tiet.GH_SL = so_luong
         chi_tiet.GH_TTien = Decimal(so_luong) * sp.SP_GiaBan
@@ -303,6 +323,10 @@ def xoa_gio_hang(request):
 def tang_so_luong_gio(request, ctgh_id):
     gio_hang = lay_hoac_tao_gio_hang(request)
     chi_tiet = get_object_or_404(ChiTietGioHang, id=ctgh_id, GH_Ma=gio_hang)
+
+    if chi_tiet.GH_SL + 1 > chi_tiet.BTSP_Ma.SP_SL:
+        messages.error(request, f'Số lượng vượt quá tồn kho (chỉ còn {chi_tiet.BTSP_Ma.SP_SL}).')
+        return redirect('gioHang')
 
     chi_tiet.GH_SL += 1
     chi_tiet.GH_TTien = Decimal(chi_tiet.GH_SL) * chi_tiet.BTSP_Ma.SP_Ma.SP_GiaBan
