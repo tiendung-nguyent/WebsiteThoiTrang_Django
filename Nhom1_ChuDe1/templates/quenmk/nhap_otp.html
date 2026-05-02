@@ -1,0 +1,184 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .otp-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        background-color: #f9fafb;
+        padding: 20px;
+    }
+    .otp-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .logo-container img {
+        width: 80px;
+        border-radius: 8px;
+    }
+    .otp-card h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .otp-card p.subtitle {
+        color: #666;
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+    .otp-inputs {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+    .otp-inputs input {
+        width: 60px;
+        height: 70px;
+        font-size: 30px;
+        text-align: center;
+        border: 2px solid #5aa5fb;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #333;
+        outline: none;
+    }
+    .otp-inputs input:focus {
+        border-color: #124e8d;
+    }
+    .bottom-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .resend-container {
+        font-size: 16px;
+        color: #666;
+    }
+    .resend-btn {
+        background: none;
+        border: none;
+        color: #004a99;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        text-decoration: none;
+    }
+    .resend-btn:disabled {
+        color: #999;
+        cursor: not-allowed;
+    }
+    .btn-primary {
+        padding: 12px 30px;
+        background-color: #124e8d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .errorlist, .successlist {
+        font-size: 14px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .errorlist { color: #d93025; }
+    .successlist { color: #1e8e3e; }
+</style>
+
+<div class="otp-container">
+    <div class="otp-card">
+        <a href="{% url 'nhap_sdt' %}" class="back-btn">&lt;</a>
+        
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Cen Sports" onerror="this.src='https://via.placeholder.com/80x80/124e8d/ffffff?text=Logo'">
+        </div>
+        
+        <h2>Kiểm tra số điện thoại</h2>
+        <p class="subtitle">Chúng tôi vừa gửi mã OTP gồm 5 kí tự đến số điện thoại của bạn.<br>Vui lòng kiểm tra SMS.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}errorlist{% else %}successlist{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="otp-form">
+            {% csrf_token %}
+            <div class="otp-inputs">
+                <input type="text" name="otp1" maxlength="1" pattern="[0-9]" required oninput="moveToNext(this, 'otp2')">
+                <input type="text" name="otp2" maxlength="1" pattern="[0-9]" required oninput="moveToNext(this, 'otp3')" id="otp2">
+                <input type="text" name="otp3" maxlength="1" pattern="[0-9]" required oninput="moveToNext(this, 'otp4')" id="otp3">
+                <input type="text" name="otp4" maxlength="1" pattern="[0-9]" required oninput="moveToNext(this, 'otp5')" id="otp4">
+                <input type="text" name="otp5" maxlength="1" pattern="[0-9]" required id="otp5">
+            </div>
+
+            <div class="bottom-actions">
+                <div class="resend-container">
+                    Gửi lại mã OTP <span id="countdown">(60s)</span>
+                </div>
+                <button type="submit" class="btn-primary">Tiếp tục</button>
+            </div>
+        </form>
+        
+        <form method="post" id="resend-form" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="resend" value="true">
+        </form>
+    </div>
+</div>
+
+<script>
+    function moveToNext(current, nextFieldID) {
+        if (current.value.length >= 1) {
+            document.getElementById(nextFieldID).focus();
+        }
+    }
+
+    // Xử lý countdown
+    let timeLeft = 60;
+    const countdownEl = document.getElementById('countdown');
+    const resendContainer = document.querySelector('.resend-container');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.innerText = `(${timeLeft}s)`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            resendContainer.innerHTML = `<button type="button" class="resend-btn" onclick="document.getElementById('resend-form').submit()">Gửi lại mã OTP?</button>`;
+        }
+    }, 1000);
+</script>
+{% endblock %}
