@@ -1,0 +1,110 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .success-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        background-color: #f9fafb;
+        padding: 20px;
+    }
+    .success-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 450px;
+        position: relative;
+        text-align: center;
+    }
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .logo-container {
+        margin-bottom: 20px;
+    }
+    .logo-container img {
+        width: 80px;
+        border-radius: 8px;
+    }
+    .check-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #f0f7ff;
+        border: 2px solid #5aa5fb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+    }
+    .check-icon svg {
+        width: 40px;
+        height: 40px;
+        color: #007bff;
+    }
+    .success-card h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #000;
+    }
+    .success-card p.subtitle {
+        color: #666;
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background-color: #124e8d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-card">
+        <a href="{% url 'login' %}" class="back-btn">&lt;</a>
+        
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Cen Sports" onerror="this.src='https://via.placeholder.com/80x80/124e8d/ffffff?text=Logo'">
+        </div>
+
+        <div class="check-icon">
+            <svg xmlns="http://www.w3.org/-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        
+        <h2>Tạo mật khẩu mới thành công</h2>
+        <p class="subtitle">Chúc mừng! Mật khẩu của bạn đã được khôi phục thành công. Nhấn vào nút "Tiếp tục" để đăng nhập</p>
+
+        <a href="{% url 'login' %}" class="btn-primary">Tiếp tục</a>
+    </div>
+</div>
+{% endblock %}

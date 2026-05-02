@@ -1,0 +1,122 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .forgot-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        background-color: #f9fafb;
+        padding: 20px;
+    }
+    .forgot-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 450px;
+        position: relative;
+    }
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .logo-container img {
+        width: 80px;
+        border-radius: 8px;
+    }
+    .forgot-card h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .forgot-card p.subtitle {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #000;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 14px 15px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background-color: #124e8d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+    }
+    .errorlist {
+        color: #d93025;
+        font-size: 14px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+</style>
+
+<div class="forgot-container">
+    <div class="forgot-card">
+        <a href="{% url 'login' %}" class="back-btn">&lt;</a>
+        
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Cen Sports" onerror="this.src='https://via.placeholder.com/80x80/124e8d/ffffff?text=Logo'">
+        </div>
+        
+        <h2>Quên mật khẩu</h2>
+        <p class="subtitle">Hãy nhập số điện thoại của bạn để cấp lại mật khẩu</p>
+
+        {% if messages %}
+            <div class="errorlist">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" name="phone" placeholder="Nhập số điện thoại" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Khôi phục mật khẩu</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "user/base_user.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .reset-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        background-color: #f9fafb;
+        padding: 20px;
+    }
+    .reset-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+    }
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .logo-container img {
+        width: 80px;
+        border-radius: 8px;
+    }
+    .reset-card h2 {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 30px;
+        text-align: center;
+        text-transform: uppercase;
+        color: #000;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #888;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 14px 15px;
+        border: 1px solid #c76f6f; /* Slightly red border as per design */
+        border-radius: 12px;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .form-group input:focus {
+        border-color: #124e8d;
+    }
+    .help-text {
+        font-size: 13px;
+        color: #c76f6f;
+        font-style: italic;
+        margin-top: -10px;
+        margin-bottom: 20px;
+        display: block;
+    }
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background-color: #124e8d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .errorlist {
+        color: #d93025;
+        font-size: 14px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+</style>
+
+<div class="reset-container">
+    <div class="reset-card">
+        <a href="{% url 'nhap_otp' %}" class="back-btn">&lt;</a>
+        
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Cen Sports" onerror="this.src='https://via.placeholder.com/80x80/124e8d/ffffff?text=Logo'">
+        </div>
+        
+        <h2>THIẾT LẬP MẬT KHẨU MỚI</h2>
+
+        {% if messages %}
+            <div class="errorlist">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Nhập mật khẩu mới</label>
+                <input type="password" name="password" placeholder="Nhập mật khẩu mới" required>
+            </div>
+            
+            <span class="help-text">Mật khẩu phải có ít nhất 6 ký tự</span>
+
+            <div class="form-group">
+                <label>Xác nhận mật khẩu mới</label>
+                <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Cập nhật mật khẩu</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
