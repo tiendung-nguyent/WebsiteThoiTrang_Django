@@ -2,46 +2,228 @@
 
 {% block content %}
 <style>
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .page-title { font-size: 22px; color: #333; font-weight: 700; }
-    .filter-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; }
-    .search-input { position: relative; }
-    .search-input i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; }
-    .search-input input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-    .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; }
-    thead { background: #f8f9fa; border-bottom: 1px solid #eee; }
-    th { padding: 15px; text-align: left; font-size: 13px; color: #666; text-transform: uppercase; }
-    td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
-    .btn-create { background: #1a5c8b; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
-    .btn-action { border: none; background: none; cursor: pointer; font-size: 18px; margin: 0 5px; }
-    .btn-view { color: #888; }
-    .btn-delete { color: #ff6b6b; }
-    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-content {
-    background: white;
-    margin: 2% auto; /* Chỉnh lại margin cho cân đối */
-    padding: 25px;
-    border-radius: 15px;
-    width: 850px;
-    position: relative;
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
 
-    /* THÊM 2 DÒNG NÀY */
-    max-height: 90vh; /* Giới hạn chiều cao popup tối đa bằng 90% màn hình */
-    overflow-y: auto; /* Nếu popup dài quá thì hiện thanh cuộn cả popup */
-}
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-    .close { font-size: 24px; cursor: pointer; color: #999; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-    .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-    .product-selection { background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px dashed #ccc; margin-bottom: 20px; }
-    .add-to-list { background: #0056b3; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; }
-    .modal-confirm { width: 400px; text-align: center; padding: 40px 20px; }
-    .icon-trash-circle { width: 80px; height: 80px; background: #ffefef; color: #ff6b6b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px; }
-    .btn-group-confirm { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
-    .btn-no { background: white; border: 1px solid #1a5c8b; color: #1a5c8b; padding: 10px 40px; border-radius: 8px; cursor: pointer; }
-    .btn-yes { background: #1a5c8b; color: white; border: none; padding: 10px 40px; border-radius: 8px; cursor: pointer; }
+    .page-title {
+        font-size: 22px;
+        color: #333;
+        font-weight: 700;
+    }
+
+    .filter-bar {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 25px;
+    }
+
+    .search-input {
+        position: relative;
+    }
+
+    .search-input i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .search-input input {
+        width: 100%;
+        padding: 10px 10px 10px 35px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        padding: 15px;
+        text-align: left;
+        font-size: 13px;
+        color: #666;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .btn-create {
+        background: #1a5c8b;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-action {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 18px;
+        margin: 0 5px;
+    }
+
+    .btn-view {
+        color: #888;
+    }
+
+    .btn-delete {
+        color: #ff6b6b;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: white;
+        margin: 2% auto; /* Chỉnh lại margin cho cân đối */
+        padding: 25px;
+        border-radius: 15px;
+        width: 850px;
+        position: relative;
+        /* THÊM 2 DÒNG NÀY */
+        max-height: 90vh; /* Giới hạn chiều cao popup tối đa bằng 90% màn hình */
+        overflow-y: auto; /* Nếu popup dài quá thì hiện thanh cuộn cả popup */
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .close {
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .product-selection {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px dashed #ccc;
+        margin-bottom: 20px;
+    }
+
+    .add-to-list {
+        background: #0056b3;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .modal-confirm {
+        width: 400px;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .icon-trash-circle {
+        width: 80px;
+        height: 80px;
+        background: #ffefef;
+        color: #ff6b6b;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 40px;
+    }
+
+    .btn-group-confirm {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .btn-no {
+        background: white;
+        border: 1px solid #1a5c8b;
+        color: #1a5c8b;
+        padding: 10px 40px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-yes {
+        background: #1a5c8b;
+        color: white;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 </style>
 
 <div class="page-header">
