@@ -147,7 +147,7 @@
     <h2 class="page-title">Báo cáo thống kê</h2>
     <div class="current-date">
         <i class="fa fa-calendar-alt" style="color: var(--primary-color);"></i>
-        <span id="txtDate">{{ current_date }}</span>
+        <span id="txtDate">{{ current_date }}</span> <!--104-->
     </div>
 </div>
 
@@ -155,7 +155,7 @@
     <div class="stat-card">
         <div class="stat-info">
             <span>Doanh thu thực thu</span>
-            <h2>{{ daily_revenue }}</h2>
+            <h2>{{ daily_revenue }}</h2> <!--78, 104-->
             <small>(Đơn đã giao hôm nay)</small>
         </div>
         <div class="stat-icon icon-green"><i class="fa fa-dollar-sign"></i></div>
@@ -164,7 +164,7 @@
     <div class="stat-card">
         <div class="stat-info">
             <span>Tổng đơn hàng</span>
-            <h2>{{ new_orders_count }}</h2>
+            <h2>{{ new_orders_count }}</h2> <!--47, 104-->
             <small>(Phát sinh hôm nay)</small>
         </div>
         <div class="stat-icon icon-blue"><i class="fa fa-box-open"></i></div>
@@ -173,7 +173,7 @@
     <div class="stat-card">
         <div class="stat-info">
             <span>Tiền đang luân chuyển</span>
-            <h2>{{ tien_luan_chuyen }}</h2>
+            <h2>{{ tien_luan_chuyen }}</h2> <!--51, 104-->
             <small>(Đang giao / Chờ thu tiền)</small>
         </div>
         <div class="stat-icon icon-orange"><i class="fa fa-sync-alt"></i></div>
@@ -210,15 +210,15 @@
             <h3>Top 5 sản phẩm bán chạy (Tháng này)</h3>
         </div>
         <ul class="top-products-list">
-            {% for product in top_products %}
+            {% for product in top_products %} <!--91-->
             <li class="top-product-item">
                 <div class="product-info">
                     <div class="product-rank {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
                         {{ forloop.counter }}
                     </div>
-                    <span class="product-name">{{ product.BTSP_Ma__SP_Ma__SP_Ten }}</span>
+                    <span class="product-name">{{ product.BTSP_Ma__SP_Ma__SP_Ten }}</span> <!--95-->
                 </div>
-                <span class="product-qty">{{ product.total_qty }} đã bán</span>
+                <span class="product-qty">{{ product.total_qty }} đã bán</span> <!--97-->
             </li>
             {% empty %}
             <li class="top-product-item" style="justify-content: center; color: #888;">
@@ -228,28 +228,33 @@
         </ul>
     </div>
 </div>
-
-{{ chart_data|json_script:"chart-data" }}
-{{ status_counts|json_script:"status-data" }}
+<!--truyền dữ liệu Python từ backend sang JavaScript trong file HTML-->
+{{ chart_data|json_script:"chart-data" }} <!--102-->
+{{ status_counts|json_script:"status-data" }} <!--82-->
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // ĐĂNG KÝ PLUGIN VỪA THÊM (Thêm dòng này ở đầu)
+        // ĐĂNG KÝ PLUGIN hiện %
         Chart.register(ChartDataLabels);
 
         function formatCurrency(value) {
             return value.toLocaleString("vi-VN") + " đ";
         }
 
-        // 1. BIỂU ĐỒ DOANH THU & LỢI NHUẬN (HÀNG 2)
+        // 1. BIỂU ĐỒ DOANH THU & LỢI NHUẬN
+
+        // lấy JSON từ {chart_data|json_script:"chart-data"} rồi chuyển thành object JS
         const chartSource = JSON.parse(document.getElementById("chart-data").textContent);
         const periodSelect = document.getElementById("chartPeriod");
+        //Lấy vùng vẽ biểu đồ
         const ctxBar = document.getElementById("doanhThuChart").getContext("2d");
 
+        //tạo bdo cột
         const barChart = new Chart(ctxBar, {
             type: "bar",
             data: {
                 labels: chartSource.week.labels,
+                //dl biểu đồ
                 datasets: [
                     {
                         label: "Doanh thu",
