@@ -35,13 +35,8 @@ def nhap_hang_view(request):
 
 
 def get_variants(request):
-    """
-    API lay danh sach bien the (size, mau) dua tren ma san pham chung.
-    Kem theo gia ban cua san pham de lam mac dinh cho gia nhap.
-    """
     sp_ma = request.GET.get("sp_ma")
     if sp_ma:
-            sp = SanPham.objects.get(SP_Ma=sp_ma)
             variants_qs = BienTheSanPham.objects.filter(SP_Ma_id=sp_ma).values(
                 "BTSP_Ma", "SP_KichThuoc", "SP_MauSac"
             )
@@ -50,8 +45,7 @@ def get_variants(request):
                 safe=False,
             )
 
-    return JsonResponse({"variants": [], "sp_gia_ban": 0}, safe=False)
-
+    return JsonResponse({"variants": []}, safe=False)
 
 @transaction.atomic
 def add_nhap_hang(request):
@@ -116,7 +110,6 @@ def delete_nhap_hang(request, ma_dn):
         try:
             don_nhap = NhapHang.objects.get(NH_Ma=ma_dn)
 
-            chi_tiets = ChiTietNhapHang.objects.filter(NH_Ma=don_nhap)
             don_nhap.delete()
 
             return JsonResponse(

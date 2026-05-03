@@ -114,7 +114,7 @@ def bao_cao_view(request):
 
 
 
-def _prepare_chart_data(order_data_map, today):
+def _prepare_chart_data(order_data_map, today) :
     # --- 1. XỬ LÝ TUẦN ---
     start_of_week = today - timedelta(days=today.weekday())
     week_labels, week_rev, week_prof = [], [], []
