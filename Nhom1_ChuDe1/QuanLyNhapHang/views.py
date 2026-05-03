@@ -41,17 +41,15 @@ def get_variants(request):
     """
     sp_ma = request.GET.get("sp_ma")
     if sp_ma:
-        try:
             sp = SanPham.objects.get(SP_Ma=sp_ma)
             variants_qs = BienTheSanPham.objects.filter(SP_Ma_id=sp_ma).values(
                 "BTSP_Ma", "SP_KichThuoc", "SP_MauSac"
             )
             return JsonResponse(
-                {"variants": list(variants_qs), "sp_gia_ban": float(sp.SP_GiaBan)},
+                {"variants": list(variants_qs)},
                 safe=False,
             )
-        except SanPham.DoesNotExist:
-            pass
+
     return JsonResponse({"variants": [], "sp_gia_ban": 0}, safe=False)
 
 
